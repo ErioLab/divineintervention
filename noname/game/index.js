@@ -1307,10 +1307,11 @@ export class Game {
 			}
 			let str = "";
 			if (!ip.startsWith("wss://") && !ip.startsWith("ws://")) str = get.config("wss_mode", "connect") ? "wss://" : "ws://";
+			ip = str + ip;
 			if (!withport) {
 				ip = ip + (ip.startsWith("wss://") ? ":50000" : ":8080");
 			}
-			game.ws = new WebSocket(str + ip + "");
+			game.ws = new WebSocket(ip + "");
 		} catch {
 			// 今天狂神龙尊来了这里也没有参数
 			alert("错误：无效联机地址");
