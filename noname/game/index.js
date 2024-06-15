@@ -1306,8 +1306,9 @@ export class Game {
 				delete game.ws;
 			}
 			let str = "";
-			if (!ip.startsWith("wss://") && !ip.startsWith("ws://")) str = get.config("wss_mode", "connect") ? "wss://" : "ws://";
-			ip = str + ip;
+			//if (!ip.startsWith("wss://") && !ip.startsWith("ws://")) str = get.config("wss_mode", "connect") ? "wss://" : "ws://";
+			if (!ip.startsWith("wss://") && !ip.startsWith("ws://"))
+				ip = "wss://" + ip;
 			if (!withport) {
 				ip = ip + (ip.startsWith("wss://") ? ":50000" : ":8080");
 			}
