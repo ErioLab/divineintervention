@@ -329,13 +329,7 @@ const skills = {
         },
         content: function () {
             "step 0"
-            if (player.hp == 1) {
-                game.broadcastAll(function (target) {
-                    target.storage.dizangsong++;
-                    target.syncStorage("dizangsong");
-                    target.updateMarks();
-                }, player);
-            } else {
+            if (player.hp != 1) {
                 player.loseHp();
             }
             "step 1"
@@ -370,13 +364,7 @@ const skills = {
                 },
                 forced: true,
                 content: function () {
-                    if (player.hp == 1) {
-                        game.broadcastAll(function (target) {
-                            target.storage.dizangsong++;
-                            target.syncStorage("dizangsong");
-                            target.updateMarks();
-                        }, player);
-                    } else {
+                    if (player.hp != 1) {
                         player.loseHp();
                     }
                     if (player.countMark("diyubian") > 0) player.draw(player.countMark("diyubian"));
@@ -3668,7 +3656,7 @@ const skills = {
             game.log("参加默写的名单（按顺序）：", event.answerPlayers);
             if (event.correctPlayers.length > 0) {
                 player.line(event.correctPlayers[0], "green");
-                event.correctPlayers[0].draw(3);
+                event.correctPlayers[0].draw(2);
             }
             var punishPlayers = event.wrongPlayers;
             punishPlayers.addArray(event.answerPlayers.slice(-1));
