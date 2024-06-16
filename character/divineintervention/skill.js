@@ -3337,7 +3337,7 @@ const skills = {
     dichaoyong: {
         audio: "ditonggui",
         frequent: true,
-        trigger: { player: "phaseUseEnd" },
+        trigger: { player: "phaseDrawEnd" },
         filter: function (event, player) {
             return player.countCards("h") > 0;
         },
