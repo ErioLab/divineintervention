@@ -5,7 +5,7 @@
 	<meta name="format-detection" content="telephone=no" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="viewport" content="user-scalable=no, viewport-fit=cover" />
-	<title>无名杀</title>
+	<title>无名杀-天降神兵版</title>
 	<script>
 		if (
 			typeof window.require == "function" &&
@@ -151,7 +151,7 @@
 						.catch(reject);
 
 					function callback() {
-						game.readFile = function (fileName, callback = () => {}, error = () => {}) {
+						game.readFile = function (fileName, callback = () => { }, error = () => { }) {
 							fetch(`./readFile?fileName=${fileName}`)
 								.then((response) => {
 									return response.json();
@@ -164,7 +164,7 @@
 								.catch(error);
 						};
 
-						game.readFileAsText = function (fileName, callback = () => {}, error = () => {}) {
+						game.readFileAsText = function (fileName, callback = () => { }, error = () => { }) {
 							fetch(`./readFileAsText?fileName=${fileName}`)
 								.then((response) => {
 									return response.json();
@@ -176,7 +176,7 @@
 								.catch(error);
 						};
 
-						game.writeFile = function (data, path, name, callback = () => {}) {
+						game.writeFile = function (data, path, name, callback = () => { }) {
 							game.ensureDirectory(path, function () {
 								if (Object.prototype.toString.call(data) == "[object File]") {
 									const fileReader = new FileReader();
@@ -219,7 +219,7 @@
 							});
 						};
 
-						game.removeFile = function (fileName, callback = () => {}) {
+						game.removeFile = function (fileName, callback = () => { }) {
 							fetch(`./removeFile?fileName=${fileName}`)
 								.then((response) => {
 									return response.json();
@@ -230,7 +230,7 @@
 								.catch(error);
 						};
 
-						game.getFileList = function (dir, callback = () => {}, onerror) {
+						game.getFileList = function (dir, callback = () => { }, onerror) {
 							fetch(`./getFileList?dir=${dir}`)
 								.then((response) => {
 									return response.json();
@@ -248,7 +248,7 @@
 								});
 						};
 
-						game.ensureDirectory = function (list, callback = () => {}, file = false) {
+						game.ensureDirectory = function (list, callback = () => { }, file = false) {
 							let pathArray = typeof list == "string" ? list.split("/") : list;
 							if (file) {
 								pathArray = pathArray.slice(0, -1);
@@ -258,8 +258,8 @@
 
 						game.createDir = (
 							directory,
-							successCallback = () => {},
-							errorCallback = () => {}
+							successCallback = () => { },
+							errorCallback = () => { }
 						) => {
 							fetch(`./createDir?dir=${directory}`)
 								.then((response) => {
@@ -276,8 +276,8 @@
 						};
 						game.removeDir = (
 							directory,
-							successCallback = () => {},
-							errorCallback = () => {}
+							successCallback = () => { },
+							errorCallback = () => { }
 						) => {
 							fetch(`./removeDir?dir=${directory}`)
 								.then((response) => {
