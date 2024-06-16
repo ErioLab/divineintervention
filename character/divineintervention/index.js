@@ -5,6 +5,11 @@ import pinyins from "./pinyin.js";
 import skills from "./skill.js";
 import translates from "./translate.js";
 import voices from "./voices.js";
+import characterFilters from "./characterFilter.js";
+import characterReplaces from "./characterReplace.js";
+import dynamicTranslates from "./dynamicTranslate.js";
+import characterIntros from "./intro.js";
+import characterTitles from "./title.js";
 import { characterSort, characterSortTranslate } from "./sort.js";
 
 game.import("character", function () {
@@ -12,91 +17,15 @@ game.import("character", function () {
         name: "divineintervention",
         connect: true,
         character: { ...characters },
-        characterSort: {
-            divineintervention: characterSort,
-        },
-        characterFilter: {/*
-            key_jojiro(mode) {
-                return mode == "chess" || mode == "tafang";
-            },
-            key_yuu(mode) {
-                return mode == "identity" || mode == "doudizhu" || mode == "single" || (mode == "versus" && _status.mode != "standard" && _status.mode != "three");
-            },
-            key_tomoya(mode) {
-                return mode != "chess" && mode != "tafang" && mode != "stone";
-            },
-            key_sunohara(mode) {
-                return mode != "guozhan";
-            },*/
-        },
-        dynamicTranslate: {
-            dilunzhuan: function (player) {
-                if (player.storage.dilunzhuan) return "转换技。【白花】你造成伤害时，可弃置一张红色手牌取消该伤害改为回复其一点体力。<span class=\"bluetext\">【黑渊】当有角色回复体力时，你可弃置一张黑色手牌使回复量-1。</span>";
-                return "转换技。<span class=\"bluetext\">【白花】你造成伤害时，可弃置一张红色手牌取消该伤害改为回复其一点体力。</span>【黑渊】当有角色回复体力时，你可弃置一张黑色手牌使回复量-1。";
-            },
-            dixushi: function (player) {
-                if (player.storage.dixushi) return "转换技。【顺势】出牌阶段，你可弃置任意张牌并对攻击范围内等量的角色各造成一点伤害。<span class=\"bluetext\">【反转】当你成为【杀】的唯一目标时，你可弃置任意张牌，若你至【杀】使用者的距离+X之后在其攻击范围外（X为你弃置的牌数），你取消并获得这张【杀】，并视为发动了技能。</span>";
-                return "转换技。<span class=\"bluetext\">【顺势】出牌阶段，你可弃置任意张牌并对攻击范围内等量的角色各造成一点伤害。</span>【反转】当你成为【杀】的唯一目标时，你可弃置任意张牌，若你至【杀】使用者的距离+X之后在其攻击范围外（X为你弃置的牌数），你取消并获得这张【杀】，并视为发动了技能。";
-            }
-        },
-        characterReplace: {
-            diganyu: ["diganyu", "dijie_ganyu"],
-            dichongyue: ["dichongyue", "dijie_chongyue"],
-        },
-        characterIntro: {
-            diganyu: "天降神兵-原神人物。月海亭的秘书，体内流淌着仙兽「麒麟」的血脉。",
-            dichongyue: "天降神兵-明日方舟人物。自称只是一介武人的炎国访客，重岳，可从未有人见他真正出手过。",
-            diren: "天降神兵-崩铁人物。弃身锋刃的剑客，原名不详。效忠于「命运的奴隶」，拥有可怖的自愈能力。手持古剑作战，剑身遍布破碎裂痕，正如其身，亦如其心。",
-            diluocha: "天降神兵-崩铁人物。金发俊雅的年轻人，背着巨大的棺棹。身为天外行商的他，不幸被卷入仙舟，「罗浮」的星核危机。一手精湛医术莫名有了用武之地。",
-            dinaxida: "天降神兵-原神人物。许久之前，草神创造了须弥雨林，又通过教令院将智慧赐予国民。她的美名无处不在，千万个故事，只为传唱她的事迹与美德而问世。在人民眼中，草神的存在更像是一种符号化的象征——因此，他们才能确信神明的庇护自古就存在于这片土地之上。城中至贤对草神崇拜备至，民众也坚定不移地追随其后。而影响诸多的「虚空」系统，则是「小吉祥草王」的耳与目。它给予她遍历人们喜怒哀乐的能力，令她听见看见一切，让她理解了赞美之外的声音。见闻越是拓展，她越明白自己必须不断学习。她唯有尽快成长，才能面对来自世界最深处的威胁。无法逃离，那是她无法回避的使命。即便没多少人对现状不满，纳西妲依旧坚定不移。她的顽强来源于信念，她比任何人都明白——在这里，她将是所有人的寄托与依靠。",
-            dihuangquan: "天降神兵-崩铁人物。自称「巡海游侠」的旅人，本名不详。身佩一柄长刀，独行银河。淡漠寡言，剑出如紫电般迅猛，却从来只以刀鞘战斗，收而不发。",
-            dimaenna: "天降神兵-明日方舟人物。玛恩纳·临光，临光家前家主，干员临光与瑕光的叔叔，迄今并未获得过任何形式的骑士封号。",
-            diqinliu: "天降神兵-明日方舟人物。前维多利亚仪仗队执旗手，服役于维多利亚小丘郡地方部队，经历战乱后，由小丘郡办事处负责人引荐，成为罗德岛合作干员。接受过维多利亚军的基础训练，体能优异，在各类任务中展现出了强大的支援能力。",
-            dijingmolieshou: "天降神兵-杀戮尖塔人物。来自雾霾之地的致命女猎手。使用匕首和下毒来消灭敌人。",
-            dikirito: "天降神兵-SAO人物。名副其实的重度网络游戏玩家。拥有超群的反射神经和洞察力。因为完全潜行正式版的SAO而被卷入死亡游戏，并以此为开端，牵扯进各种的虚拟世界事件。五官看起来像少女一样纤细，性格却非常冷淡，给人一种“捉摸不定”、“年龄不详”的印象。",
-            dikokomi: "天降神兵-原神人物。海祇岛的「现人神巫女」，即——海祇岛最高领袖。",
-            ditaojinniang: "天降神兵-明日方舟人物。杜林族出身的少女，根据本人强烈要求，记录此前履历为：大将军。外表与性格有孩子气的成分，但在战场上表现出颇强的感染力和相当的指挥水准，能够在提振其他干员士气的同时，为他们提供一定的治疗，十分可靠。",
-            dijie_ganyu: "天降神兵-原神人物。月海亭的秘书，体内流淌着仙兽「麒麟」的血脉。",
-            dibanzang: "天降神兵-守望先锋人物。作为一名箭术和忍术大师，岛田半藏一直都在追求极致完美的技艺以证明自己是最强大的武士。岛田家据传已有数百年的历史。以忍者为主要成员的岛田家，经过多年的发展，已经建立起一个以军火和非法物资交易为主的庞大黑道帝国。作为大名的长子，半藏注定要继承他的父亲统治岛田帝国。因此从很小的时候开始，半藏就以这一责任为目标接受训练，并表现出了天生的领导能力以及对战略战术惊人的天赋。同时，他还是精通武术、剑术和弓术的天才。父亲过世后，家族长老就建议半藏帮助他那刚愎自用的弟弟（即岛田源氏），以便两人携手管理岛田帝国。在遭到拒绝后，半藏被迫亲手了结了自己的弟弟。半藏因此深受打击，他拒绝继承父亲的遗产并最终抛弃了自己的家族和所有辛苦换来的成果。现在，半藏四海为家，不断磨练着自己作为一名武士的技巧，希望终有一天能挽回自己的名誉并真正放下自己的过去。",
-            dizhongli: "天降神兵-原神人物。在璃月的传统中，「请仙」与「送仙」是同样重要的事。最擅长「送别」一道的，莫过于胡家传承七十七代的「往生堂」。但「往生堂」的堂主胡桃本人，主要还是专注于送别凡人的技艺。送别仙人的诸般仪式，则交由一位「道上的朋友」——钟离打理。仙人与璃月一同度过漫长岁月，三千多年来升天者寥寥无几，这就意味着一切相关传统都只能以纸面形式存在——时间跨度实在太长了，这可不是那种你小时候咬着糖葫芦参加过一回，老了还能躺在竹椅上再次亲眼目睹的事件。但即便是眼光最为挑剔、沉迷旧纸堆的老学究，也无法对「往生堂」操办的送仙典仪挑出任何毛病。不仅仪式中人的服饰合规，仪式举行的吉时、地点、用具、乃至当天天气、仪式时长、允许观礼人数、观礼者身份职业年龄...哪怕将以上所有全都纳入计量范畴，也无一不合礼节。若人们以「通晓古今」来形容钟离，他只会无奈地一笑，叹道：「我只是...记性很好。」",
-            di5t5: "天降神兵-咒术回战人物。特级咒术师，出生于御三家的五条家，为五条家的实质的代行。在新宿与两面宿傩激战后，被宿傩腰斩。",
-            dijie_chongyue: "天降神兵-明日方舟人物。自称只是一介武人的炎国访客，重岳，可从未有人见他真正出手过。",
-            diayfl: "天降神兵-明日方舟人物。艾雅法拉，火山学家，天灾信使。于高等源石技艺、高能量法术释放等领域展现出了卓越的天赋。现于罗德岛接受治疗，同时为罗德岛提供天灾研究、环境观察与评估、危险地形航行保障等相关服务。",
-            dimulikong: "天降神兵-地下工作人物。？？？",
-            disrtr: "天降神兵-明日方舟人物。神秘的萨卡兹少女史尔特尔，或因矿石病影响导致缺失性记忆障碍，其情况在矿石病病理中也极其少见，现于罗德岛接受治疗中。在测试过程中展现出了原因不详的强大战斗能力，很快成为了作战干员。",
-            dijicanghai: "天降神兵-永劫无间人物。举杯痛饮，人生尽欢。烈豪这称号的背后，是他洒脱不羁的脾性，也是他遇强则强的豪情。纵然命运之路沉重难行，但他将依旧挥刀向前。",
-            dirobin: "天降神兵-崩铁人物。出生于匹诺康尼，闻名银河的天环族歌者，举止从容优雅的少女。",
-            diyftx: "天降神兵-魔禁人物。一方通行生活在学园都市，父母不详，本名一共五个字，姓氏为两个字，名字为三个字，在仅有七人的Level5中排名第一位，有着“学园都市最强”的称号，因此经常被人骚扰。为了不再让他人因挑战自己而残废而渴望得到“绝对”的力量，同时封锁了自己的感情。根据树状图设计者的演算结果，学园都市中的七名超能力者中只有一方通行有机会稳定进化为绝对能力者Level 6。",
-
-        },
-        characterTitle: {
-            diganyu: "循循守月",
-            dichongyue: "自晦及明",
-            diren: "死兆将至",
-            diluocha: "寻索世间",
-            dinaxida: "白草净华",
-            dihuangquan: "远辞畴昔",
-            dimaenna: "未曾起誓",
-            diqinliu: "小丘上的眠柳",
-            dijingmolieshou: "狩猎之影",
-            dikirito: "黑色剑士",
-            dikokomi: "真珠之智",
-            ditaojinniang: "浮光跃金",
-            dijie_ganyu: "循循守月",
-            dibanzang: "巨龙之魂",
-            dizhongli: "尘世闲游",
-            di5t5: "会赢的",
-            dijie_chongyue: "自晦及明",
-            diayfl: "火舞之人",
-            dimulikong: "？？？",
-            disrtr: "无拘熔火",
-            dijicanghai: "『烈豪』",
-            dirobin: "翼声纯律",
-            diyftx: "白色怪物"
-        },
         card: { ...cards },
+        pinyins: { ...pinyins },
         skill: { ...skills },
         translate: { ...translates, ...voices, ...characterSortTranslate },
-        pinyins: { ...pinyins },
+        characterSort: { divineintervention: characterSort, },
+        characterFilter: { ...characterFilters },
+        characterReplace: { ...characterReplaces },
+        dynamicTranslate: { ...dynamicTranslates },
+        characterIntro: { ...characterIntros },
+        characterTitle: { ...characterTitles },
     };
 });

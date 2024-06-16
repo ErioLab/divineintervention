@@ -139,6 +139,12 @@ const Characters = {
         maxHp: 8,
         skills: ["dishiliang"]
     },
+    dizxskd: {
+        sex: "female",
+        group: "qun",
+        hp: 3,
+        skills: ["dixueqin", "ditongzang", "ditonggui", "dishenghua"]
+    },
 };
 
 export default Characters;

@@ -1,17 +1,21 @@
 const characterSort = {
-    di_wolong: ["diganyu", "dichongyue", "diluocha", "diren"],
-    diyizhan: ["dihuangquan", "dimaenna", "dijingmolieshou", "diqinliu"],
-    dijushi: ["dinaxida", "dikirito", "dikokomi", "ditaojinniang"],
-    ditianxia: ["dijie_ganyu", "dibanzang", "dizhongli", "di5t5", "dijie_chongyue"],
-    dizhutian: ["diayfl", "dimulikong", "disrtr", "dijicanghai", "dirobin", "diyftx"]
+    di_ys: ["diganyu", "dinaxida", "dikokomi", "dijie_ganyu", "dizhongli"],
+    di_mrfz: ["dichongyue", "dimaenna", "diqinliu", "ditaojinniang", "dijie_chongyue", "diayfl", "disrtr", "dizxskd"],
+    di_bt: ["diren", "diluocha", "dihuangquan", "dirobin"],
+    di_yx: ["dijingmolieshou", "dijicanghai", "dibanzang",],
+    di_dm: ["dikirito", "di5t5", "diyftx"],
+    di_ls: [],
+    di_qt: ["dimulikong"],
 };
 
 const characterSortTranslate = {
-    di_wolong: "天降神兵·卧龙出山",
-    diyizhan: "天降神兵·一战成名",
-    dijushi: "天降神兵·举世皆惊",
-    ditianxia: "天降神兵·天下无敌",
-    dizhutian: "天降神兵·诛天灭地"
+    di_ys: "天降神兵·原神",
+    di_mrfz: "天降神兵·明日方舟",
+    di_bt: "天降神兵·崩铁",
+    di_yx: "天降神兵·其他游戏",
+    di_dm: "天降神兵·动漫",
+    di_ls: "天降神兵·历史人物",
+    di_qt: "天降神兵·其他",
 };
 
 export { characterSort, characterSortTranslate };

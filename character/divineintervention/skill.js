@@ -3202,6 +3202,13 @@ const skills = {
             event.goto(9);
         }
     },
+    //浊心斯卡蒂
+    dixueqin: {},
+    ditongzang: {},
+    ditonggui: {},
+    dishenghua: {},
+    dichaoyong: {},
+    dichaoku: {},
 };
 
 export default skills;
