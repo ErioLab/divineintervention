@@ -3454,6 +3454,286 @@ const skills = {
             }
         }
     },
+    //宗小静
+    dimoxie: {
+        usable: 4,
+        enable: "phaseUse",
+        filter: function (event, player) {
+            return player.countCards("h") > 0;
+        },
+        content: function () {
+            "step 0";
+            player.chooseCardTarget({
+                position: "he",
+                selectCard: 1,
+                selectTarget: [1, Infinity],
+                filterTarget: lib.filter.notMe,
+                prompt: get.prompt("dimoxie"),
+                prompt2: "弃置一张牌选择任意名其他角色同时参加英语默写",
+            });
+            "step 1";
+            if (result.bool) {
+                player.discard(result.cards);
+                event.players = result.targets.slice(0);
+                event._global_waiting = true;
+            } else event.finish();
+            "step 2";
+            game.check();
+            game.pause();
+            fetch('./character/divineintervention/dic.json').then(function (response) {
+                return response.json();
+            }).then(function (data) {
+                event.dic = JSON.parse(JSON.stringify(data, null, 2));
+                game.resume();
+            });
+            "step 3";
+            const questionType = Math.floor(Math.random() * 2);
+            const selectedEntry = event.dic.dic[Math.floor(Math.random() * event.dic.dic.length)];
+            const selectedWord = selectedEntry.word;
+            const selectedPre = selectedEntry.pre;
+            event.moxie = [];
+            if (questionType === 1) {
+                const randomPres = [];
+                while (randomPres.length < 3) {
+                    const randomPre = event.dic.dic[Math.floor(Math.random() * event.dic.dic.length)].pre;
+                    if (!randomPres.includes(randomPre)) {
+                        randomPres.push(randomPre);
+                    }
+                }
+                const insertAt = Math.floor(Math.random() * (randomPres.length + 1));
+                randomPres.splice(insertAt, 0, selectedPre);
+                event.moxie = [selectedWord, randomPres, selectedPre];
+            } else {
+                const randomWords = [];
+                while (randomWords.length < 3) {
+                    const randomWord = event.dic.dic[Math.floor(Math.random() * event.dic.dic.length)].word;
+                    if (!randomWords.includes(randomWord)) {
+                        randomWords.push(randomWord);
+                    }
+                }
+                const insertAt = Math.floor(Math.random() * (randomWords.length + 1));
+                randomWords.splice(insertAt, 0, selectedWord);
+                event.moxie = [selectedPre, randomWords, selectedWord];
+            }
+            game.broadcastAll(function (t, m) {
+                t.forEach(function (target) {
+                    target.storage.moxie = m;
+                });
+            }, event.players, event.moxie);
+            "step 4";
+            var send = function (source) {
+                var next = game.createEvent("dimoxie_choose", false);
+                next.player = game.me;
+                next.source = source;
+                next.setContent(lib.skill.dimoxie.contentx);
+                game.resume();
+            };
+            var sendback = function (result, player) {
+                if (!result) {
+                    result = "random";
+                }
+                event.results.push([player, result]);
+            };
+            event.ai_targets = [];
+            event.results = [];
+            event.correctPlayers = [];
+            event.answerPlayers = [];
+            event.wrongPlayers = [];
+            var players = game
+                .filterPlayer(function (current) {
+                    return current != player;
+                })
+                .sortBySeat();
+            var time = 10000;
+            if (lib.configOL && lib.configOL.choose_timeout) time = parseInt(lib.configOL.choose_timeout) * 1000;
+            for (var i = 0; i < players.length; i++) {
+                players[i].showTimer(time);
+                if (!event.players.includes(players[i])) continue;
+                if (players[i].isOnline()) {
+                    event.withol = true;
+                    players[i].send(send, player);
+                    players[i].wait(sendback);
+                } else if (players[i] == game.me) {
+                    event.withme = true;
+                    var next = game.createEvent("dimoxie_choose", false);
+                    next.player = game.me;
+                    next.source = player;
+                    next.setContent(lib.skill.dimoxie.contentx);
+                    if (_status.connectMode) game.me.wait(sendback);
+                } else {
+                    event.ai_targets.push(players[i]);
+                }
+            }
+            if (event.ai_targets.length) {
+                event.ai_targets.randomSort();
+                setTimeout(function () {
+                    event.interval = setInterval(
+                        function () {
+                            var target = event.ai_targets.shift();
+                            sendback("random", target);
+                            if (!event.ai_targets.length) {
+                                clearInterval(event.interval);
+                                if (event.withai) game.resume();
+                            }
+                        },
+                        _status.connectMove ? 750 : 75
+                    );
+                }, 500);
+            }
+            "step 5";
+            if (event.withme) {
+                if (_status.connectMode) game.me.unwait(result, game.me);
+                else {
+                    if (!result) {
+                        result = "random";
+                    }
+                    event.results.push([player, result]);
+                }
+            }
+            "step 6";
+            if (event.withol && !event.resultOL) {
+                game.pause();
+            }
+            "step 7";
+            if (event.ai_targets.length > 0) {
+                event.withai = true;
+                game.pause();
+            }
+            "step 8";
+            delete event._global_waiting;
+            for (var i of game.players) i.hideTimer();
+            event.videoId = lib.status.videoId++;
+            game.broadcastAll(
+                function (name, id, results, answerPlayers, correctPlayers, wrongPlayers) {
+                    var dialog = ui.create.dialog(name + "发动了技能【默写】", "hidden", "forcebutton");
+                    dialog.videoId = id;
+                    dialog.classList.add("scroll1");
+                    dialog.classList.add("scroll2");
+                    dialog.classList.add("fullwidth");
+                    dialog.classList.add("fullheight");
+                    dialog.buttonss = [];
+
+                    var list = ["及格名单", "不及名单"];
+                    for (var i = 0; i < list.length; i++) {
+                        dialog.add('<div class="text center">' + list[i] + "</div>");
+                        var buttons = ui.create.div(".buttons", dialog.content);
+                        dialog.buttonss.push(buttons);
+                        buttons.classList.add("popup");
+                        buttons.classList.add("guanxing");
+                    }
+                    dialog.open();
+                    var getx = function () {
+                        var item = results.shift();
+                        var index = item[1] == "0" ? 0 : 1;
+                        var index = 0;
+                        answerPlayers.push(item[0]);
+                        if (item[1] == "correct") {
+                            index = 0;
+                            correctPlayers.push(item[0]);
+                        }
+                        else if (item[1] == "random") {
+                            var dui = Math.random() < 0.7;
+                            if (dui) {
+                                index = 0;
+                                correctPlayers.push(item[0]);
+                            }
+                            else {
+                                index = 1;
+                                wrongPlayers.push(item[0]);
+                            }
+                        }
+                        else {
+                            index = 1;
+                            wrongPlayers.push(item[0]);
+                        }
+                        var button = ui.create.button(item[0], "player", dialog.buttonss[index]);
+                        if (results.length > 0) getx();
+                    };
+                    getx();
+
+                },
+                get.translation(player),
+                event.videoId,
+                event.results.slice(0),
+                event.answerPlayers,
+                event.correctPlayers,
+                event.wrongPlayers
+            );
+            game.delay(0, 1500 + event.results.length * 500);
+            "step 9";
+            game.broadcastAll("closeDialog", event.videoId);
+            "step 10"
+            game.log("默写正确的名单（按顺序）：", event.correctPlayers);
+            game.log("默写不及的名单（按顺序）：", event.wrongPlayers);
+            game.log("参加默写的名单（按顺序）：", event.answerPlayers);
+            if (event.correctPlayers.length > 0) {
+                player.line(event.correctPlayers[0], "green");
+                event.correctPlayers[0].draw(3);
+            }
+            var punishPlayers = event.wrongPlayers;
+            punishPlayers.addArray(event.answerPlayers.slice(-1));
+            punishPlayers.forEach(function (target) {
+                player.line(target, "fire");
+                target.addMark("dimoxie_buji", 1);
+            });
+        },
+        contentx: function () {
+            "step 0";
+            event._global_waiting = true;
+            event.result = "random";
+            player
+                .chooseControl(player.storage.moxie[1])
+                .set("prompt", "Now here 把书收起来，本子拿出来")
+                .set("prompt2", "Listen to my question：" + player.storage.moxie[0])
+                .set("_global_waiting", true);
+            "step 1";
+            if (result.control && result.control == player.storage.moxie[2]) {
+                event.result = "correct";
+            } else {
+                event.result = "wrong";
+            }
+        },
+        group: ["dimoxie_fa"],
+        subSkill: {
+            buji: {
+                mark: true,
+                marktext: "寄",
+                intro: {
+                    name: "不及",
+                    content: "你已#次不及",
+                },
+            },
+            fa: {
+                forced: true,
+                trigger: { player: "phaseUseEnd" },
+                filter: function (event, player) {
+                    return game.countPlayer(function (current) {
+                        return current.countMark("dimoxie_buji") > 0;
+                    }) > 0;
+                },
+                content: function () {
+                    game.filterPlayer(function (current) {
+                        if (current.countMark("dimoxie_buji") > 0) {
+                            player.line(current, "yellow");
+                            var num = current.countMark("dimoxie_buji");
+                            current.removeMark("dimoxie_buji", num);
+                            if (num == 4) {
+                                current.turnOver();
+                                player.turnOver();
+                            } else if (num == 3) {
+                                player.loseHp();
+                                current.chooseToDiscard("he", 3, true);
+                            } else if (num == 2) {
+                                current.loseHp();
+                            } else if (num == 1) {
+                                current.chooseToDiscard("he", true);
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    },
 };
 
 export default skills;

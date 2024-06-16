@@ -144,7 +144,7 @@ export class Create {
 					(lib.config.codeMirror_fontSize
 						? lib.config.codeMirror_fontSize.slice(0, -2)
 						: 16) /
-						game.documentZoom +
+					game.documentZoom +
 					"px",
 			});
 			const theme = editor.options.theme;
@@ -466,10 +466,10 @@ export class Create {
 					if (lib.card[cardName].modeimage) {
 						bg.setBackgroundImage(
 							"image/mode/" +
-								lib.card[cardName].modeimage +
-								"/card/" +
-								cardName +
-								".png"
+							lib.card[cardName].modeimage +
+							"/card/" +
+							cardName +
+							".png"
 						);
 					} else {
 						if (cardName == "sha" && cardNature == "stab")
@@ -537,7 +537,7 @@ export class Create {
 				else bg.setBackground(cardName, "card");
 			} else if (
 				typeof get.dynamicVariable(lib.card[cardName].image, card) ==
-					"string" &&
+				"string" &&
 				!lib.card[cardName].fullskin
 			) {
 				if (img) {
@@ -562,11 +562,10 @@ export class Create {
 			}
 			delete node.dataset.nature;
 		}
-		node.innerHTML += `<span>${
-			cardTempNameConfig == "default"
-				? get.verticalStr(tempname)
-				: tempname
-		}</span>`;
+		node.innerHTML += `<span>${cardTempNameConfig == "default"
+			? get.verticalStr(tempname)
+			: tempname
+			}</span>`;
 		node.tempname = tempname;
 		return node;
 	}
@@ -1078,10 +1077,10 @@ export class Create {
 							if (
 								dialog.currentcapt &&
 								dialog.buttons[i].capt !=
-									dialog.getCurrentCapt(
-										dialog.buttons[i].link,
-										dialog.buttons[i].capt
-									)
+								dialog.getCurrentCapt(
+									dialog.buttons[i].link,
+									dialog.buttons[i].capt
+								)
 							) {
 								dialog.buttons[i].classList.add("nodisplay");
 							} else {
@@ -1102,10 +1101,10 @@ export class Create {
 								dialog.buttons[i].group != link ||
 								(dialog.currentcapt &&
 									dialog.buttons[i].capt !=
-										dialog.getCurrentCapt(
-											dialog.buttons[i].link,
-											dialog.buttons[i].capt
-										))
+									dialog.getCurrentCapt(
+										dialog.buttons[i].link,
+										dialog.buttons[i].capt
+									))
 							) {
 								dialog.buttons[i].classList.add("nodisplay");
 							} else {
@@ -1305,7 +1304,7 @@ export class Create {
 			}
 		} else {
 			for (var i in lib.character) {
-				if(lib.character[i][4]) {
+				if (lib.character[i][4]) {
 					if (lib.character[i].isMinskin) continue;
 					if (
 						lib.character[i].isBoss ||
@@ -1377,11 +1376,11 @@ export class Create {
 						} else if (
 							dialog.currentcapt2 &&
 							dialog.buttons[i].capt !=
-								dialog.getCurrentCapt(
-									dialog.buttons[i].link,
-									dialog.buttons[i].capt,
-									true
-								)
+							dialog.getCurrentCapt(
+								dialog.buttons[i].link,
+								dialog.buttons[i].capt,
+								true
+							)
 						) {
 							dialog.buttons[i].classList.add("nodisplay");
 						} else {
@@ -1415,11 +1414,11 @@ export class Create {
 						} else if (
 							dialog.currentcapt2 &&
 							dialog.buttons[i].capt !=
-								dialog.getCurrentCapt(
-									dialog.buttons[i].link,
-									dialog.buttons[i].capt,
-									true
-								)
+							dialog.getCurrentCapt(
+								dialog.buttons[i].link,
+								dialog.buttons[i].capt,
+								true
+							)
 						) {
 							dialog.buttons[i].classList.add("nodisplay");
 						} else if (
@@ -1461,10 +1460,10 @@ export class Create {
 						} else if (
 							dialog.currentcapt &&
 							dialog.buttons[i].capt !=
-								dialog.getCurrentCapt(
-									dialog.buttons[i].link,
-									dialog.buttons[i].capt
-								)
+							dialog.getCurrentCapt(
+								dialog.buttons[i].link,
+								dialog.buttons[i].capt
+							)
 						) {
 							dialog.buttons[i].classList.add("nodisplay");
 						} else {
@@ -1493,10 +1492,10 @@ export class Create {
 						if (
 							dialog.currentcapt &&
 							dialog.buttons[i].capt !=
-								dialog.getCurrentCapt(
-									dialog.buttons[i].link,
-									dialog.buttons[i].capt
-								)
+							dialog.getCurrentCapt(
+								dialog.buttons[i].link,
+								dialog.buttons[i].capt
+							)
 						) {
 							dialog.buttons[i].classList.add("nodisplay");
 						} else if (
@@ -1617,20 +1616,20 @@ export class Create {
 						if (
 							dialog.currentcapt &&
 							dialog.buttons[i].capt !=
-								dialog.getCurrentCapt(
-									dialog.buttons[i].link,
-									dialog.buttons[i].capt
-								)
+							dialog.getCurrentCapt(
+								dialog.buttons[i].link,
+								dialog.buttons[i].capt
+							)
 						) {
 							dialog.buttons[i].classList.add("nodisplay");
 						} else if (
 							dialog.currentcapt2 &&
 							dialog.buttons[i].capt !=
-								dialog.getCurrentCapt(
-									dialog.buttons[i].link,
-									dialog.buttons[i].capt,
-									true
-								)
+							dialog.getCurrentCapt(
+								dialog.buttons[i].link,
+								dialog.buttons[i].capt,
+								true
+							)
 						) {
 							dialog.buttons[i].classList.add("nodisplay");
 						} else {
@@ -1648,20 +1647,20 @@ export class Create {
 						if (
 							dialog.currentcapt &&
 							dialog.buttons[i].capt !=
-								dialog.getCurrentCapt(
-									dialog.buttons[i].link,
-									dialog.buttons[i].capt
-								)
+							dialog.getCurrentCapt(
+								dialog.buttons[i].link,
+								dialog.buttons[i].capt
+							)
 						) {
 							dialog.buttons[i].classList.add("nodisplay");
 						} else if (
 							dialog.currentcapt2 &&
 							dialog.buttons[i].capt !=
-								dialog.getCurrentCapt(
-									dialog.buttons[i].link,
-									dialog.buttons[i].capt,
-									true
-								)
+							dialog.getCurrentCapt(
+								dialog.buttons[i].link,
+								dialog.buttons[i].capt,
+								true
+							)
 						) {
 							dialog.buttons[i].classList.add("nodisplay");
 						} else if (dialog.currentgroup == "double") {
@@ -2446,8 +2445,8 @@ export class Create {
 				});
 			}
 		}
-		lib.init.js(lib.assetURL + "game", "pinyinjs", function () {});
-		lib.init.js(lib.assetURL + "game", "keyWords", function () {});
+		lib.init.js(lib.assetURL + "game", "pinyinjs", function () { });
+		lib.init.js(lib.assetURL + "game", "keyWords", function () { });
 
 		lib.updateURL =
 			lib.updateURLS[lib.config.update_link] || lib.updateURLS.coding;
@@ -3535,7 +3534,7 @@ export class Create {
 		bar.style.left = "10%";
 		bar.style.top = "calc(200% / 7 - 120px + 5px)";
 		bar.style.textAlign = "center";
-		var ipbar = ui.create.div(".shadowed", ip, bar);
+		var ipbar = ui.create.div(".shadowed", ip.replace(/^wss?:\/\//, '').replace(/:\d+$/, ''), bar);
 		ipbar.style.padding = "4px";
 		ipbar.style.borderRadius = "2px";
 		ipbar.style.position = "relative";
@@ -3581,17 +3580,13 @@ export class Create {
 			"分享房间",
 			ui.window,
 			function () {
-				var text = `无名杀-联机-${lib.translate[get.mode()]}-${
-					game.connectPlayers.filter((p) => p.avatar).length
-				}/${
-					game.connectPlayers.filter(
+				var text = `无名杀-联机-${lib.translate[get.mode()]}-${game.connectPlayers.filter((p) => p.avatar).length
+					}/${game.connectPlayers.filter(
 						(p) => !p.classList.contains("unselectable2")
 					).length
-				}\n${get.connectNickname()}邀请你加入${
-					game.roomId
-				}房间\n联机地址:${
-					game.ip
-				}\n请先通过游戏内菜单-开始-联机中启用“读取邀请链接”选项`;
+					}\n${get.connectNickname()}邀请你加入${game.roomId
+					}房间\n联机地址:${game.ip
+					}\n请先通过游戏内菜单-开始-联机中启用“读取邀请链接”选项`;
 				window.focus();
 				if (navigator.clipboard && lib.node) {
 					navigator.clipboard

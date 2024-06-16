@@ -23,5 +23,6 @@ const characterTitles = {
     dirobin: "翼声纯律",
     diyftx: "白色怪物",
     dizxskd: "深悼",
+    dizxj: "？？？",
 };
 export default characterTitles;
