@@ -3203,12 +3203,254 @@ const skills = {
         }
     },
     //浊心斯卡蒂
-    dixueqin: {},
-    ditongzang: {},
-    ditonggui: {},
-    dishenghua: {},
-    dichaoyong: {},
-    dichaoku: {},
+    dixueqin: {
+        audio: 1,
+        trigger: { global: "roundStart" },
+        init: function (player) {
+            player.storage.dixueqin = [];
+        },
+        direct: true,
+        content: function () {
+            "step 0";
+            game.filterPlayer(function (current) {
+                if (current.hasSkill("dixueqin2"))
+                    current.removeSkill("dixueqin2");
+            });
+            player.chooseTarget("选择至多" + player.hp + "名角色作为【血亲】", [1, player.hp], lib.filter.notMe);
+            "step 1";
+            if (result.bool) {
+                player.logSkill("dixueqin", result.targets);
+                if (result.targets.length < player.hp) player.draw(player.hp - result.targets.length);
+                result.targets.forEach(function (target) {
+                    if (!player.storage.dixueqin.includes(target))
+                        player.storage.dixueqin.push(target);
+                    target.addSkill("dixueqin2");
+                    target.storage.dixueqin2_range = player;
+                });
+            } else {
+                player.draw(player.hp);
+            }
+        },
+    },
+    dixueqin2: {
+        mark: true,
+        marktext: "亲",
+        intro: {
+            name: "血亲",
+            content: "你本轮已成为浊心斯卡蒂的【血亲】",
+        },
+        group: ["dixueqin2_range"],
+        subSkill: {
+            range: {
+                mod: {
+                    targetInRange: function (card, player, target) {
+                        if (card.name == "sha" && player.storage.dixueqin2_range.inRange(target)) {
+                            return true;
+                        }
+                    },
+                },
+            }
+        }
+    },
+    ditongzang: {
+        audio: "ditonggui",
+        trigger: { global: "damageBegin" },
+        filter: function (event, player) {
+            return event.player.hasSkill("dixueqin2");
+        },
+        content: function () {
+            if (!player.storage.ditongzang.includes(trigger.player)) {
+                player.line(trigger.player, "fire");
+                player.storage.ditongzang.push(trigger.player);
+                player.loseHp();
+                trigger.cancel();
+            }
+        },
+        group: ["ditongzang_lun"],
+        subSkill: {
+            lun: {
+                trigger: { global: "roundStart" },
+                forced: true,
+                silent: true,
+                content: function () {
+                    player.storage.ditongzang = [];
+                }
+            }
+        }
+    },
+    ditonggui: {
+        audio: 6,
+        direct: true,
+        trigger: { global: "useCard" },
+        filter: function (event, player) {
+            return player.countCards("he") > 0 && event.player.hasSkill("dixueqin2") && event.card && event.card.name == "sha";
+        },
+        content: function () {
+            "step 0";
+            player.chooseToDiscard("he", "是否弃置一张牌，使" + get.translation(trigger.player) + "的" + get.translation(trigger.card) + "不计入出【杀】次数？");
+            "step 1";
+            if (result.bool) {
+                player.logSkill("ditonggui", trigger.player);
+                trigger.player.getStat().card.sha--;
+            }
+        }
+    },
+    dishenghua: {
+        audio: 1,
+        trigger: { player: "dying" },
+        limited: true,
+        skillAnimation: true,
+        animationColor: "thunder",
+        content: function () {
+            "step 0"
+            player.awakenSkill("dishenghua");
+            event.current = player.next;
+            "step 1"
+            if (event.current != player) {
+                if (player.storage.dixueqin.includes(event.current)) {
+                    event.current.chooseControl(["选项一", "选项二"]).set("prompt", "请选择一项").set("prompt2", "1.失去一点体力并使" + get.translation(player) + "回复一点体力<br>2.摸一张牌");
+                } else {
+                    event.current = event.current.next;
+                    event.goto(1);
+                }
+            } else {
+                event.goto(3);
+            }
+            "step 2"
+            if (result.control == "选项一") {
+                player.recover();
+                event.current.loseHp();
+            } else {
+                event.current.draw();
+            }
+            event.current = event.current.next;
+            event.goto(1);
+            "step 3"
+            game.broadcastAll(function (t) {
+                t.removeSkill("ditongzang");
+                t.removeSkill("ditonggui");
+                t.addSkill("dichaoyong");
+                t.addSkill("dichaoku");
+            }, player);
+        }
+    },
+    dichaoyong: {
+        audio: "ditonggui",
+        frequent: true,
+        trigger: { player: "phaseUseEnd" },
+        filter: function (event, player) {
+            return player.countCards("h") > 0;
+        },
+        direct: true,
+        content: function () {
+            "step 0"
+            event.given_map = {};
+            event.num = player.countCards("h");
+            "step 1";
+            player.chooseCardTarget({
+                filterCard: function (card) {
+                    return get.itemtype(card) == "card" && !card.hasGaintag("dichaoyong_fenpei");
+                },
+                filterTarget: function (card, player, target) {
+                    return target.hasSkill("dixueqin2");
+                },
+                selectCard: [1, event.num],
+                prompt: "请选择要分配的卡牌和目标",
+                ai1: function (card) {
+                    if (!ui.selected.cards.length) return 1;
+                    return 0;
+                },
+                ai2: function (target) {
+                    var player = _status.event.player,
+                        card = ui.selected.cards[0];
+                    var val = target.getUseValue(card);
+                    if (val > 0) return val * get.attitude(player, target) * 2;
+                    return get.value(card, target) * get.attitude(player, target);
+                },
+            });
+            "step 2";
+            if (result.bool) {
+                var res = result.cards,
+                    target = result.targets[0].playerid;
+                player.addGaintag(res, "dichaoyong_fenpei");
+                event.num -= res.length;
+                if (!event.given_map[target]) event.given_map[target] = [];
+                event.given_map[target].addArray(res);
+                if (event.num > 0) event.goto(1);
+            }
+            "step 3";
+            if (_status.connectMode) {
+                game.broadcastAll(function () {
+                    delete _status.noclearcountdown;
+                    game.stopCountChoose();
+                });
+            }
+            var map = [],
+                cards = [];
+            for (var i in event.given_map) {
+                var source = (_status.connectMode ? lib.playerOL : game.playerMap)[i];
+                player.line(source, "green");
+                //if (player !== source && (get.mode() !== "identity" || player.identity !== "nei")) player.addExpose(0.18);
+                map.push([source, event.given_map[i]]);
+                source.addTempSkill("dichaoyong_sha", { player: "phaseEnd" });
+                source.addMark("dichaoyong_sha", event.given_map[i].length);
+                cards.addArray(event.given_map[i]);
+            }
+            game.loseAsync({
+                gain_list: map,
+                player: player,
+                cards: cards,
+                giver: player,
+                animate: "giveAuto",
+            }).setContent("gaincardMultiple");
+        },
+        subSkill: {
+            sha: {
+                mark: true,
+                marktext: "潮",
+                intro: {
+                    name: "潮涌",
+                    content: "出牌阶段使用【杀】的次数+#",
+                },
+                mod: {
+                    cardUsable: function (card, player, num) {
+                        if (card.name == "sha") return num + player.countMark("dichaoyong_sha");
+                    }
+                }
+            }
+        }
+    },
+    dichaoku: {
+        firstDo: true,
+        audio: "ditonggui",
+        forced: true,
+        trigger: { global: "roundStart" },
+        init: function (player) {
+            player.storage.dichaoku = false;
+        },
+        filter: function (event, player) {
+            return game.roundNumber > 1;
+        },
+        content: function () {
+            if (!player.storage.dichaoku)
+                player.loseHp();
+            player.storage.dichaoku = false;
+        },
+        group: ["dichaoku_dead"],
+        subSkill: {
+            dead: {
+                forced: true,
+                silent: true,
+                trigger: { global: "die" },
+                filter: function (event, player) {
+                    return !player.storage.dichaoku
+                },
+                content: function () {
+                    player.storage.dichaoku = true;
+                }
+            }
+        }
+    },
 };
 
 export default skills;
