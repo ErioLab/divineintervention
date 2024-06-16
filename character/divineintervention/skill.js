@@ -1846,8 +1846,11 @@ const skills = {
     //钟离
     diyuzhang: {
         audio: 6,
-        trigger: { player: "phaseEnd" },
         direct: true,
+        trigger: { player: "phaseEnd" },
+        filter: function (event, player) {
+            return player.countCards("h") > 0;
+        },
         content: function () {
             "step 0"
             game.filterPlayer(function (current) {
