@@ -3094,7 +3094,7 @@ const skills = {
                     game.log(player, "开始歌唱！")
                     game.broadcastAll(function () {
                         game.bgMusic.loop = true;
-                        game.bgMusic.volume = 0.4;
+                        game.bgMusic.volume = 0.2;
                     });
                 },
             }
