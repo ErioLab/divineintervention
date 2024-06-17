@@ -1398,6 +1398,22 @@ const skills = {
             }
         }
     },
+    difengbi: {
+        audio: 1,
+        round: 1,
+        trigger: { global: "phaseEnd" },
+        filter: function (event, player) {
+            return game.roundNumber < 5;
+        },
+        content: function () {
+            "step 0";
+            event.cards = get.cards(5 - game.roundNumber);
+            player.chooseCardButton(event.cards, 1, "选择一张牌获得");
+            "step 1";
+            player.gain(result.links, "gain2");
+        }
+    },
+    /*
     dirishi: {
         trigger: { player: "phaseDrawEnd" },
         frequent: true,
@@ -1437,6 +1453,89 @@ const skills = {
         },
         content: function () {
             player.addMark("dirishi", trigger.num);
+        }
+    },*/
+    dirishi: {
+        limited: true,
+        enable: "phaseUse",
+        skillAnimation: true,
+        animationColor: "fire",
+        filter: function (event, player) {
+            return player.countCards("e") > player.hp;
+        },
+        content: function () {
+            player.awakenSkill("dirishi");
+            player.addTempSkill("dirishi2");
+        },
+    },
+    dirishi2: {
+        mark: true,
+        intro: {
+            content: "最后两张牌的花色：$",
+            onunmark: true,
+        },
+        group: ["dirishi2_jilu", "dirishi2_sha", "dirishi2_mo", "dirishi2_use"],
+        subSkill: {
+            jilu: {
+                trigger: { player: "useCard" },
+                forced: true,
+                silent: true,
+                content: function () {
+                    player.storage.dirishi2_2 = (player.storage.dirishi2_1 || "");
+                    player.storage.dirishi2_1 = get.suit(trigger.card);
+                    player.storage.dirishi2 = [];
+                    if (player.storage.dirishi2_2)
+                        player.storage.dirishi2.push(player.storage.dirishi2_2);
+                    if (player.storage.dirishi2_1)
+                        player.storage.dirishi2.push(player.storage.dirishi2_1);
+                }
+            },
+            sha: {
+                enable: "chooseToUse",
+                viewAs: {
+                    name: "sha",
+                    storage: { dirishi2_sha: true },
+                },
+                filterCard: function (card, player) {
+                    return get.suit(card) != player.storage.dirishi2_1 && get.suit(card) != player.storage.dirishi2_2;
+                },
+                prompt: "将一张与记录花色不同的手牌当做不计入次数的【杀】使用",
+                position: "h",
+                filter: function (event, player) {
+                    return player.countCards("h", function (card) {
+                        return get.suit(card) != player.storage.dirishi2_1 && get.suit(card) != player.storage.dirishi2_2;
+                    });
+                },
+                check: function (card) {
+                    return 6 - get.value(card);
+                },
+                precontent: function () {
+                    event.getParent().addCount = false;
+                },
+                ai: {
+                    order: () => get.order({ name: "sha" }) + 0.2,
+                    result: { player: 1 },
+                },
+            },
+            mo: {
+                trigger: { source: "damageAfter" },
+                forced: true,
+                silent: true,
+                filter: function (event) {
+                    return event.parent.skill == "dirishi2_sha";
+                },
+                content: function () {
+                    player.draw();
+                }
+            },
+            use: {
+                audio: 1,
+                trigger: { player: "useCard" },
+                forced: true,
+                content: function () {
+                }
+
+            }
         }
     },
     //珊瑚宫心海
