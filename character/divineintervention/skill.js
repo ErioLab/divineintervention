@@ -1974,7 +1974,6 @@ const skills = {
                 for (var i = 0; i < result.targets.length; i++) {
                     result.targets[i].changeHujia(1);
                     result.targets[i].addSkill("diyuzhang_jianshang");
-                    result.targets[i].addMark("diyuzhang_jianshang", 1);
                 }
             }
         },
@@ -2004,33 +2003,17 @@ const skills = {
                 mark: true,
                 marktext: "璋",
                 intro: {
-                    content: "受到的属性伤害-1。上轮从钟离得到的护甲剩余#点",
+                    content: "受到的属性伤害-1。",
                 },
-                group: ["diyuzhang_chufa"],
             },
-            chufa: {
-                trigger: { player: "changeHujiaBefore" },
-                forced: true,
-                silent: true,
-                filter: function (event, player) {
-                    return player.countMark("diyuzhang_jianshang") > 0;
-                },
-                content: function () {
-                    if (trigger.num < 0)
-                        player.removeMark("diyuzhang_jianshang", Math.max(player.countMark("diyuzhang_jianshang"), -trigger.num));
-                }
-            }
         }
     },
     dichuijin: {
         forced: true,
         trigger: { player: "phaseDrawBegin2" },
         content: function () {
-            var num = 0;
-            game.filterPlayer(function (current) {
-                if (current.hasSkill("diyuzhang_jianshang")) {
-                    num += current.countMark("diyuzhang_jianshang");
-                }
+            var num = game.countPlayer(function (current) {
+                return current.hujia > 0;
             });
             trigger.num += num;
         },
@@ -2049,7 +2032,7 @@ const skills = {
         content: function () {
             game.log(player, "展开了领域【无量空处】");
         },
-        group: ["diwuliang_juli", "diwuliang_lun", "diwuliang_shoushang"],
+        group: ["diwuliang_juli"],
         subSkill: {
             juli: {
                 lastDo: true,
@@ -2080,60 +2063,41 @@ const skills = {
                     },
                 }
             },
-            lun: {
-                trigger: { global: "roundStart" },
-                filter: function (event, player) {
-                    game.log(game.roundNumber);
-                    return game.roundNumber > 1;
-                },
-                forced: true,
-                content: function () {
-                    if (player.storage.diwuliang_shoushang == false) player.gainMaxHp();
-                    player.storage.diwuliang_shoushang = false;
-                }
-            },
-            shoushang: {
-                init: function (player) {
-                    player.storage.diwuliang_shoushang = false;
-                },
-                trigger: { player: ["damageEnd"] },
-                forced: true,
-                content: function () {
-                    player.storage.diwuliang_shoushang = true;
-                }
-            }
         }
     },
     diliuyan: {
-        trigger: { player: "phaseDrawBegin1" },
+        direct: true,
+        trigger: { player: "phaseDrawBefore" },
         filter: function (event, player) {
-            return !event.numFixed;
+            return player.hp < player.maxHp;
         },
         content: function () {
             "step 0"
-            trigger.changeToZero();
-            player.loseHp();
-            "step 1"
             var x = player.maxHp - player.hp;
             player.chooseTarget("选择" + x + "名其他角色，你依次观察他们的手牌并各从中选择一张获得", [1, x], lib.filter.notMe);
+            "step 1"
+            if (!result.bool) {
+                event.finish();
+            } else {
+                player.logSkill("diliuyan", result.targets);
+                event.targets = result.targets;
+                event.num = 0;
+            }
             "step 2"
-            if (!result.bool) event.finish();
-            event.targets = result.targets;
-            event.num = 0;
-            "step 3"
             if (event.num == event.targets.length) event.finish();
+            "step 3"
+            var t = event.targets[event.num];
+            if (t.countCards("h") == 0)
+                event.goto(6);
             "step 4"
             var t = event.targets[event.num];
-            if (t.countCards("h") == 0) event.goto(7);
-            "step 5"
-            var t = event.targets[event.num];
             player.chooseCardButton("观察" + get.translation(t) + "的手牌并获得一张", t, t.getCards("h"));
-            "step 6"
+            "step 5"
             if (result.bool)
                 player.gain(result.links[0], "gain2");
-            "step 7"
+            "step 6"
             event.num++;
-            event.goto(3);
+            event.goto(2);
         }
     },
     ditiaozhan: {
@@ -2152,7 +2116,7 @@ const skills = {
                 result.targets[0].useCard({ name: "juedou", isCard: true, ditiaozhan: true }, player, false);
             }
         },
-        group: ["ditiaozhan_shoushang"],
+        group: ["ditiaozhan_shoushang", "ditiaozhan_zhuanhuan"],
         subSkill: {
             shoushang: {
                 trigger: { player: "damageBegin4" },
@@ -2166,6 +2130,18 @@ const skills = {
                         player.loseMaxHp();
                     else
                         player.die();
+                }
+            },
+            zhuanhuan: {
+                trigger: { global: "useCardAfter" },
+                forced: true,
+                filter: function (event, player) {
+                    return event.card && event.card.ditiaozhan;
+                },
+                content: function () {
+                    game.broadcastAll(function (target) {
+                        target.changeZhuanhuanji("dixushi");
+                    }, player);
                 }
             }
         }

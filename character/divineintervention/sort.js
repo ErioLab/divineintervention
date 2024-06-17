@@ -5,7 +5,7 @@ const characterSort = {
     di_yx: ["dijingmolieshou", "dijicanghai", "dibanzang",],
     di_dm: ["dikirito", "di5t5", "diyftx"],
     di_ls: [],
-    di_qt: ["dimulikong"],
+    di_qt: ["dimulikong", "dizxj"],
 };
 
 const characterSortTranslate = {
