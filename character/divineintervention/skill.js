@@ -114,9 +114,9 @@ const skills = {
                         }
                     ) == 0) {
                         if (trigger.source.storage.didaemon_kill >= 1 && trigger.source.storage.didaemon_kill <= 7) {
-                            game.broadcastAll(function () {
-                                game.playDaemonAnim(trigger.source.storage.didaemon_kill);
-                            });
+                            game.broadcastAll(function (t) {
+                                game.playDaemonAnim(t);
+                            }, trigger.source.storage.didaemon_kill);
                         }
                     }
                 },
