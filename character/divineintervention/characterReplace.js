@@ -1,6 +1,6 @@
 const characterReplaces = {
-    diganyu: ["diganyu", "dijie_ganyu"],
-    dichongyue: ["dichongyue", "dijie_chongyue"],
+    diganyu: ["diganyu", "jie_diganyu"],
+    dichongyue: ["dichongyue", "jie_dichongyue"],
 };
 
 export default characterReplaces;

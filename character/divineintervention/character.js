@@ -71,7 +71,7 @@ const Characters = {
         hp: 3,
         skills: ["dijunli", "dizhiyuan"]
     },
-    dijie_ganyu: {
+    jie_diganyu: {
         sex: "female",
         group: "qun",
         hp: 3,
@@ -95,7 +95,7 @@ const Characters = {
         hp: 5,
         skills: ["diwuliang", "diliuyan", "ditiaozhan", "dixushi"]
     },
-    dijie_chongyue: {
+    jie_dichongyue: {
         sex: "male",
         group: "shu",
         hp: 3,

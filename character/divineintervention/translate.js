@@ -109,8 +109,8 @@ const translates = {
     dizhiyuan: "支援",
     dizhiyuan_info: "每回合限一次，当失去最后的手牌时，你摸3张牌。",
     //界甘雨
-    dijie_ganyu_prefix: "界",
-    dijie_ganyu: "界甘雨",
+    jie_diganyu_prefix: "界",
+    jie_diganyu: "界甘雨",
     dijie_shuanghua: "霜华",
     dijie_shuanghua_info: "①结束阶段，你可将一张【杀】置于武将牌上称为【矢】。②出牌阶段开始前，若武将牌上存在【矢】，你可选择一名角色，视为对其及其上下家使用冰【杀】，随后弃置一张【矢】，你每以此法造成一点伤害便摸一张牌。③锁定技，当你受到伤害后，你弃置一张【矢】。④锁定技，若你的武将牌上存在【矢】，你视为装备【麒麟弓】。",
     dijie_linji: "麟迹",
@@ -140,8 +140,8 @@ const translates = {
     dixushi_fan: "反转",
     dixushi_info: "转换技。【顺势】出牌阶段，你可弃置任意张牌并对攻击范围内等量的角色各造成一点伤害。【反转】当你成为【杀】的唯一目标时，你可弃置任意张牌，若你至【杀】使用者的距离+X之后在其攻击范围外（X为你弃置的牌数），你取消并获得这张【杀】，并视为发动了技能。",
     //界重岳
-    dijie_chongyue_prefix: "界",
-    dijie_chongyue: "界重岳",
+    jie_dichongyue_prefix: "界",
+    jie_dichongyue: "界重岳",
     dijie_zhige: "止戈",
     dijie_zhige_info: "当你造成伤害时，你可要求目标角色交给你指定类型的牌以取消此伤害。",
     dijie_wowu: "我无",
