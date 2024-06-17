@@ -2354,7 +2354,7 @@ const skills = {
         skillAnimation: true,
         animationColor: "soil",
         filter: function (event, player) {
-            return player.countMark("dijie_huiming") >= 3;
+            return player.countMark("dijie_huiming") >= 2;
         },
         content: function () {
             player.awakenSkill("dijie_huiming");
@@ -2403,21 +2403,32 @@ const skills = {
                 }, player, t);
             }
             if (player.storage.dijie_wowu.length >= 2) {
+                if (player.storage.dijie_wowu.includes("基本牌")) {
+                    if (player.storage.dijie_wowu.includes("锦囊牌")) {
+                        player.addSkill("dijie_wowu_v2_target");
+                    } else if (player.storage.dijie_wowu.includes("装备牌")) {
+                        player.addSkill("dijie_wowu_v2_base");
+                        trigger.card.diwowu_notme = true;
+                    }
+                } else {
+                    player.draw();
+                }
                 game.broadcastAll(function (target) {
                     target.storage.dijie_wowu = [];
                     target.syncStorage("dijie_wowu");
                     target.updateMarks();
                 }, player);
-                player.draw(2);
-                player.addMark("dijie_wowu_v2_sha", 1);
+                player.draw();
+                if (player.hasSkill("dijie_wowu_v2_sha")) {
+                    player.storage.dijie_wowu_v2_sha += 1;
+                } else {
+                    player.addTempSkill("dijie_wowu_v2_sha");
+                    player.storage.dijie_wowu_v2_sha = 1;
+                }
             }
         },
-        group: ["dijie_wowu_v2_sha", "dijie_wowu_v2_shaclear"],
         subSkill: {
             sha: {
-                init: function (player) {
-                    player.storage.dijie_wowu_v2_sha = 0;
-                },
                 mark: true,
                 marktext: "无",
                 intro: {
@@ -2432,14 +2443,65 @@ const skills = {
                     }
                 },
             },
-            shaclear: {
-                trigger: { player: "phaseEnd" },
+            target: {
+                trigger: { player: "useCard2" },
                 forced: true,
-                silent: true,
+                filter: function (event, player) {
+                    var card = event.card;
+                    if (get.type(card) != "trick" && get.type(card) != "basic") return false;
+                    var info = get.info(card);
+                    if (info.allowMultiple == false) return false;
+                    if (event.targets && !info.multitarget) {
+                        if (
+                            game.hasPlayer(function (current) {
+                                return !event.targets.includes(current) && lib.filter.targetEnabled2(card, player, current);
+                            })
+                        ) {
+                            return true;
+                        }
+                    }
+                    return false;
+                },
                 content: function () {
-                    player.removeMark("dijie_wowu_v2_sha", player.countMark("dijie_wowu_v2_sha"));
+                    "step 0";
+                    player.removeSkill("dijie_wowu_v2_target");
+                    player
+                        .chooseTarget("为" + get.translation(trigger.card) + "增加一个目标", function (card, player, target) {
+                            var player = _status.event.player;
+                            return !_status.event.targets.includes(target) && lib.filter.targetEnabled2(_status.event.card, player, target);
+                        })
+                        .set("ai", function (target) {
+                            var trigger = _status.event.getTrigger();
+                            var player = _status.event.player;
+                            return get.effect(target, trigger.card, player, player);
+                        })
+                        .set("card", trigger.card)
+                        .set("targets", trigger.targets);
+                    "step 1";
+                    if (result.bool) {
+                        if (!event.isMine() && !event.isOnline()) game.delayx();
+                        event.targets = result.targets;
+                    } else {
+                        event.finish();
+                    }
+                    "step 2";
+                    if (event.targets) {
+                        trigger.targets.addArray(event.targets);
+                        game.log(get.translation(trigger.player) + "为" + get.translation(trigger.card) + "多指点了目标" + get.translation(event.targets));
+                    }
+                },
+            },
+            base: {
+                trigger: { player: "useCardToPlayered" },
+                filter: function (event, player) {
+                    return !event.card.diwowu_notme;
+                },
+                forced: true,
+                content: function () {
+                    trigger.getParent().baseDamage += 1;
+                    player.removeSkill("dijie_wowu_v2_base");
                 }
-            }
+            },
         }
     },
     //艾雅法拉
