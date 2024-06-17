@@ -3388,7 +3388,7 @@ export class Get {
 							});
 							button._link = i;
 							if (i) {
-								button.setBackgroundImage("image/skin/" + nameskin + "/" + i + ".jpg");
+								button.setBackgroundImage("image/skin/" + nameskin.split('_').at(-1) + "/" + i + ".jpg");
 							} else {
 								if (gzbool && lib.character[nameskin2].hasSkinInGuozhan && lib.config.mode_config.guozhan.guozhanSkin) button.setBackground(nameskin2, "character", "noskin");
 								else button.setBackground(nameskin, "character", "noskin");
@@ -3423,7 +3423,7 @@ export class Get {
 							nameskin = nameskin.slice(3);
 							gzbool = true;
 						}
-						img.src = lib.assetURL + "image/skin/" + nameskin + "/" + num + ".jpg";
+						img.src = lib.assetURL + "image/skin/" + nameskin.split('_').at(-1) + "/" + num + ".jpg";
 					};
 					if (lib.config.change_skin) {
 						if (!node.isUnseen(0)) {
@@ -3887,7 +3887,7 @@ export class Get {
 							});
 							button._link = i;
 							if (i) {
-								button.setBackgroundImage("image/skin/" + nameskin + "/" + i + ".jpg");
+								button.setBackgroundImage("image/skin/" + nameskin.split('_').at(-1) + "/" + i + ".jpg");
 							} else {
 								if (gzbool && lib.character[nameskin2].hasSkinInGuozhan && lib.config.mode_config.guozhan.guozhanSkin) button.setBackground(nameskin2, "character", "noskin");
 								else button.setBackground(nameskin, "character", "noskin");
@@ -3905,7 +3905,7 @@ export class Get {
 							num--;
 							createButtons(num);
 						};
-						img.src = lib.assetURL + "image/skin/" + nameskin + "/" + num + ".jpg";
+						img.src = lib.assetURL + "image/skin/" + nameskin.split('_').at(-1) + "/" + num + ".jpg";
 					};
 					if (lib.config.change_skin) {
 						loadImage();

@@ -541,7 +541,7 @@ export class Click {
 			game.saveConfig("skin", lib.config.skin);
 			avatar.setBackground(name, "character");
 		};
-		img.src = lib.assetURL + "image/skin/" + name + "/" + num + ".jpg";
+		img.src = lib.assetURL + "image/skin/" + name.split('_').at(-1) + "/" + num + ".jpg";
 	}
 	touchpop(forced) {
 		if (lib.config.touchscreen || forced) {
@@ -3212,7 +3212,7 @@ export class Click {
 						});
 						button._link = i;
 						if (i) {
-							button.setBackgroundImage("image/skin/" + nameskin + "/" + i + ".jpg");
+							button.setBackgroundImage("image/skin/" + nameskin.split('_').at(-1) + "/" + i + ".jpg");
 						} else {
 							if (
 								gzbool &&
@@ -3235,7 +3235,7 @@ export class Click {
 						num--;
 						createButtons(num);
 					};
-					img.src = lib.assetURL + "image/skin/" + nameskin + "/" + num + ".jpg";
+					img.src = lib.assetURL + "image/skin/" + nameskin.split('_').at(-1) + "/" + num + ".jpg";
 				};
 				if (lib.config.change_skin) {
 					loadImage();
@@ -3247,7 +3247,7 @@ export class Click {
 		if (lib.config.change_skin) {
 			var img = new Image();
 			img.onload = changeskin;
-			img.src = lib.assetURL + "image/skin/" + nameskin + "/1.jpg";
+			img.src = lib.assetURL + "image/skin/" + nameskin.split('_').at(-1) + "/1.jpg";
 		} else if (lib.config.debug && lib.skin[nameskin]) {
 			changeskin();
 		}

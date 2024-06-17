@@ -147,7 +147,7 @@ Reflect.defineProperty(HTMLDivElement.prototype, "setBackground", {
 					if (mode == "guozhan") {
 						if (name.startsWith("gz_shibing")) name = name.slice(3, 11);
 						else {
-							if (lib.config.mode_config.guozhan.guozhanSkin && nameinfo && nameinfo.hasSkinInGuozhan){
+							if (lib.config.mode_config.guozhan.guozhanSkin && nameinfo && nameinfo.hasSkinInGuozhan) {
 								gzbool = true;
 							}
 							name = name.slice(3);
@@ -188,7 +188,7 @@ Reflect.defineProperty(HTMLDivElement.prototype, "setBackground", {
 				return this;
 			} else if (modeimage) src = `image/mode/${modeimage}/character/${name}${ext}`;
 			else if (type == "character" && lib.config.skin[name] && arguments[2] != "noskin")
-				src = `image/skin/${name}/${lib.config.skin[name]}${ext}`;
+				src = `image/skin/${name.split('_').at(-1)}/${lib.config.skin[name]}${ext}`;
 			else if (type == "character") {
 				src = `image/character/${gzbool ? "gz_" : ""}${name}${ext}`;
 			} else src = `image/${type}/${subfolder}/${name}${ext}`;
