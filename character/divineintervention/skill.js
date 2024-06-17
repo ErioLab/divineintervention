@@ -27,9 +27,13 @@ const skills = {
                 },
                 content: function () {
                     if (trigger.num == 3)
-                        game.playDaemonAnim("diankuang");
+                        game.broadcastAll(function () {
+                            game.playDaemonAnim("diankuang");
+                        });
                     else
-                        game.playDaemonAnim("wushuang");
+                        game.broadcastAll(function () {
+                            game.playDaemonAnim("wushuang");
+                        });
                 }
             },
             rec: {
@@ -54,7 +58,9 @@ const skills = {
                         player.storage.didaemon_rec.get(trigger.player)[0] += trigger.num;
                         if (player.storage.didaemon_rec.get(trigger.player)[0] >= 3) {
                             player.storage.didaemon_rec.get(trigger.player)[0] = 0;
-                            game.playDaemonAnim("yishu");
+                            game.broadcastAll(function () {
+                                game.playDaemonAnim("yishu");
+                            });
                         }
                     } else {
                         player.storage.didaemon_rec.get(trigger.player)[0] += trigger.num;
@@ -62,11 +68,15 @@ const skills = {
                         if (player.storage.didaemon_rec.get(trigger.source)[1] >= 3) {
                             player.storage.didaemon_rec.get(trigger.player)[0] = 0;
                             player.storage.didaemon_rec.get(trigger.source)[1] = 0;
-                            game.playDaemonAnim("miaoshou");
+                            game.broadcastAll(function () {
+                                game.playDaemonAnim("miaoshou");
+                            });
                         } else if (player.storage.didaemon_rec.get(trigger.player)[0] >= 3) {
                             player.storage.didaemon_rec.get(trigger.player)[0] = 0;
                             player.storage.didaemon_rec.get(trigger.source)[1] = 0;
-                            game.playDaemonAnim("yishu");
+                            game.broadcastAll(function () {
+                                game.playDaemonAnim("yishu");
+                            });
                         }
                     }
                 }
@@ -104,7 +114,9 @@ const skills = {
                         }
                     ) == 0) {
                         if (trigger.source.storage.didaemon_kill >= 1 && trigger.source.storage.didaemon_kill <= 7) {
-                            game.playDaemonAnim(trigger.source.storage.didaemon_kill);
+                            game.broadcastAll(function () {
+                                game.playDaemonAnim(trigger.source.storage.didaemon_kill);
+                            });
                         }
                     }
                 },
