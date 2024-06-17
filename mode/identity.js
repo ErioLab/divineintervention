@@ -527,7 +527,6 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					);
 				}
 			}
-			game.zhu.addSkill("didaemon");
 			game.syncState();
 			event.trigger("gameStart");
 

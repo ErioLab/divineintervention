@@ -24,6 +24,8 @@ import { Check } from "./check.js";
 export class Game {
 	//
 	bgMusic = new Audio();
+	recoverRecord = new Map();
+	killRecord = new Map();
 	//
 	online = false;
 	onlineID = null;

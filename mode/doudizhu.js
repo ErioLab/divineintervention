@@ -215,7 +215,6 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 					if (!game.zhu.isInitFilter("noZhuSkill")) {
 						game.zhu.addSkill("feiyang");
 						game.zhu.addSkill("bahu");
-						game.zhu.addSkill("didaemon");
 					}
 			}
 			game.syncState();

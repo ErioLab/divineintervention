@@ -353,12 +353,12 @@ export const Content = {
 						.chooseButton(
 							[
 								"选择" +
-									(player == source ? "你" : get.translation(player)) +
-									"的" +
-									get.cnNumber(num) +
-									"张" +
-									get.translation(slot) +
-									"牌置入弃牌堆",
+								(player == source ? "你" : get.translation(player)) +
+								"的" +
+								get.cnNumber(num) +
+								"张" +
+								get.translation(slot) +
+								"牌置入弃牌堆",
 								cards,
 							],
 							true,
@@ -670,17 +670,17 @@ export const Content = {
 				.set(
 					"ai",
 					event.ai ||
-						function (card) {
-							return Math.random();
-						}
+					function (card) {
+						return Math.random();
+					}
 				)
 				.set(
 					"aiCard",
 					event.aiCard ||
-						function (target) {
-							var hs = target.getCards("h");
-							return { bool: true, cards: [hs.randomGet()] };
-						}
+					function (target) {
+						var hs = target.getCards("h");
+						return { bool: true, cards: [hs.randomGet()] };
+					}
 				);
 			next._args.remove("glow_result");
 		}
@@ -805,9 +805,9 @@ export const Content = {
 		next.set(
 			"ai",
 			event.ai ||
-				function () {
-					return Math.random();
-				}
+			function () {
+				return Math.random();
+			}
 		);
 		"step 1";
 		if (result.bool) {
@@ -828,7 +828,7 @@ export const Content = {
 							(beatmap.timeleap[beatmap.timeleap.length - 1] +
 								beatmap.speed * 100 +
 								(beatmap.current || 0)) /
-								1000
+							1000
 						) + 5
 					).toString();
 				if (player == game.me) return;
@@ -893,10 +893,10 @@ export const Content = {
 			event.dialog = dialog;
 			event.dialog.textPrompt = event.dialog.add(
 				'<div class="text center">' +
-					(beatmap.prompt || "在音符滑条和底部判定区重合时点击屏幕！") +
-					"</div>"
+				(beatmap.prompt || "在音符滑条和底部判定区重合时点击屏幕！") +
+				"</div>"
 			);
-			event.switchToAuto = function () {};
+			event.switchToAuto = function () { };
 			event.dialog.classList.add("fixed");
 			event.dialog.classList.add("scroll1");
 			event.dialog.classList.add("scroll2");
@@ -931,10 +931,10 @@ export const Content = {
 					"%</div>";
 				game.me.$fullscreenpop(
 					'<span style="font-family:xinwei">演奏评级：<span data-nature="' +
-						rank[1] +
-						'">' +
-						rank[0] +
-						"</span></span>",
+					rank[1] +
+					'">' +
+					rank[0] +
+					"</span></span>",
 					null,
 					null,
 					false
@@ -1415,12 +1415,12 @@ export const Content = {
 				next.set(
 					"prompt",
 					event.prompt ||
-						"是否" +
-							(event.targets2.length ? "对" : "") +
-							get.translation(event.targets2) +
-							"使用" +
-							get.translation(card) +
-							"?"
+					"是否" +
+					(event.targets2.length ? "对" : "") +
+					get.translation(event.targets2) +
+					"使用" +
+					get.translation(card) +
+					"?"
 				);
 				if (event.hsskill) next.setHiddenSkill(event.hsskill);
 				if (event.prompt2) next.set("prompt2", event.prompt2);
@@ -1451,12 +1451,12 @@ export const Content = {
 			next.set(
 				"filterTarget",
 				event.filterTarget ||
-					function (card, player, target) {
-						if (!_status.event.targets.includes(target)) return false;
-						if (!_status.event.nodistance && !lib.filter.targetInRange(card, player, target))
-							return false;
-						return lib.filter.targetEnabledx(card, player, target);
-					}
+				function (card, player, target) {
+					if (!_status.event.targets.includes(target)) return false;
+					if (!_status.event.nodistance && !lib.filter.targetInRange(card, player, target))
+						return false;
+					return lib.filter.targetEnabledx(card, player, target);
+				}
 			);
 			next.set("ai", event.ai || get.effect_use);
 			next.set("selectTarget", event.selectTarget || lib.filter.selectTarget);
@@ -1544,7 +1544,7 @@ export const Content = {
 							true,
 						],
 					],
-					function () {},
+					function () { },
 					event.ai
 				)
 				.set("switchToAuto", function () {
@@ -1683,7 +1683,7 @@ export const Content = {
 							true,
 						],
 					],
-					function () {},
+					function () { },
 					function () {
 						return 1 + Math.random();
 					}
@@ -3244,6 +3244,7 @@ export const Content = {
 		"step 12";
 		event.trigger("phaseAfter");
 		"step 13";
+		game.recoverRecord.clear();
 		//删除当前回合角色 此时处于“不属于任何角色的回合”的阶段
 		game.broadcastAll(function (player) {
 			player.classList.remove("glow_phase");
@@ -3632,9 +3633,9 @@ export const Content = {
 						next.set(
 							"ai",
 							info.chooseButton.check ||
-								function () {
-									return 0;
-								}
+							function () {
+								return 0;
+							}
 						);
 						if (event.id) next._parent_id = event.id;
 						next.type = "chooseToUse_button";
@@ -3645,16 +3646,16 @@ export const Content = {
 						next.set(
 							"ai",
 							info.chooseButton.check ||
-								function () {
-									return 1;
-								}
+							function () {
+								return 1;
+							}
 						);
 						next.set(
 							"filterButton",
 							info.chooseButton.filter ||
-								function () {
-									return true;
-								}
+							function () {
+								return true;
+							}
 						);
 						next.set("selectButton", info.chooseButton.select || 1);
 						next.set("complexSelect", info.chooseButton.complexSelect !== false);
@@ -3846,9 +3847,9 @@ export const Content = {
 						next.set(
 							"ai",
 							info.chooseButton.check ||
-								function () {
-									return 0;
-								}
+							function () {
+								return 0;
+							}
 						);
 					} else {
 						var next = player.chooseButton(dialog);
@@ -3857,16 +3858,16 @@ export const Content = {
 						next.set(
 							"ai",
 							info.chooseButton.check ||
-								function () {
-									return 1;
-								}
+							function () {
+								return 1;
+							}
 						);
 						next.set(
 							"filterButton",
 							info.chooseButton.filter ||
-								function () {
-									return true;
-								}
+							function () {
+								return true;
+							}
 						);
 						next.set("selectButton", info.chooseButton.select || 1);
 						next.set("filterOk", info.chooseButton.filterOk || (() => true));
@@ -3999,13 +4000,13 @@ export const Content = {
 			!event.complexCard;
 		const cards = directFilter
 			? player
-					.getCards(event.position)
-					.filter(
-						(card) =>
-							!card.classList.contains("uncheck") &&
-							lib.filter.cardAiIncluded(card) &&
-							event.filterCard(card, player)
-					)
+				.getCards(event.position)
+				.filter(
+					(card) =>
+						!card.classList.contains("uncheck") &&
+						lib.filter.cardAiIncluded(card) &&
+						event.filterCard(card, player)
+				)
 			: [];
 		const range = get.select(event.selectCard);
 		if (directFilter && (range[0] >= cards.length || range[1] <= -1)) {
@@ -4455,15 +4456,15 @@ export const Content = {
 				.set("type", "compare")
 				.set("ai", event.ai)
 				.set("source", player).aiCard = function (target) {
-				var hs = target.getCards("h");
-				var event = _status.event;
-				event.player = target;
-				hs.sort(function (a, b) {
-					return event.ai(b) - event.ai(a);
-				});
-				delete event.player;
-				return { bool: true, cards: [hs[0]] };
-			};
+					var hs = target.getCards("h");
+					var event = _status.event;
+					event.player = target;
+					hs.sort(function (a, b) {
+						return event.ai(b) - event.ai(a);
+					});
+					delete event.player;
+					return { bool: true, cards: [hs[0]] };
+				};
 		}
 		"step 2";
 		var cards = [];
@@ -4623,15 +4624,15 @@ export const Content = {
 				.set("type", "compare")
 				.set("ai", event.ai)
 				.set("source", player).aiCard = function (target) {
-				var hs = target.getCards("h");
-				var event = _status.event;
-				event.player = target;
-				hs.sort(function (a, b) {
-					return event.ai(b) - event.ai(a);
-				});
-				delete event.player;
-				return { bool: true, cards: [hs[0]] };
-			};
+					var hs = target.getCards("h");
+					var event = _status.event;
+					event.player = target;
+					hs.sort(function (a, b) {
+						return event.ai(b) - event.ai(a);
+					});
+					delete event.player;
+					return { bool: true, cards: [hs[0]] };
+				};
 		}
 		"step 2";
 		var cards = [];
@@ -4981,10 +4982,10 @@ export const Content = {
 					}
 					var item = dialog.add(
 						'<div class="popup pointerdiv" style="width:80%;display:inline-block"><div class="skill">【' +
-							translation +
-							"】</div><div>" +
-							lib.translate[list[i] + "_info"] +
-							"</div></div>"
+						translation +
+						"】</div><div>" +
+						lib.translate[list[i] + "_info"] +
+						"</div></div>"
 					);
 					item.firstChild.addEventListener("click", clickItem);
 					item.firstChild.link = list[i];
@@ -5598,8 +5599,8 @@ export const Content = {
 				for (var i = 0; i < event.controls.length; i++) {
 					var item = event.dialog.add(
 						'<div class="popup text pointerdiv" style="width:calc(100% - 10px);display:inline-block">' +
-							event.controls[i] +
-							"</div>"
+						event.controls[i] +
+						"</div>"
 					);
 					item.firstChild.listen(ui.click.dialogcontrol);
 					item.firstChild.link = event.controls[i];
@@ -5659,11 +5660,11 @@ export const Content = {
 					for (var i = 0; i < event.choiceList.length; i++) {
 						event.dialog.add(
 							'<div class="popup text" style="width:calc(100% - 10px);display:inline-block">' +
-								(event.displayIndex !== false
-									? "选项" + get.cnNumber(i + 1, true) + "："
-									: "") +
-								event.choiceList[i] +
-								"</div>"
+							(event.displayIndex !== false
+								? "选项" + get.cnNumber(i + 1, true) + "："
+								: "") +
+							event.choiceList[i] +
+							"</div>"
 						);
 					}
 				} else if (event.prompt) {
@@ -6441,7 +6442,7 @@ export const Content = {
 			return;
 		}
 		var cards = player.getCards("h");
-		player.showCards(cards).setContent(function () {});
+		player.showCards(cards).setContent(function () { });
 		var str = get.translation(player.name) + "的手牌";
 		if (typeof event.prompt == "string") {
 			str = event.prompt;
@@ -6639,9 +6640,9 @@ export const Content = {
 										get.value(es[i], target) > 0 &&
 										current.canEquip(es[i], _status.event.canReplace) &&
 										get.effect(current, es[i], player, player) >
-											(_status.event.canReplace
-												? get.effect(target, es[i], player, player)
-												: 0)
+										(_status.event.canReplace
+											? get.effect(target, es[i], player, player)
+											: 0)
 									)
 										return true;
 								}
@@ -8505,6 +8506,17 @@ export const Content = {
 				event._triggered = null;
 			} else {
 				event.trigger("damage");
+				if (source) {
+					if (num >= 4) {
+						game.broadcastAll(function () {
+							game.playDaemonAnim("wushuang");
+						});
+					} else if (num >= 3) {
+						game.broadcastAll(function () {
+							game.playDaemonAnim("diankuang");
+						});
+					}
+				}
 			}
 		}
 		"step 5";
@@ -8559,6 +8571,38 @@ export const Content = {
 		if (!event.notrigger) event.trigger("damageSource");
 	},
 	recover: function () {
+		if (event.card && (event.card.name == "tao" || event.card.name == "jiu")) {
+			if (!game.recoverRecord.has(player))
+				game.recoverRecord.set(player, [0, 0]);
+			if (!game.recoverRecord.has(source))
+				game.recoverRecord.set(source, [0, 0]);
+
+			if (player == source) {
+				game.recoverRecord.get(player)[0] += num;
+				if (game.recoverRecord.get(player)[0] >= 3) {
+					game.recoverRecord.get(player)[0] = 0;
+					game.broadcastAll(function () {
+						game.playDaemonAnim("yishu");
+					});
+				}
+			} else {
+				game.recoverRecord.get(player)[0] += num;
+				game.recoverRecord.get(source)[1] += num;
+				if (game.recoverRecord.get(source)[1] >= 3) {
+					game.recoverRecord.get(player)[0] = 0;
+					game.recoverRecord.get(source)[1] = 0;
+					game.broadcastAll(function () {
+						game.playDaemonAnim("miaoshou");
+					});
+				} else if (game.recoverRecord.get(player)[0] >= 3) {
+					game.recoverRecord.get(player)[0] = 0;
+					game.recoverRecord.get(source)[1] = 0;
+					game.broadcastAll(function () {
+						game.playDaemonAnim("yishu");
+					});
+				}
+			}
+		}
 		if (num > player.maxHp - player.hp) {
 			num = player.maxHp - player.hp;
 			event.num = num;
@@ -8680,7 +8724,7 @@ export const Content = {
 				event.num = num;
 			}
 			switch (
-				event.type //log moved here
+			event.type //log moved here
 			) {
 				case "damage":
 					game.log(player, "的护甲抵挡了" + get.cnNumber(-num) + "点伤害");
@@ -8770,7 +8814,24 @@ export const Content = {
 		} else {
 			game.log(player, "阵亡");
 		}
+		if (source) {
+			if (!game.killRecord.has(source))
+				game.killRecord.set(source, 1);
+			else
+				game.killRecord.set(source, game.killRecord.get(source) + 1);
+			if (game.countPlayer(
+				function (current) {
+					return current != source && game.killRecord.has(current) && game.killRecord.get(current) >= game.killRecord.get(source);
+				}
+			) == 0) {
+				if (game.killRecord.get(source) >= 1 && game.killRecord.get(source) <= 7) {
+					game.broadcastAll(function (t) {
+						game.playDaemonAnim(t);
+					}, game.killRecord.get(source));
+				}
+			}
 
+		}
 		// player.removeEquipTrigger();
 
 		// for(var i in lib.skill.globalmap){
@@ -8804,7 +8865,7 @@ export const Content = {
 						game.playAudio("die", name.slice(name.indexOf("_") + 1));
 					});
 				}
-				else{
+				else {
 					game.playAudio(audios.file);
 				}
 			}
