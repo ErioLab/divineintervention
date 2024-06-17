@@ -662,6 +662,7 @@ const skills = {
         },
         content: function () {
             player.addMark("dilifeng", 1);
+            player.draw();
         },
         marktext: "勋",
         intro: {

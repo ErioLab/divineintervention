@@ -43,7 +43,7 @@ const translates = {
     //玛恩纳
     dimaenna: "玛恩纳",
     dilifeng: "砺锋",
-    dilifeng_info: "锁定技，结束阶段，若你本回合没有打出过杀，你获得一个【勋】。",
+    dilifeng_info: "锁定技，结束阶段，若你本回合没有打出过杀，你获得一个【勋】并摸一张牌。",
     diyouxia: "游侠",
     diyouxia_info: "当一名其他角色成为【杀】的目标后，若其与你的距离不大于1且此杀的使用者不为你，你可将此【杀】的目标修改为你并获得一个【勋】。",
     dilinguang: "临光",
