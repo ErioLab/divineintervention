@@ -13,16 +13,6 @@ try {
 		return path.normalize(join(url)).startsWith(__dirname);
 	}
 
-
-	// 特定文件的路由，禁止缓存
-	app.get('/character/divineintervention/*', (req, res) => {
-		res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-		res.setHeader('Pragma', 'no-cache');
-		res.setHeader('Expires', '0');
-		const filePath = path.join(__dirname, 'character', 'divineintervention', req.params[0]);
-		res.sendFile(filePath);
-	});
-
 	app.use(express.static(__dirname));
 
 	// parse application/x-www-form-urlencoded
