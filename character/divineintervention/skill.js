@@ -3594,7 +3594,7 @@ const skills = {
                                 if (event.withai) game.resume();
                             }
                         },
-                        _status.connectMove ? 750 : 75
+                        _status.connectMode ? 750 : 75
                     );
                 }, 500);
             }

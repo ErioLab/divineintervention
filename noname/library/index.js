@@ -12016,6 +12016,26 @@ export class Library {
 		server: {
 			/** @this { any } */
 			init(version, config, banned_info) {
+				//旁观发言开始
+				this.send(ui.create.createTipBall)
+				if (!_status.waitingForPlayer) {
+					this.send(ui.create.chat)
+					this.send(ui.create.danmu, '<span style="color:#AED6F1;">', '提示', '本房间允许旁观发言</span>')
+				}
+				this.send(() => {
+					game.send = function () {
+						if (game.observe && !['reinited', 'chat', 'emotion'].includes(arguments[0])) return;
+						if (game.ws) {
+							const args = Array.from(arguments);
+							if (['chat', 'emotion'].includes(arguments[0])) args.push(lib.config.connect_nickname)
+							if (typeof args[0] == 'function') {
+								args.unshift('exec');
+							}
+							game.ws.send(JSON.stringify(get.stringifiedResult(args)));
+						}
+					}
+				},)
+				//旁观发言结束
 				if (lib.node.banned.includes(banned_info)) {
 					this.send("denied", "banned");
 				} else if (config.id && lib.playerOL && lib.playerOL[config.id]) {
@@ -12159,7 +12179,11 @@ export class Library {
 				}
 			},
 			emotion: function (id, pack, emotion) {
-				if (lib.node.observing.includes(this)) return;
+				if (lib.node.observing.includes(this)) {
+					const str = '<img src="##assetURL##image/emotion/' + pack + '/' + emotion + '.gif" width="50" height="50">';
+					lib.message.server.chat.call(this, this.id, str, name)
+					return
+				};
 				var that = this;
 				if (
 					!this.id ||
@@ -12189,7 +12213,16 @@ export class Library {
 				if (player) player.emotion(pack, emotion);
 			},
 			chat: function (id, str) {
-				if (lib.node.observing.includes(this)) return;
+				if (lib.node.observing.includes(this)) {
+					const name = arguments[arguments.length - 1]
+					game.broadcastAll((func, prefix, name, str) => {
+						str = str.replace(/##assetURL##/g, lib.assetURL);
+						func(prefix, name, str)
+						const info = [name, str];
+						lib.chatHistory.push(info);
+					}, ui.create.danmu, '<span style="color:#A2D9CE;">[旁观]', name, str + "</span>")
+					return
+				};
 				var that = this;
 				if (
 					!this.id ||

@@ -3762,4 +3762,32 @@ export class Create {
 			lib.inpile_nature
 		);
 	}
+	danmu(prefix, name, str) {
+		if (!ui.danmuList) ui.danmuList = []
+		let top = document.body.clientHeight * 0.05;
+		const danmu = ui.create.div('.danmumode', `${prefix}${name}：${str}`, document.body)
+		danmu.css({
+			left: '100%',
+			transition: 'left 10s cubic-bezier(0.45, 0.44, 0.55, 0.52) 0s',
+			fontSize: "30px",
+			textShadow: "1px 1px black",
+			whiteSpace: "nowrap",
+			fontWeight: "bold",
+			zIndex: "1000"
+		})
+		while (ui.danmuList.includes(top)) {
+			top += 36
+			if (top > document.body.clientHeight * 0.35) {
+				top = document.body.clientHeight * 0.05
+				ui.danmuList = []
+			}
+		}
+		ui.danmuList.add(top)
+		danmu.style.top = top + "px"
+		ui.refresh(danmu)
+		danmu.style.left = "-10%"
+		setTimeout((danmu, top) => {
+			danmu.remove()
+		}, 10000, danmu, top);
+	}
 }
