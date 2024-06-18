@@ -943,7 +943,7 @@ const skills = {
 		filter: function (event, player) {
 			return get.sgn(player.getDamagedHp() - 1.5) != get.sgn(player.getDamagedHp() - 1.5 + event.num);
 		},
-		content: function () {},
+		content: function () { },
 		mod: {
 			globalFrom: function (from, to, current) {
 				return current - 1;
@@ -1209,7 +1209,7 @@ const skills = {
 			}
 			event._result = { cards: target.getCards("h").randomGets(1) };
 			"step 1";
-			target.showCards(result.cards).setContent(function () {});
+			target.showCards(result.cards).setContent(function () { });
 			event.dialog = ui.create.dialog(get.translation(target) + "展示的手牌", result.cards);
 			event.videoId = lib.status.videoId++;
 
@@ -4126,7 +4126,7 @@ const skills = {
 		},
 		forced: true,
 		firstDo: true,
-		content() {},
+		content() { },
 		subSkill: {
 			global: {
 				mod: {
@@ -5192,13 +5192,13 @@ const skills = {
 				content: function () {
 					"step 0";
 					var targets = game.filterPlayer(function (target) {
-							return (
-								target != player &&
-								!game.hasPlayer(function (current) {
-									return current != player && current != target && current.countCards("h") < target.countCards("h");
-								})
-							);
-						}),
+						return (
+							target != player &&
+							!game.hasPlayer(function (current) {
+								return current != player && current != target && current.countCards("h") < target.countCards("h");
+							})
+						);
+					}),
 						num = Math.floor(player.countCards("h") / 2);
 					player.chooseCardTarget({
 						position: "h",
@@ -6774,17 +6774,17 @@ const skills = {
 				return (
 					get.order({ name: "sha" }, player) +
 					0.3 *
-						(Math.min(
-							player.getCardUsable("sha"),
-							player.countCards("hs", "sha") +
-								player.hasCard(function (card) {
-									return card.name != "sha" && get.value(card, player) < 6.3;
-								}, "hs")
-								? 1
-								: 0
-						) > 1
-							? -1
-							: 1)
+					(Math.min(
+						player.getCardUsable("sha"),
+						player.countCards("hs", "sha") +
+							player.hasCard(function (card) {
+								return card.name != "sha" && get.value(card, player) < 6.3;
+							}, "hs")
+							? 1
+							: 0
+					) > 1
+						? -1
+						: 1)
 				);
 			},
 			nokeep: true,
@@ -7238,7 +7238,7 @@ const skills = {
 			"step 0";
 			player.showHandcards();
 			const hs = player.getCards("h"), color = get.color(hs[0], player);
-			if (hs.length === 1 || !hs.some((card,index) => {
+			if (hs.length === 1 || !hs.some((card, index) => {
 				return index > 0 && get.color(card) !== color;
 			})) {
 				player.draw();
@@ -7246,7 +7246,7 @@ const skills = {
 				event.finish();
 			}
 			"step 1";
-			
+
 			const list = [], bannedList = [], indexs = Object.keys(lib.color);
 			player.getCards("h").forEach(card => {
 				const color = get.color(card, player);
@@ -7256,7 +7256,7 @@ const skills = {
 			list.removeArray(bannedList);
 			list.sort((a, b) => indexs.indexOf(a) - indexs.indexOf(b));
 			if (!list.length) event.finish();
-			else if(list.length === 1) event._result = {control: list[0]};
+			else if (list.length === 1) event._result = { control: list[0] };
 			else player.chooseControl(list.map(i => `${i}2`)).set("ai", function () {
 				var player = _status.event.player;
 				if (player.countCards("h", { color: "red" }) == 1 && player.countCards("h", { color: "black" }) > 1) return 1;
@@ -7264,7 +7264,7 @@ const skills = {
 			}).set("prompt", "请选择弃置一种颜色的所有手牌");
 			"step 2";
 			event.control = result.control.slice(0, result.control.length - 1);
-			var cards = player.getCards("h", {color: event.control});
+			var cards = player.getCards("h", { color: event.control });
 			player.discard(cards);
 			event.num = cards.length;
 			"step 3";
@@ -8584,8 +8584,8 @@ const skills = {
 							if (get.position(event.judgeResult.card, true) == "o") player.gain(event.judgeResult.card, "gain2", "log");
 						}
 					}).judge2 = function (result) {
-					return result.bool ? true : false;
-				};
+						return result.bool ? true : false;
+					};
 			} else {
 				event.finish();
 			}
@@ -10413,7 +10413,7 @@ const skills = {
 		filter: function (event, player) {
 			return event.card.name == "sha" && !event.skill && event.cards.length == 1 && event.cards[0].name == "jiu";
 		},
-		content: function () {},
+		content: function () { },
 		group: "rejinjiu2",
 		global: "rejinjiu3",
 	},
@@ -10864,17 +10864,17 @@ const skills = {
 					.set(
 						"choice",
 						get.attitude(target, player) > 0 ||
-							target.countCards("h", function (card) {
-								var val = get.value(card);
-								if (val < 0) return true;
-								if (val <= 5) {
-									return get.number(card) >= 12;
-								}
-								if (val <= 6) {
-									return get.number(card) >= 13;
-								}
-								return false;
-							}) > 0
+						target.countCards("h", function (card) {
+							var val = get.value(card);
+							if (val < 0) return true;
+							if (val <= 5) {
+								return get.number(card) >= 12;
+							}
+							if (val <= 6) {
+								return get.number(card) >= 13;
+							}
+							return false;
+						}) > 0
 					)
 					.set("ai", function () {
 						return _status.event.choice;
@@ -11088,7 +11088,7 @@ const skills = {
 					function (player, character, old) {
 						player.tempname.remove(old);
 						player.tempname.add(character);
-						player.sex = lib.character[event.card][0];
+						player.sex = lib.character[character][0];
 					},
 					player,
 					event.card,
@@ -14478,7 +14478,7 @@ const skills = {
 		filter: function (event, player) {
 			return get.sgn(player.hp - 2.5) != get.sgn(player.hp - 2.5 - event.num);
 		},
-		content: function () {},
+		content: function () { },
 		mod: {
 			globalFrom: function (from, to, current) {
 				return current - 1;
@@ -14593,10 +14593,10 @@ const skills = {
 					return [
 						1,
 						target.countCards("h") <= target.hp ||
-						(using &&
-							game.hasPlayer(function (current) {
-								return current != player && get.attitude(player, current) < 0 && player.inRange(current);
-							}))
+							(using &&
+								game.hasPlayer(function (current) {
+									return current != player && get.attitude(player, current) < 0 && player.inRange(current);
+								}))
 							? 3
 							: 2,
 					];
