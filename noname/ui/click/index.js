@@ -942,7 +942,24 @@ export class Click {
 			num = ui.cardPile.childNodes.length;
 		}
 		uiintro.add('剩余 <span style="font-family:' + "xinwei" + '">' + num);
-
+		//记牌器开始
+		var cardPileCounter = {};
+		for (var i = 0; i < ui.cardPile.childNodes.length; i++) {
+			var name = ui.cardPile.childNodes[i].name;
+			if (!cardPileCounter[name]) {
+				cardPileCounter[name] = 0;
+			}
+			cardPileCounter[name]++;
+		}
+		var sortedCardPile = Object.entries(cardPileCounter).sort(function (a, b) {
+			return b[1] - a[1];
+		});
+		var counterStr = sortedCardPile.map(function (item) {
+			return get.translation(item[0]);
+			//return get.translation(item[0]) + item[1];
+		}).join(' ');
+		uiintro.add("<div class=\"text center\">" + counterStr + "</div>");
+		//记牌器结束
 		if (_status.connectMode) return uiintro;
 		uiintro.add(
 			'<div class="text center">轮数 <span style="font-family:xinwei">' +
