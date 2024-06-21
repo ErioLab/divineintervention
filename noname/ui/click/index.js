@@ -3192,22 +3192,29 @@ export class Click {
 					return;
 				}
 				node._created = true;
-				var createButtons = function (num) {
-					if (!num) return;
-					if (num >= 4) {
+				var createButtons = function () {
+					if (!num && !videonum) return;
+					if (num + videonum >= 4) {
 						avatars.classList.add("scroll");
 						if (lib.config.touchscreen) {
 							lib.setScroll(avatars);
 						}
 					}
-					for (var i = 0; i <= num; i++) {
+					var values = [0];
+					for (var x = 101; x <= videonum; x++)
+						values.push(x);
+					for (var x = 1; x <= num; x++)
+						values.push(x);
+					for (var x = 0; x < values.length; x++) {
+						var i = values[x];
 						var button = ui.create.div(avatars, function () {
 							playerbg.classList.remove("scroll");
 							if (this._link) {
 								lib.config.skin[nameskin] = this._link;
-								bg.style.backgroundImage = this.style.backgroundImage;
-								if (sourcenode) sourcenode.style.backgroundImage = this.style.backgroundImage;
-								if (avatar) avatar.style.backgroundImage = this.style.backgroundImage;
+								bg.setBackground(nameskin, "character");
+								//bg.style.backgroundImage = this.style.backgroundImage;
+								if (sourcenode) sourcenode.setBackground(nameskin, "character");//sourcenode.style.backgroundImage = this.style.backgroundImage;
+								if (avatar) avatar.setBackground(nameskin, "character");//avatar.style.backgroundImage = this.style.backgroundImage;
 								game.saveConfig("skin", lib.config.skin);
 							} else {
 								delete lib.config.skin[nameskin];
@@ -3229,7 +3236,10 @@ export class Click {
 						});
 						button._link = i;
 						if (i) {
-							button.setBackgroundImage("image/skin/" + nameskin.split('_').at(-1) + "/" + i + ".jpg");
+							if (i > 100)
+								button.setBackgroundVideo("image/skin/" + nameskin.split('_').at(-1) + "/" + i + ".webm");
+							else
+								button.setBackgroundImage("image/skin/" + nameskin.split('_').at(-1) + "/" + i + ".jpg");
 						} else {
 							if (
 								gzbool &&
@@ -3241,7 +3251,7 @@ export class Click {
 						}
 					}
 				};
-				var num = 1;
+				var num = 1, videonum = 101;
 				var loadImage = function () {
 					var img = new Image();
 					img.onload = function () {
@@ -3250,12 +3260,24 @@ export class Click {
 					};
 					img.onerror = function () {
 						num--;
-						createButtons(num);
+						createButtons();
 					};
 					img.src = lib.assetURL + "image/skin/" + nameskin.split('_').at(-1) + "/" + num + ".jpg";
 				};
+				var loadVideo = function () {
+					var video = document.createElement('video');
+					video.onloadeddata = function () {
+						videonum++;
+						loadVideo();
+					};
+					video.onerror = function () {
+						videonum--;
+						loadImage();
+					};
+					video.src = lib.assetURL + "image/skin/" + nameskin.split('_').at(-1) + "/" + videonum + ".webm";
+				};
 				if (lib.config.change_skin) {
-					loadImage();
+					loadVideo();
 				} else {
 					createButtons(lib.skin[nameskin]);
 				}

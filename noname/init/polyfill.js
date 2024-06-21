@@ -196,9 +196,15 @@ Reflect.defineProperty(HTMLDivElement.prototype, "setBackground", {
 		this.style.backgroundPositionX = "center";
 		this.style.backgroundSize = "cover";
 		if (type === "character") {
-			const nameinfo = get.character(name);
-			const sex = nameinfo && ["male", "female", "double"].includes(nameinfo[0]) ? nameinfo[0] : "male";
-			this.setBackgroundImage([src, `${lib.characterDefaultPicturePath}${sex}${ext}`]);
+			if (lib.config.skin[name] && arguments[2] != "noskin" && lib.config.skin[name] > 100) {
+				this.setBackgroundImage();
+				this.setBackgroundVideo(`image/skin/${name.split('_').at(-1)}/${lib.config.skin[name]}.webm`);
+			} else {
+				this.setBackgroundVideo();
+				const nameinfo = get.character(name);
+				const sex = nameinfo && ["male", "female", "double"].includes(nameinfo[0]) ? nameinfo[0] : "male";
+				this.setBackgroundImage([src, `${lib.characterDefaultPicturePath}${sex}${ext}`]);
+			}
 		} else {
 			this.setBackgroundImage(src);
 		}
@@ -218,9 +224,55 @@ HTMLDivElement.prototype.setBackgroundDB = function (img) {
 };
 /**
  * @this HTMLDivElement
+ * @type { typeof HTMLDivElement['prototype']['setBackgroundVideo'] }
+ */
+HTMLDivElement.prototype.setBackgroundVideo = function (src) {
+	let existingVideo = this.querySelector('video');
+	if (existingVideo) {
+		if (!src) {
+			this.removeChild(existingVideo);
+			return;
+		}
+		let existingSource = existingVideo.querySelector('source');
+		if (existingSource) {
+			existingSource.src = src;
+			existingVideo.load();
+		}
+	} else {
+		if (!src)
+			return;
+		const video = document.createElement('video');
+		video.autoplay = true;
+		video.muted = true;
+		video.loop = true;
+		video.controls = false;
+		video.disablePictureInPicture = true;
+		video.style.position = 'absolute';
+		video.style.top = '0';
+		video.style.left = '0';
+		video.style.width = '100%';
+		video.style.height = '100%';
+		video.style.objectFit = 'cover';
+		video.style.zIndex = '-1';
+		video.style.borderRadius = '8px';
+		video.style.mixBlendMode = 'normal';
+		video.style.pointerEvents = 'none';
+		const source = document.createElement('source');
+		source.src = src;
+		source.type = 'video/webm';
+		video.appendChild(source);
+		this.insertBefore(video, this.firstChild);
+	}
+};
+/**
+ * @this HTMLDivElement
  * @type { typeof HTMLDivElement['prototype']['setBackgroundImage'] }
  */
 HTMLDivElement.prototype.setBackgroundImage = function (img) {
+	if (!img) {
+		this.style.backgroundImage = "";
+		return;
+	}
 	if (Array.isArray(img)) {
 		this.style.backgroundImage = img
 			.unique()

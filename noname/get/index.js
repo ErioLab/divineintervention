@@ -3346,9 +3346,9 @@ export class Get {
 			}
 			if (!simple || get.is.phoneLayout()) {
 				if ((lib.config.change_skin || lib.skin) && !node.isUnseen()) {
-					var num = 1;
+					var num = 1, videonum = 101;
 					var introadded = false;
-					var createButtons = function (num, avatar2) {
+					var createButtons = function (avatar2) {
 						if (!introadded) {
 							introadded = true;
 							uiintro.add('<div class="text center">更改皮肤</div>');
@@ -3364,15 +3364,23 @@ export class Get {
 							nameskin = nameskin.slice(3);
 							gzbool = true;
 						}
-						for (var i = 0; i <= num; i++) {
+						var values = [0];
+						for (var x = 101; x <= videonum; x++)
+							values.push(x);
+						for (var x = 1; x <= num; x++)
+							values.push(x);
+						for (var x = 0; x < values.length; x++) {
+							var i = values[x];
 							var button = ui.create.div(".button.character.pointerdiv", buttons, function () {
 								if (this._link) {
 									if (avatar2) {
 										lib.config.skin[nameskin] = this._link;
-										node.node.avatar2.style.backgroundImage = this.style.backgroundImage;
+										node.node.avatar2.setBackground(nameskin, "character");
+										//node.node.avatar2.style.backgroundImage = this.style.backgroundImage;
 									} else {
 										lib.config.skin[nameskin] = this._link;
-										node.node.avatar.style.backgroundImage = this.style.backgroundImage;
+										node.node.avatar.setBackground(nameskin, "character");
+										//node.node.avatar.style.backgroundImage = this.style.backgroundImage;
 									}
 								} else {
 									delete lib.config.skin[nameskin];
@@ -3388,7 +3396,10 @@ export class Get {
 							});
 							button._link = i;
 							if (i) {
-								button.setBackgroundImage("image/skin/" + nameskin.split('_').at(-1) + "/" + i + ".jpg");
+								if (i > 100)
+									button.setBackgroundVideo("image/skin/" + nameskin.split('_').at(-1) + "/" + i + ".webm");
+								else
+									button.setBackgroundImage("image/skin/" + nameskin.split('_').at(-1) + "/" + i + ".jpg");
 							} else {
 								if (gzbool && lib.character[nameskin2].hasSkinInGuozhan && lib.config.mode_config.guozhan.guozhanSkin) button.setBackground(nameskin2, "character", "noskin");
 								else button.setBackground(nameskin, "character", "noskin");
@@ -3405,7 +3416,7 @@ export class Get {
 						img.onerror = function () {
 							num--;
 							if (num) {
-								createButtons(num, avatar2);
+								createButtons(avatar2);
 							}
 							if (!avatar2) {
 								if (!node.classList.contains("unseen2") && node.name2) {
@@ -3425,11 +3436,40 @@ export class Get {
 						}
 						img.src = lib.assetURL + "image/skin/" + nameskin.split('_').at(-1) + "/" + num + ".jpg";
 					};
+					var loadVideo = function (avatar2) {
+						var video = document.createElement('video');
+						video.onloadeddata = function () {
+							videonum++;
+							loadVideo(avatar2);
+						};
+						video.onerror = function () {
+							videonum--;
+							if (videonum) {
+								loadImage(avatar2);
+							}
+							if (!avatar2) {
+								if (!node.classList.contains("unseen2") && node.name2) {
+									videonum = 101;
+									loadVideo(true);
+								}
+							}
+						};
+						var nameskin = avatar2 ? node.name2 : node.name1;
+						var nameskin2 = nameskin;
+						var gzbool = false;
+						if (nameskin.startsWith("gz_shibing")) {
+							nameskin = nameskin.slice(3, 11);
+						} else if (nameskin.startsWith("gz_")) {
+							nameskin = nameskin.slice(3);
+							gzbool = true;
+						}
+						video.src = lib.assetURL + "image/skin/" + nameskin.split('_').at(-1) + "/" + videonum + ".webm";
+					};
 					if (lib.config.change_skin) {
 						if (!node.isUnseen(0)) {
-							loadImage();
+							loadVideo();
 						} else if (node.name2) {
-							loadImage(true);
+							loadVideo(true);
 						}
 					} else {
 						setTimeout(function () {
@@ -3442,16 +3482,15 @@ export class Get {
 								nameskin2 = nameskin2.slice(3);
 							}
 							if (!node.isUnseen(0) && lib.skin[nameskin1]) {
-								createButtons(lib.skin[nameskin1]);
+								createButtons();
 							}
 							if (!node.isUnseen(1) && lib.skin[nameskin2]) {
-								createButtons(lib.skin[nameskin2], true);
+								createButtons(true);
 							}
 						});
 					}
 				}
 			}
-
 			uiintro.add(ui.create.div(".placeholder.slim"));
 		} else if (node.classList.contains("mark") && node.info && node.parentNode && node.parentNode.parentNode && node.parentNode.parentNode.classList.contains("player")) {
 			var info = node.info;
@@ -3853,7 +3892,7 @@ export class Get {
 					addskin = lib.config.change_skin || lib.skin;
 				}
 				if (addskin && (!simple || get.is.phoneLayout())) {
-					var num = 1;
+					var num = 1, videonum = 101;
 					var introadded = false;
 					var nameskin = node.link;
 					var nameskin2 = nameskin;
@@ -3864,19 +3903,26 @@ export class Get {
 						nameskin = nameskin.slice(3);
 						gzbool = true;
 					}
-					var createButtons = function (num) {
-						if (!num) return;
+					var createButtons = function () {
+						if (!num && !videonum) return;
 						if (!introadded) {
 							introadded = true;
 							uiintro.add('<div class="text center">更改皮肤</div>');
 						}
 						var buttons = ui.create.div(".buttons.smallzoom.scrollbuttons");
 						lib.setMousewheel(buttons);
-						for (var i = 0; i <= num; i++) {
+						var values = [0];
+						for (var x = 101; x <= videonum; x++)
+							values.push(x);
+						for (var x = 1; x <= num; x++)
+							values.push(x);
+						for (var x = 0; x < values.length; x++) {
+							var i = values[x];
 							var button = ui.create.div(".button.character.pointerdiv", buttons, function () {
 								if (this._link) {
 									lib.config.skin[nameskin] = this._link;
-									node.style.backgroundImage = this.style.backgroundImage;
+									node.setBackground(nameskin, "character");
+									//node.style.backgroundImage = this.style.backgroundImage;
 									game.saveConfig("skin", lib.config.skin);
 								} else {
 									delete lib.config.skin[nameskin];
@@ -3887,7 +3933,10 @@ export class Get {
 							});
 							button._link = i;
 							if (i) {
-								button.setBackgroundImage("image/skin/" + nameskin.split('_').at(-1) + "/" + i + ".jpg");
+								if (i > 100)
+									button.setBackgroundVideo("image/skin/" + nameskin.split('_').at(-1) + "/" + i + ".webm");
+								else
+									button.setBackgroundImage("image/skin/" + nameskin.split('_').at(-1) + "/" + i + ".jpg");
 							} else {
 								if (gzbool && lib.character[nameskin2].hasSkinInGuozhan && lib.config.mode_config.guozhan.guozhanSkin) button.setBackground(nameskin2, "character", "noskin");
 								else button.setBackground(nameskin, "character", "noskin");
@@ -3903,15 +3952,27 @@ export class Get {
 						};
 						img.onerror = function () {
 							num--;
-							createButtons(num);
+							createButtons();
 						};
 						img.src = lib.assetURL + "image/skin/" + nameskin.split('_').at(-1) + "/" + num + ".jpg";
 					};
+					var loadVideo = function () {
+						var video = document.createElement('video');
+						video.onloadeddata = function () {
+							videonum++;
+							loadVideo();
+						};
+						video.onerror = function () {
+							videonum--;
+							loadImage();
+						};
+						video.src = lib.assetURL + "image/skin/" + nameskin.split('_').at(-1) + "/" + videonum + ".webm";
+					};
 					if (lib.config.change_skin) {
-						loadImage();
+						loadVideo();
 					} else {
 						setTimeout(function () {
-							createButtons(lib.skin[nameskin]);
+							createButtons();
 						});
 					}
 				}
