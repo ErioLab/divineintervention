@@ -3415,13 +3415,14 @@ export class Get {
 						};
 						img.onerror = function () {
 							num--;
-							if (num) {
+							if (num || videonum) {
 								createButtons(avatar2);
 							}
 							if (!avatar2) {
 								if (!node.classList.contains("unseen2") && node.name2) {
 									num = 1;
-									loadImage(true);
+									videonum = 101;
+									loadVideo(true);
 								}
 							}
 						};

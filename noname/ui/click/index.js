@@ -3279,7 +3279,7 @@ export class Click {
 				if (lib.config.change_skin) {
 					loadVideo();
 				} else {
-					createButtons(lib.skin[nameskin]);
+					createButtons();
 				}
 			};
 		};
@@ -3287,6 +3287,9 @@ export class Click {
 			var img = new Image();
 			img.onload = changeskin;
 			img.src = lib.assetURL + "image/skin/" + nameskin.split('_').at(-1) + "/1.jpg";
+			var video = document.createElement('video');
+			video.onloadeddata = changeskin;
+			video.src = lib.assetURL + "image/skin/" + nameskin.split('_').at(-1) + "/101.webm";
 		} else if (lib.config.debug && lib.skin[nameskin]) {
 			changeskin();
 		}
