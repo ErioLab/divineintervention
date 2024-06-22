@@ -3349,6 +3349,7 @@ export class Get {
 					var num = 1, videonum = 101;
 					var introadded = false;
 					var createButtons = function (avatar2) {
+						if (!num && videonum == 100) return;
 						if (!introadded) {
 							introadded = true;
 							uiintro.add('<div class="text center">更改皮肤</div>');
@@ -3415,7 +3416,7 @@ export class Get {
 						};
 						img.onerror = function () {
 							num--;
-							if (num || videonum) {
+							if (num > 0 || videonum > 100) {
 								createButtons(avatar2);
 							}
 							if (!avatar2) {
@@ -3445,15 +3446,7 @@ export class Get {
 						};
 						video.onerror = function () {
 							videonum--;
-							if (videonum) {
-								loadImage(avatar2);
-							}
-							if (!avatar2) {
-								if (!node.classList.contains("unseen2") && node.name2) {
-									videonum = 101;
-									loadVideo(true);
-								}
-							}
+							loadImage(avatar2);
 						};
 						var nameskin = avatar2 ? node.name2 : node.name1;
 						var nameskin2 = nameskin;
@@ -3905,7 +3898,7 @@ export class Get {
 						gzbool = true;
 					}
 					var createButtons = function () {
-						if (!num && !videonum) return;
+						if (!num && videonum == 100) return;
 						if (!introadded) {
 							introadded = true;
 							uiintro.add('<div class="text center">更改皮肤</div>');

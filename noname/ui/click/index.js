@@ -3193,7 +3193,7 @@ export class Click {
 				}
 				node._created = true;
 				var createButtons = function () {
-					if (!num && !videonum) return;
+					if (!num && videonum == 100) return;
 					if (num + videonum >= 4) {
 						avatars.classList.add("scroll");
 						if (lib.config.touchscreen) {
