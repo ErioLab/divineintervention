@@ -3755,6 +3755,114 @@ const skills = {
     //符玄
     diqiongguan: {
         audio: 3,
+        trigger: { player: "phaseBegin" },
+        frequent: true,
+        content: function () {
+            "step 0";
+            var num = game.countPlayer() < 4 ? 4 : 6;
+            var cards = get.cards(num);
+            game.cardsGotoOrdering(cards);
+            var next = player.chooseToMove();
+            next.set("list", [["牌堆顶", cards], ["元"], ["亨"], ["利"], ["贞"]]);
+            next.set("prompt", "穷观阵已开启");
+            next.processAI = function (list) {/*
+                var cards = list[0][1],
+                    player = _status.event.player;
+                var target = _status.event.getTrigger().name == "phaseZhunbei" ? player : player.next;
+                var att = get.sgn(get.attitude(player, target));
+                var top = [];
+                var judges = target.getCards("j");
+                var stopped = false;
+                if (player != target || !target.hasWuxie()) {
+                    for (var i = 0; i < judges.length; i++) {
+                        var judge = get.judge(judges[i]);
+                        cards.sort(function (a, b) {
+                            return (judge(b) - judge(a)) * att;
+                        });
+                        if (judge(cards[0]) * att < 0) {
+                            stopped = true;
+                            break;
+                        } else {
+                            top.unshift(cards.shift());
+                        }
+                    }
+                }
+                var bottom;
+                if (!stopped) {
+                    cards.sort(function (a, b) {
+                        return (get.value(b, player) - get.value(a, player)) * att;
+                    });
+                    while (cards.length) {
+                        if (get.value(cards[0], player) <= 5 == att > 0) break;
+                        top.unshift(cards.shift());
+                    }
+                }
+                bottom = cards;
+                return [top, bottom];*/
+                return [list];
+            };
+            "step 1";
+            var list = result.moved[0];
+            while (list.length) {
+                ui.cardPile.insertBefore(list.pop(), ui.cardPile.firstChild);
+            }
+            player.addToExpansion(result.moved[1].reverse(), player, "give").gaintag.add("diqiongguan_yuan");
+            player.addToExpansion(result.moved[2].reverse(), player, "give").gaintag.add("diqiongguan_heng");
+            player.addToExpansion(result.moved[3].reverse(), player, "give").gaintag.add("diqiongguan_li");
+            player.addToExpansion(result.moved[4].reverse(), player, "give").gaintag.add("diqiongguan_zhen");
+            "step 2";
+            game.delayx();
+        },
+        group: ["diqiongguan_yuan", "diqiongguan_heng", "diqiongguan_li", "diqiongguan_zhen"],
+        subSkill: {
+            yuan: {
+                marktext: "元",
+                intro: {
+                    name: "穷观阵-元",
+                    markcount: "expansion",
+                    content: "expansion",
+                },
+                trigger: { global: "drawBegin" },
+                forced: true,
+                filter: function (event, player) {
+                    return player.getExpansions("diqiongguan_yuan").length > 0;
+                },
+                content: function () {
+                    if (trigger.num > player.getExpansions("diqiongguan_yuan").length) {
+                        var num = trigger.num - player.getExpansions("diqiongguan_yuan").length;
+                        trigger.player.gain(player.getExpansions("diqiongguan_yuan"), "draw");
+                        trigger.num = num;
+                    } else {
+                        trigger.player.gain(player.getExpansions("diqiongguan_yuan").splice(0, trigger.num), "draw");
+                        trigger.cancel();
+                    }
+                }
+            },
+            heng: {
+                marktext: "亨",
+                intro: {
+                    name: "穷观阵-亨",
+                    markcount: "expansion",
+                    content: "expansion",
+                },
+            },
+            li: {
+                marktext: "利",
+                intro: {
+                    name: "穷观阵-利",
+                    markcount: "expansion",
+                    content: "expansion",
+                },
+            },
+            zhen: {
+                marktext: "贞",
+                intro: {
+                    name: "穷观阵-贞",
+                    markcount: "expansion",
+                    content: "expansion",
+                },
+            },
+        }
     },
     disanyan: {
         audio: 3,

@@ -153,7 +153,7 @@ const Characters = {
     },
     difuxuan: {
         sex: "female",
-        group: "wu",
+        group: "shu",
         hp: 3,
         skills: ["diqiongguan", "disanyan", "dibie"]
     },
