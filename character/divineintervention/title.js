@@ -24,5 +24,6 @@ const characterTitles = {
     diyftx: "白色怪物",
     dizxskd: "深悼",
     dizxj: "？？？",
+    difuxuan: "穷观妙算",
 };
 export default characterTitles;

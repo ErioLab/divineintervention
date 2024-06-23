@@ -3752,6 +3752,16 @@ const skills = {
             }
         }
     },
+    //符玄
+    diqiongguan: {
+        audio: 3,
+    },
+    disanyan: {
+        audio: 3,
+    },
+    dibie: {
+        audio: 2,
+    },
 };
 
 export default skills;
