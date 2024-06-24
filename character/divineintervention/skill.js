@@ -3765,17 +3765,8 @@ const skills = {
         subSkill: {
             mopai: {
                 audio: "diqiongguan",
-                trigger: { global: "drawBegin" },
-                prompt2(event, player) {
-                    var str = "使" + get.translation(event.player) + "改为从【穷观阵】中获得";
-                    if (event.num > player.getExpansions("diqiongguan").length) {
-                        str += get.translation(player.getExpansions("diqiongguan"));
-                        str += "并从牌堆中摸" + get.cnNumber(event.num - player.getExpansions("diqiongguan").length) + "张牌";
-                    } else {
-                        str += get.translation(player.getExpansions("diqiongguan").slice(0, event.num));
-                    }
-                    return str;
-                },
+                trigger: { player: "drawBegin" },
+                forced: true,
                 filter: function (event, player) {
                     return player.getExpansions("diqiongguan").length > 0;
                 },
@@ -3870,7 +3861,7 @@ const skills = {
             next.set("list", [["牌堆顶", cards], ["穷观阵（至多四张）", qgcards]]);
             next.set("prompt", "三眼：将这些牌以任意顺序置于牌堆顶或【穷观阵】中");
             next.set("filterMove", function (from, to, moved) {
-                if (to == 1 && moved[to].length >= 4) return false;
+                if (to == 1 && moved[to].length >= 6) return false;
                 return true;
             });
             next.processAI = function (list) {/*
