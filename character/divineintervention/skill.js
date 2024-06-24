@@ -3861,7 +3861,7 @@ const skills = {
             next.set("list", [["牌堆顶", cards], ["穷观阵", qgcards]]);
             next.set("prompt", "三眼：将这些牌以任意顺序置于牌堆顶或【穷观阵】中");
             next.set("filterMove", function (from, to, moved) {
-                if (to == 1 && moved[to].length >= 6) return false;
+                if (to == 1 && moved[to].length >= 4) return false;
                 return true;
             });
             next.processAI = function (list) {/*
