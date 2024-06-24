@@ -3755,16 +3755,124 @@ const skills = {
     //符玄
     diqiongguan: {
         audio: 3,
+        marktext: "阵",
+        intro: {
+            name: "穷观阵",
+            markcount: "expansion",
+            content: "expansion",
+        },
+        group: ["diqiongguan_mopai", "diqiongguan_panding"],
+        subSkill: {
+            mopai: {
+                audio: "diqiongguan",
+                trigger: { global: "drawBegin" },
+                prompt2(event, player) {
+                    var str = "使" + get.translation(event.player) + "改为从【穷观阵】中获得";
+                    if (event.num > player.getExpansions("diqiongguan").length) {
+                        str += get.translation(player.getExpansions("diqiongguan"));
+                        str += "并从牌堆中摸" + get.cnNumber(event.num - player.getExpansions("diqiongguan").length) + "张牌";
+                    } else {
+                        str += get.translation(player.getExpansions("diqiongguan").slice(0, event.num));
+                    }
+                    return str;
+                },
+                filter: function (event, player) {
+                    return player.getExpansions("diqiongguan").length > 0;
+                },
+                content: function () {
+                    if (trigger.num > player.getExpansions("diqiongguan").length) {
+                        var num = trigger.num - player.getExpansions("diqiongguan").length;
+                        trigger.player.gain(player.getExpansions("diqiongguan"), "draw");
+                        trigger.num = num;
+                    } else {
+                        trigger.player.gain(player.getExpansions("diqiongguan").splice(0, trigger.num), "draw");
+                        trigger.cancel();
+                    }
+                }
+            },
+            panding: {
+                audio: "diqiongguan",
+                trigger: { global: "judgeBefore" },
+                prompt2(event, player) {
+                    return "是否使" + get.translation(event.player) + "的" + get.translation(event.judgestr) + "判定牌改为【穷观阵】中的" + get.translation(player.getExpansions("diqiongguan").splice(0, 1));
+                },
+                filter: function (event, player) {
+                    return player.getExpansions("diqiongguan").length > 0;
+                },
+                priority: 1,
+                content: function () {
+                    "step 0";
+                    var card = player.getExpansions("diqiongguan").splice(0, 1)[0];
+                    var judgestr = get.translation(trigger.player) + "的" + trigger.judgestr + "判定";
+                    event.videoId = lib.status.videoId++;
+                    event.dialog = ui.create.dialog(judgestr);
+                    event.dialog.classList.add("center");
+                    event.dialog.videoId = event.videoId;
+
+                    game.addVideo("judge1", player, [get.cardInfo(card), judgestr, event.videoId]);
+                    var node;
+                    if (game.chess) {
+                        node = card.copy("thrown", "center", ui.arena).addTempClass("start");
+                    } else {
+                        node = player.$throwordered(card.copy(), true);
+                    }
+                    node.classList.add("thrownhighlight");
+                    ui.arena.classList.add("thrownhighlight");
+                    if (card) {
+                        trigger.cancel();
+                        trigger.result = {
+                            card: card,
+                            judge: trigger.judge(card),
+                            node: node,
+                            number: get.number(card),
+                            suit: get.suit(card),
+                            color: get.color(card),
+                        };
+                        if (trigger.result.judge > 0) {
+                            trigger.result.bool = true;
+                        }
+                        if (trigger.result.judge < 0) {
+                            trigger.result.bool = false;
+                        }
+                        game.log(trigger.player, "的判定结果为", card);
+                        trigger.direct = true;
+                        trigger.position.appendChild(card);
+                        game.delay(2);
+                    } else {
+                        event.finish();
+                    }
+                    "step 1";
+                    ui.arena.classList.remove("thrownhighlight");
+                    event.dialog.close();
+                    game.addVideo("judge2", null, event.videoId);
+                    ui.clear();
+                    var card = trigger.result.card;
+                    trigger.position.appendChild(card);
+                    trigger.result.node.delete();
+                    player.updateMarks();
+                    game.delay();
+                },
+            },
+        }
+    },
+    disanyan: {
+        audio: 3,
         trigger: { player: "phaseBegin" },
         frequent: true,
         content: function () {
             "step 0";
-            var num = game.countPlayer() < 4 ? 4 : 6;
+            var num = game.countPlayer() < 4 ? 3 : 5;
             var cards = get.cards(num);
             game.cardsGotoOrdering(cards);
+            var qgcards = player.getExpansions("diqiongguan");
+            game.cardsGotoOrdering(qgcards);
             var next = player.chooseToMove();
-            next.set("list", [["牌堆顶", cards], ["元"], ["亨"], ["利"], ["贞"]]);
-            next.set("prompt", "穷观阵已开启");
+            next.set("list", [["牌堆顶", cards], ["穷观阵（至多四张）", qgcards]]);
+            next.set("prompt", "三眼：将这些牌以任意顺序置于牌堆顶或【穷观阵】中");
+            next.set("filterMove", function (from, to, moved) {
+                if (to == 1 && moved[to].length >= 4) return false;
+                return true;
+            });
             next.processAI = function (list) {/*
                 var cards = list[0][1],
                     player = _status.event.player;
@@ -3806,69 +3914,33 @@ const skills = {
             while (list.length) {
                 ui.cardPile.insertBefore(list.pop(), ui.cardPile.firstChild);
             }
-            player.addToExpansion(result.moved[1].reverse(), player, "give").gaintag.add("diqiongguan_yuan");
-            player.addToExpansion(result.moved[2].reverse(), player, "give").gaintag.add("diqiongguan_heng");
-            player.addToExpansion(result.moved[3].reverse(), player, "give").gaintag.add("diqiongguan_li");
-            player.addToExpansion(result.moved[4].reverse(), player, "give").gaintag.add("diqiongguan_zhen");
+            player.addToExpansion(result.moved[1].reverse(), player, "give").gaintag.add("diqiongguan");
             "step 2";
             game.delayx();
         },
-        group: ["diqiongguan_yuan", "diqiongguan_heng", "diqiongguan_li", "diqiongguan_zhen"],
-        subSkill: {
-            yuan: {
-                marktext: "元",
-                intro: {
-                    name: "穷观阵-元",
-                    markcount: "expansion",
-                    content: "expansion",
-                },
-                trigger: { global: "drawBegin" },
-                forced: true,
-                filter: function (event, player) {
-                    return player.getExpansions("diqiongguan_yuan").length > 0;
-                },
-                content: function () {
-                    if (trigger.num > player.getExpansions("diqiongguan_yuan").length) {
-                        var num = trigger.num - player.getExpansions("diqiongguan_yuan").length;
-                        trigger.player.gain(player.getExpansions("diqiongguan_yuan"), "draw");
-                        trigger.num = num;
-                    } else {
-                        trigger.player.gain(player.getExpansions("diqiongguan_yuan").splice(0, trigger.num), "draw");
-                        trigger.cancel();
-                    }
-                }
-            },
-            heng: {
-                marktext: "亨",
-                intro: {
-                    name: "穷观阵-亨",
-                    markcount: "expansion",
-                    content: "expansion",
-                },
-            },
-            li: {
-                marktext: "利",
-                intro: {
-                    name: "穷观阵-利",
-                    markcount: "expansion",
-                    content: "expansion",
-                },
-            },
-            zhen: {
-                marktext: "贞",
-                intro: {
-                    name: "穷观阵-贞",
-                    markcount: "expansion",
-                    content: "expansion",
-                },
-            },
-        }
-    },
-    disanyan: {
-        audio: 3,
     },
     dibie: {
         audio: 2,
+        limited: true,
+        skillAnimation: true,
+        animationColor: "thunder",
+        trigger: { player: "dying" },
+        content: function () {
+            "step 0";
+            player.awakenSkill("dibie");
+            var cards = player.getExpansions("diqiongguan");
+            event.heart = 0;
+            for (var i = 0; i < cards.length; i++) {
+                if (get.suit(cards[i]) == "heart") event.heart++;
+            }
+            "step 1";
+            player.loseToDiscardpile(player.getExpansions("diqiongguan"));
+            "step 2";
+            for (var i = 0; i < event.heart; i++) {
+                player.useCard({ name: "tao", isCard: true }, player);
+            }
+
+        },
     },
 };
 
