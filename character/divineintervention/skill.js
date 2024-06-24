@@ -3858,7 +3858,7 @@ const skills = {
             var qgcards = player.getExpansions("diqiongguan");
             game.cardsGotoOrdering(qgcards);
             var next = player.chooseToMove();
-            next.set("list", [["牌堆顶", cards], ["穷观阵（至多四张）", qgcards]]);
+            next.set("list", [["牌堆顶", cards], ["穷观阵", qgcards]]);
             next.set("prompt", "三眼：将这些牌以任意顺序置于牌堆顶或【穷观阵】中");
             next.set("filterMove", function (from, to, moved) {
                 if (to == 1 && moved[to].length >= 6) return false;
