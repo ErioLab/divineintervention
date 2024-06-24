@@ -3930,6 +3930,9 @@ const skills = {
             }
             return "弃置【穷观阵】中所有牌，视为对自己使用" + get.cnNumber(heart) + "张【桃】。";
         },
+        filter: function (event, player) {
+            return player.getExpansions("diqiongguan").length > 0;
+        },
         content: function () {
             "step 0";
             var cards = player.getExpansions("diqiongguan");
