@@ -3861,7 +3861,7 @@ const skills = {
         frequent: true,
         content: function () {
             "step 0";
-            var num = game.countPlayer() < 4 ? 3 : 5;
+            var num = game.countPlayer() < 4 ? 4 : 6;
             var cards = get.cards(num);
             game.cardsGotoOrdering(cards);
             var qgcards = player.getExpansions("diqiongguan");
@@ -3921,13 +3921,17 @@ const skills = {
     },
     dibie: {
         audio: 2,
-        limited: true,
-        skillAnimation: true,
-        animationColor: "thunder",
         trigger: { player: "dying" },
+        prompt2(event, player) {
+            var heart = 0;
+            var cards = player.getExpansions("diqiongguan");
+            for (var i = 0; i < cards.length; i++) {
+                if (get.suit(cards[i]) == "heart") heart++;
+            }
+            return "弃置【穷观阵】中所有牌，视为对自己使用" + get.cnNumber(heart) + "张【桃】。";
+        },
         content: function () {
             "step 0";
-            player.awakenSkill("dibie");
             var cards = player.getExpansions("diqiongguan");
             event.heart = 0;
             for (var i = 0; i < cards.length; i++) {
