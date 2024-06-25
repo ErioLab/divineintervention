@@ -3762,7 +3762,14 @@ const skills = {
             mopai: {
                 audio: "diqiongguan",
                 trigger: { player: "drawBegin" },
-                forced: true,
+                prompt2(event, player) {
+                    var num = event.num - player.getExpansions("diqiongguan").length;
+                    if (num > 0) {
+                        return "从【穷观阵】中获得" + get.translation(player.getExpansions("diqiongguan")) + "，并从牌堆中摸" + num + "张牌";
+                    } else {
+                        return "从【穷观阵】中获得" + get.translation(player.getExpansions("diqiongguan").slice(0, event.num));
+                    }
+                },
                 filter: function (event, player) {
                     return player.getExpansions("diqiongguan").length > 0;
                 },
@@ -3848,7 +3855,7 @@ const skills = {
         frequent: true,
         content: function () {
             "step 0";
-            var num = game.countPlayer() < 4 ? 4 : 6;
+            var num = game.countPlayer() < 4 ? 3 : 5;
             var cards = get.cards(num);
             game.cardsGotoOrdering(cards);
             var qgcards = player.getExpansions("diqiongguan");
@@ -3860,8 +3867,8 @@ const skills = {
                 if (to == 1 && moved[to].length >= 4) return false;
                 return true;
             });
-            next.processAI = function (list) {/*
-                var cards = list[0][1],
+            next.processAI = function (list) {
+                /*var cards = list[0][1],
                     player = _status.event.player;
                 var target = _status.event.getTrigger().name == "phaseZhunbei" ? player : player.next;
                 var att = get.sgn(get.attitude(player, target));
@@ -3894,7 +3901,7 @@ const skills = {
                 }
                 bottom = cards;
                 return [top, bottom];*/
-                return [list];
+                return [list[0][1], []];
             };
             "step 1";
             var list = result.moved[0];
