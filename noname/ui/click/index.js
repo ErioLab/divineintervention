@@ -415,7 +415,7 @@ export class Click {
 					var node = ui.create.div(".menubutton.videonode.pointerdiv", uiintro.content);
 					ui.create
 						.div(".menubutton.videoavatar", node)
-						.setBackground(button.info[i][1] || "caocao", "character");
+						.setBackground(button.info[i][1] || "caocao", "character", "noskin");
 					if (button.info[i][4] == game.wsid) {
 						ui.create.div(
 							".name",
