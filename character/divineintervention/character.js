@@ -14,14 +14,15 @@ const Characters = {
     diren: {
         sex: "male",
         group: "wei",
-        hp: 5,
+        hp: 4,
         skills: ["diyubian", "dizangsong", "diwansi"]
     },
     diluocha: {
         sex: "male",
         group: "qun",
         hp: 3,
-        skills: ["diqiwang", "dilunzhuan", "diguizang"]
+        hujia: 2,
+        skills: ["diheiyuan", "dibaihua", "diguizang"]
     },
     dinaxida: {
         sex: "female",

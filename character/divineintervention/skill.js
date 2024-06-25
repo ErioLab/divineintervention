@@ -258,8 +258,10 @@ const skills = {
                 content: function () {
                     if (player.hp != 1) {
                         player.loseHp();
+                        player.draw(2);
+                    } else {
+                        player.draw(1);
                     }
-                    if (player.countMark("diyubian") > 0) player.draw(player.countMark("diyubian"));
                 }
             }
         }
@@ -290,7 +292,7 @@ const skills = {
                 priority: -50,
                 forced: true,
                 filter: function (event, player) {
-                    return player.storage.dizangsong >= 5;
+                    return player.storage.dizangsong >= 4;
                 },
                 content: function () {
                     player.insertPhase();
@@ -327,74 +329,52 @@ const skills = {
         }
     },
     //罗刹
-    diqiwang: {
-        audio: "dilunzhuan",
-        trigger: { global: "dying" },
-        priority: 6,
-        filter: function (event, player) {
-            return player.countCards("h") >= 2 || (event.player == player && player.countCards("h") >= 1);
-        },
+    diheiyuan: {
+        audio: 2,
         direct: true,
-        content: function () {
-            "step 0"
-            var num = trigger.player == player ? 1 : 2;
-            player.chooseToDiscard("是否弃置" + num + "张手牌回复" + (trigger.player == player ? "自己" : get.translation(trigger.player)) + "一点体力?", "h", num);
-            "step 1"
-            if (result.bool) {
-                trigger.player.recover();
-                player.logSkill("diqiwang", trigger.player);
-            }
-        },
-    },
-    dilunzhuan: {
-        audio: 4,
-        zhuanhuanji: true,
-        direct: true,
-        mark: true,
-        marktext: "☯",
-        intro: {
-            content: function (storage, player) {
-                if (storage) return "转换技。当有角色回复体力时，你可弃置一张黑色手牌使回复量-1。";
-                return "转换技。你造成伤害时，可弃置一张红色手牌取消该伤害改为回复其一点体力。";
-            },
-        },
         trigger: {
-            source: "damageBegin1",
             global: "recoverBegin",
         },
         filter: function (event, player) {
-            var storage = player.storage.dilunzhuan;
-            if (storage && event.name == "recover") {
+            if (event.name == "recover") {
                 return player.countCards("h", { color: "black" }) > 0;
             }
-            if (!storage && event.name == "damage") {
+        },
+        content: function () {
+            "step 0"
+            var target = trigger.getParent().target;
+            player.chooseToDiscard("h", 1, "弃置一张黑色手牌，使" + get.translation(target) + "的体力回复量-1。", { color: "black" });
+            "step 1"
+            var target = trigger.getParent().target;
+            if (result.bool) {
+                player.logSkill("diheiyuan", target);
+                player.line(target, "black");
+                trigger.num--;
+            }
+        },
+    },
+    dibaihua: {
+        audio: 2,
+        direct: true,
+        trigger: {
+            source: "damageBegin1",
+        },
+        filter: function (event, player) {
+            if (event.name == "damage") {
                 return player.countCards("h", { color: "red" }) > 0;
             }
         },
         content: function () {
             "step 0"
             var target = trigger.getParent().target;
-            if (player.storage.dilunzhuan) {
-                player.chooseToDiscard("h", 1, "弃置一张黑色手牌，使" + get.translation(target) + "的体力回复量-1。", { color: "black" });
-            }
-            else {
-                player.chooseToDiscard("h", 1, "弃置一张红色手牌，取消对" + get.translation(target) + "的伤害并改为回复其一点体力。", { color: "red" });
-            }
+            player.chooseToDiscard("h", 1, "弃置一张红色手牌，取消对" + get.translation(target) + "的伤害并改为回复其一点体力。", { color: "red" });
             "step 1"
             var target = trigger.getParent().target;
             if (result.bool) {
-                player.logSkill("dilunzhuan");
-                if (player.storage.dilunzhuan) {
-                    player.line(target, "black");
-                    trigger.num--;
-                } else {
-                    player.line(target, "red");
-                    trigger.num--;
-                    target.recover();
-                }
-                game.broadcastAll(function (target) {
-                    target.changeZhuanhuanji("dilunzhuan");
-                }, player);
+                player.logSkill("dibaihua", target);
+                player.line(target, "red");
+                trigger.num--;
+                target.recover();
             }
         },
     },
@@ -406,98 +386,17 @@ const skills = {
         unique: true,
         juexingji: true,
         forced: true,
-        init: function (player, skill) {
-            if (!player.storage[skill]) player.storage[skill] = false;
-        },
         filter: function (event, player) {
             if (player.storage.diguizang) return false;
-            return game.dead.length >= game.players.length;
+            return game.dead.length >= game.players.length * 0.5;
         },
         content: function () {
-            "step 0"
             player.awakenSkill("diguizang");
             var targets = game.filterPlayer(current => current != player).sortBySeat();
             player.line(targets);
             player.gainMultiple(targets, "h");
-            "step 1"
-            player.chooseControl(["选项一", "选项二"]).set("choiceList", ["获得【白花】：每轮限一次，你造成伤害时，可弃置一张红色手牌取消该伤害改为回复其一点体力。", "获得【黑渊】：每轮限一次，当有角色回复体力时，你可弃置一张黑色手牌使回复量-1。"]);
-            "step 2"
-            if (result.control == "选项一") {
-                player.removeSkill("dilunzhuan");
-                player.addSkill("dibaihua");
-            } else {
-                player.removeSkill("dilunzhuan");
-                player.addSkill("diheiyuan");
-            }
-            "step 3"
             player.addSkill("dizailin");
         },
-    },
-    dibaihua: {
-        audio: "dilunzhuan",
-        direct: true,
-        trigger: {
-            source: "damageBegin1",
-        },
-        filter: function (event, player) {
-            if (event.name == "damage" && !player.hasSkill("dibaihua_round")) {
-                return player.countCards("h", { color: "red" }) > 0;
-            }
-        },
-        content: function () {
-            "step 0"
-            var target = trigger.getParent().target;
-            player.chooseToDiscard("h", 1, "弃置一张红色手牌，取消对" + get.translation(target) + "的伤害并改为回复其一点体力。", { color: "red" });
-            "step 1"
-            var target = trigger.getParent().target;
-            if (result.bool) {
-                player.addTempSkill("dibaihua_round", "roundStart");
-                player.logSkill("dibaihua");
-                player.line(target, "red");
-                trigger.num--;
-                target.recover();
-            }
-        },
-        subSkill: {
-            round: {
-                mark: true,
-                intro: { content: "本轮已发动【白花】" }
-            }
-        }
-    },
-    diheiyuan: {
-        audio: "dilunzhuan",
-        direct: true,
-        trigger: {
-            global: "recoverBegin",
-        },
-        filter: function (event, player) {
-            if (event.name == "recover" && !player.hasSkill("diheiyuan_round")) {
-                return player.countCards("h", { color: "black" }) > 0;
-            }
-        },
-        content: function () {
-            "step 0"
-            var target = trigger.getParent().target;
-            player.chooseToDiscard("h", 1, "弃置一张黑色手牌，使" + get.translation(target) + "的体力回复量-1。", { color: "black" });
-            "step 1"
-            var target = trigger.getParent().target;
-            if (result.bool) {
-                player.addTempSkill("diheiyuan_round", "roundStart");
-                player.logSkill("diheiyuan");
-                player.line(target, "black");
-                if (result.cards.length == 2) {
-                    player.recover();
-                }
-                trigger.num--;
-            }
-        },
-        subSkill: {
-            round: {
-                mark: true,
-                intro: { content: "本轮已发动【黑渊】" }
-            }
-        }
     },
     dizailin: {
         audio: 1,
@@ -523,11 +422,12 @@ const skills = {
             "step 1"
             if (result.bool) {
                 var dead = result.targets[0];
+                game.log(get.translation(player) + "复活了" + get.translation(dead));
                 game.broadcastAll(function (target) {
                     target.revive(2, false);
                 }, dead);
                 dead.hp = Math.min(2, dead.maxHp);
-                dead.draw(3);
+                dead.draw(4);
                 game.addVideo("revive", dead);
             } else event.finish();
         }
@@ -1425,7 +1325,7 @@ const skills = {
         direct: true,
         content: function () {
             "step 0"
-            var tricks = ["guohe", "jiedao", "juedou", "nanman", "shunshou", "taoyuan", "wanjian", "wugu", "wuzhong", "lebu", "shandian", "huogong", "tiesuo", "bingliang"];
+            var tricks = ["guohe", "jiedao", "juedou", "nanman", "shunshou", "taoyuan", "wanjian", "wugu", "wuzhong", "huogong", "tiesuo", "wuxie"];
             var usedTricks = player.getHistory("useCard", function (evt) {
                 return tricks.includes(evt.card.name);
             }).map(function (evt) { return evt.card.name; });
@@ -1436,7 +1336,7 @@ const skills = {
             });
 
             if (available.length) {
-                player.chooseButton(["选择一张本回合未使用的锦囊牌视为于下个准备阶段使用", [available, "vcard"]]).set("ai", function (button) {
+                player.chooseButton(["选择一张本回合未使用过的普通锦囊牌视为于你的下个准备阶段使用", [available, "vcard"]]).set("ai", function (button) {
                     return get.value({ name: button.link[2] });
                 });
             } else {
@@ -1457,13 +1357,7 @@ const skills = {
                 content: function () {
                     "step 0"
                     if (player.storage.diqice) {
-                        if (["lebu", "bingliang", "shandian"].includes(player.storage.diqice.name)) {
-                            var card = game.createCard(player.storage.diqice.name);
-                            player.gain(card, "gain2");
-                            player.chooseUseTarget(card);
-                        } else {
-                            player.chooseUseTarget(player.storage.diqice);
-                        }
+                        player.chooseUseTarget(player.storage.diqice);
                         delete player.storage.diqice;
                     }
                     player.removeSkill("diqice_activate");
