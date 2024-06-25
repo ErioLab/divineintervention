@@ -134,7 +134,7 @@ window.config = {
 	connect_characters: ["diy"],
 	connect_cards: ["huanlekapai", "guozhan", "sp", "zhulu", "yingbian", "yongjian"],
 	plays: [],
-	extensions: ["十周年UI"],
+	extensions: [],
 	banned: [],
 	bannedcards: [],
 	forbidlist: [],
