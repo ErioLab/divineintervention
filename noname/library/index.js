@@ -4879,7 +4879,7 @@ export class Library {
 						map.connect_enable_year_limit.show();
 						map.connect_zhong_card.hide();
 						map.connect_special_identity.hide();
-					} else if (config.connect_identity_mode == "purple") {
+					} else if (config.connect_identity_mode == "purple" || config.connect_identity_mode == "pve") {
 						map.connect_player_number.hide();
 						map.connect_limit_zhu.hide();
 						map.connect_enhance_zhu.hide();
@@ -4911,6 +4911,7 @@ export class Library {
 					init: "normal",
 					item: {
 						normal: "标准",
+						pve: "PVE",
 						zhong: "明忠",
 						stratagem: "谋攻",
 						purple: "3v3v2",
@@ -5097,7 +5098,7 @@ export class Library {
 						} else {
 							map.double_hp.hide();
 						}
-					} else if (config.identity_mode == "purple") {
+					} else if (config.identity_mode == "purple" || config.identity_mode == "pve") {
 						map.player_number.hide();
 						map.enhance_zhu.hide();
 						map.double_nei.hide();
@@ -5172,6 +5173,7 @@ export class Library {
 					init: "normal",
 					item: {
 						normal: "标准",
+						pve: "PVE",
 						zhong: "明忠",
 						stratagem: "谋攻",
 						purple: "3v3v2",
@@ -12178,7 +12180,7 @@ export class Library {
 					player.throwEmotion(target, emotion, rotate);
 				}
 			},
-			emotion: function (id, pack, emotion) {
+			emotion: function (id, pack, emotion, name) {
 				if (lib.node.observing.includes(this)) {
 					const str = '<img src="##assetURL##image/emotion/' + pack + '/' + emotion + '.gif" width="50" height="50">';
 					lib.message.server.chat.call(this, this.id, str, name)
