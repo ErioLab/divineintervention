@@ -2598,19 +2598,15 @@ const skills = {
                 mod: {
                     cardEnabled: function (card, player) {
                         if (card.name == "shan" && get.number(card) < player.storage.dironghuo_shan) return false;
-                        return true;
                     },
                     cardUsable: function (card, player) {
                         if (card.name == "shan" && get.number(card) < player.storage.dironghuo_shan) return false;
-                        return true;
                     },
                     cardRespondable: function (card, player) {
                         if (card.name == "shan" && get.number(card) < player.storage.dironghuo_shan) return false;
-                        return true;
                     },
                     cardSavable: function (card, player) {
                         if (card.name == "shan" && get.number(card) < player.storage.dironghuo_shan) return false;
-                        return true;
                     },
                 },
             },
