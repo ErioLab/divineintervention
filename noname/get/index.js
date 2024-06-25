@@ -3897,6 +3897,7 @@ export class Get {
 						nameskin = nameskin.slice(3);
 						gzbool = true;
 					}
+					/*
 					var createButtons = function () {
 						if (!num && videonum == 100) return;
 						if (!introadded) {
@@ -3968,7 +3969,9 @@ export class Get {
 						setTimeout(function () {
 							createButtons();
 						});
-					}
+					}*/
+					// 关闭在选将界面调整皮肤的功能
+					// 因为要实现大招动画，必须设置图片皮肤，而在选将界面因为未知原因，新设置的视频皮肤无法覆盖在图片皮肤上。
 				}
 			}
 		} else if (node.classList.contains("equips") && ui.arena.classList.contains("selecting")) {

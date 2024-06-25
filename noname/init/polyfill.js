@@ -197,7 +197,8 @@ Reflect.defineProperty(HTMLDivElement.prototype, "setBackground", {
 		this.style.backgroundSize = "cover";
 		if (type === "character") {
 			if (lib.config.skin[name] && arguments[2] != "noskin" && lib.config.skin[name] > 100) {
-				this.setBackgroundImage();
+				//this.setBackgroundImage();
+				this.setBackground(name, "character", "noskin");
 				this.setBackgroundVideo(`image/skin/${name.split('_').at(-1)}/${lib.config.skin[name]}.webm`);
 			} else {
 				this.setBackgroundVideo();
