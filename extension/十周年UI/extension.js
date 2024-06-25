@@ -2014,7 +2014,9 @@ game.import('extension', async function (lib, game, ui, get, ai, _status) {
 
 								say: function (str) {
 									str = str.replace(/##assetURL##/g, lib.assetURL);
-
+									game.broadcastAll((danmu, prefix, name, str) => {
+										danmu(prefix, name, str)
+									}, ui.create.danmu, '', _status.connectMode ? (this.name ? get.translation(this) + "[" + this.nickname + "]" : this.nickname) : get.translation(this), str);
 									if (!this.$chatBubble) {
 										this.$chatBubble = decadeUI.element.create('chat-bubble');
 									}

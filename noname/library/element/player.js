@@ -2980,7 +2980,6 @@ export class Player extends HTMLDivElement {
 		game.broadcastAll((danmu, prefix, name, str) => {
 			danmu(prefix, name, str)
 		}, ui.create.danmu, '', _status.connectMode ? (this.name ? get.translation(this) + "[" + this.nickname + "]" : this.nickname) : get.translation(this), str);
-		str = str.replace(/##assetURL##/g, lib.assetURL);
 		var dialog = ui.create.dialog("hidden");
 		dialog.classList.add("static");
 		dialog.add('<div class="text" style="word-break:break-all;display:inline">' + str + "</div>");
