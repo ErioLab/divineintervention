@@ -4861,6 +4861,7 @@ export class Library {
 					}
 					if (config.connect_identity_mode == "zhong") {
 						map.connect_player_number.hide();
+						map.connect_pve_boss.hide();
 						map.connect_limit_zhu.hide();
 						map.connect_enhance_zhu.hide();
 						map.connect_double_nei.hide();
@@ -4872,6 +4873,7 @@ export class Library {
 					} else if (config.connect_identity_mode == "stratagem") {
 						map.connect_double_character.show();
 						map.connect_player_number.show();
+						map.connect_pve_boss.hide();
 						map.connect_limit_zhu.hide();
 						map.connect_enhance_zhu.hide();
 						map.connect_double_nei.hide();
@@ -4879,8 +4881,20 @@ export class Library {
 						map.connect_enable_year_limit.show();
 						map.connect_zhong_card.hide();
 						map.connect_special_identity.hide();
-					} else if (config.connect_identity_mode == "purple" || config.connect_identity_mode == "pve") {
+					} else if (config.connect_identity_mode == "purple") {
 						map.connect_player_number.hide();
+						map.connect_pve_boss.hide();
+						map.connect_limit_zhu.hide();
+						map.connect_enhance_zhu.hide();
+						map.connect_double_nei.hide();
+						map.connect_enable_commoner.hide();
+						map.connect_enable_year_limit.hide();
+						map.connect_zhong_card.hide();
+						map.connect_special_identity.hide();
+						map.connect_double_character.hide();
+					} else if (config.connect_identity_mode == "pve") {
+						map.connect_player_number.show();
+						map.connect_pve_boss.show();
 						map.connect_limit_zhu.hide();
 						map.connect_enhance_zhu.hide();
 						map.connect_double_nei.hide();
@@ -4892,6 +4906,7 @@ export class Library {
 					} else {
 						map.connect_double_character.show();
 						map.connect_player_number.show();
+						map.connect_pve_boss.hide();
 						map.connect_limit_zhu.show();
 						map.connect_enhance_zhu.show();
 						map.connect_double_nei[config.connect_player_number != "2" && !config.connect_enable_commoner ? "show" : "hide"]();
@@ -4926,6 +4941,12 @@ export class Library {
 					get item() {
 						return lib.mode.identity.config.player_number.item;
 					},
+					frequent: true,
+					restart: true,
+				},
+				connect_pve_boss: {
+					name: "AI操作boss",
+					init: true,
 					frequent: true,
 					restart: true,
 				},
@@ -5098,7 +5119,7 @@ export class Library {
 						} else {
 							map.double_hp.hide();
 						}
-					} else if (config.identity_mode == "purple" || config.identity_mode == "pve") {
+					} else if (config.identity_mode == "purple") {
 						map.player_number.hide();
 						map.enhance_zhu.hide();
 						map.double_nei.hide();
@@ -5173,7 +5194,6 @@ export class Library {
 					init: "normal",
 					item: {
 						normal: "标准",
-						pve: "PVE",
 						zhong: "明忠",
 						stratagem: "谋攻",
 						purple: "3v3v2",

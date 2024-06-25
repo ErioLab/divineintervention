@@ -290,7 +290,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 			if (ui.coin) {
 				_status.coinCoeff = get.coinCoeff([game.me.name]);
 			}
-			if (game.players.length == 2) {
+			if (game.players.length == 2 || _status.mode == "pve") {
 				game.showIdentity(true);
 				var map = {};
 				for (var i in lib.playerOL) {
@@ -2471,31 +2471,74 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 				next.setContent(function () {
 					"step 0";
 					ui.arena.classList.add("choose-character");
-					var i;
-					var identityList;
-					if (_status.mode == "zhong") {
-						event.zhongmode = true;
-						identityList = ["zhu", "zhong", "mingzhong", "nei", "fan", "fan", "fan", "fan"];
-					} else {
-						identityList = get.identityList(game.players.length);
-					}
-					identityList.randomSort();
-					for (i = 0; i < game.players.length; i++) {
-						game.players[i].identity = identityList[i];
-						game.players[i].setIdentity("cai");
-						game.players[i].node.identity.classList.add("guessing");
-						if (event.zhongmode) {
-							if (identityList[i] == "mingzhong") {
-								game.zhu = game.players[i];
-							} else if (identityList[i] == "zhu") {
-								game.zhu2 = game.players[i];
-							}
+					if (_status.mode == "pve") {
+						var renNum = 0, aiNum = 0;
+						game.players.forEach(function (current) {
+							if (current.isOnline() || current == game.me)
+								renNum++;
+							else
+								aiNum++;
+						});
+						if (lib.configOL.pve_boss && aiNum > 0) {
+							let renId = new Array(renNum).fill("fan");
+							let aiId = new Array(aiNum - 1).fill("fan");
+							aiId.push("zhu");
+							aiId.randomSort();
+							renId.randomSort();
+							game.players.forEach(function (current) {
+								if (current.isOnline() || current == game.me)
+									current.identity = renId.shift();
+								else
+									current.identity = aiId.shift();
+								if (current.identity == "zhu")
+									game.zhu = current;
+								current.setIdentity();
+								current.identityShown = true;
+							});
 						} else {
-							if (identityList[i] == "zhu") {
-								game.zhu = game.players[i];
-							}
+							let renId = new Array(renNum - 1).fill("fan");
+							let aiId = new Array(aiNum).fill("fan");
+							renId.push("zhu");
+							aiId.randomSort();
+							renId.randomSort();
+							game.players.forEach(function (current) {
+								if (current.isOnline() || current == game.me)
+									current.identity = renId.shift();
+								else
+									current.identity = aiId.shift();
+								if (current.identity == "zhu")
+									game.zhu = current;
+								current.setIdentity();
+								current.identityShown = true;
+							});
 						}
-						game.players[i].identityShown = false;
+					} else {
+						var i;
+						var identityList;
+						if (_status.mode == "zhong") {
+							event.zhongmode = true;
+							identityList = ["zhu", "zhong", "mingzhong", "nei", "fan", "fan", "fan", "fan"];
+						} else {
+							identityList = get.identityList(game.players.length);
+						}
+						identityList.randomSort();
+						for (i = 0; i < game.players.length; i++) {
+							game.players[i].identity = identityList[i];
+							game.players[i].setIdentity("cai");
+							game.players[i].node.identity.classList.add("guessing");
+							if (event.zhongmode) {
+								if (identityList[i] == "mingzhong") {
+									game.zhu = game.players[i];
+								} else if (identityList[i] == "zhu") {
+									game.zhu2 = game.players[i];
+								}
+							} else {
+								if (identityList[i] == "zhu") {
+									game.zhu = game.players[i];
+								}
+							}
+							game.players[i].identityShown = false;
+						}
 					}
 					if (lib.configOL.special_identity && !event.zhongmode && game.players.length == 8) {
 						var map = {};
@@ -2656,6 +2699,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 						};
 						list = getZhuList(list2).concat(list3.randomGets(9));
 					}
+					if (_status.mode == 'pve') list = ["diganyu"];
 					var next = game.zhu.chooseButton(true);
 					next.set("selectButton", lib.configOL.double_character ? 2 : 1);
 					next.set("createDialog", ["选择角色", [list, "characterx"]]);
