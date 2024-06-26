@@ -6,6 +6,7 @@ const characterSort = {
     di_dm: ["dikirito", "di5t5", "diyftx"],
     di_ls: [],
     di_qt: ["dimulikong", "dizxj"],
+    di_boss: ["dishenzhuri"],
 };
 
 const characterSortTranslate = {
@@ -16,6 +17,7 @@ const characterSortTranslate = {
     di_dm: "天降神兵·动漫",
     di_ls: "天降神兵·历史人物",
     di_qt: "天降神兵·其他",
+    di_boss: "天降神兵·强敌",
 };
 
 export { characterSort, characterSortTranslate };

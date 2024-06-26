@@ -3761,6 +3761,8 @@ export class Create {
 			_status.cardtag,
 			lib.inpile_nature
 		);
+		for (var i = 0; i < ui.cardPile.childNodes.length; i++)
+			game.initCards.push(ui.cardPile.childNodes[i]);
 	}
 	danmu(prefix, name, str) {
 		if (!ui.danmuList) ui.danmuList = []

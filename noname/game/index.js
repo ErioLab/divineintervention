@@ -26,6 +26,7 @@ export class Game {
 	bgMusic = new Audio();
 	recoverRecord = new Map();
 	killRecord = new Map();
+	initCards = [];
 	//
 	online = false;
 	onlineID = null;

@@ -158,6 +158,12 @@ const Characters = {
         hp: 3,
         skills: ["diqiongguan", "disanyan", "dibie"]
     },
+    dishenzhuri: {
+        sex: "male",
+        group: "shen",
+        hp: 15,
+        skills:["direnxing","diyuxiang","dihuisheng","diyimeng"]
+    }
 };
 
 export default Characters;

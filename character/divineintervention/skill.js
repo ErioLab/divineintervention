@@ -3837,6 +3837,52 @@ const skills = {
 
         },
     },
+    //神主日
+    direnxing: {
+        forced: true,
+        trigger: { player: "phaseUseBegin" },
+        filter: function (event, player) {
+            return player.hujia == 0;
+        },
+        content: function () {
+            player.changeHujia(10);
+        },
+        group: ["direnxing_po"],
+        subSkill: {
+            po: {
+                trigger: { player: "changeHujiaAfter" },
+                forced: true,
+                filter: function (event, player) {
+                    return player.hujia == 0;
+                },
+                content: function () {
+                    player.turnOver();
+                    player.discard(player.getCards("h"));
+                    game.filterPlayer(function (current) {
+                        if (current != player)
+                            current.changeHujia(2);
+                    });
+                }
+            }
+        }
+    },
+    diyuxiang: {
+        firstDo: true,
+        trigger: {
+            global: "phaseBefore",
+            player: "enterGame",
+        },
+        filter: function (event, player) {
+            return event.name != "phase" || game.phaseNumber == 0;
+        },
+        forced: true,
+        content: function () {
+        }
+    },
+    dihuisheng: {},
+    diyimeng: {},
+    ditaichu: {},
+    dizaowu: {},
 };
 
 export default skills;
