@@ -4960,7 +4960,7 @@ export class Library {
 					init: "dishenzhuri",
 					item: {
 						dishenzhuri: "『齐响诗班』神主日",
-						jie_dichongyue: "『自晦及明』界重岳",
+						//jie_dichongyue: "『自晦及明』界重岳",
 					},
 					frequent: true,
 					restart: true,
