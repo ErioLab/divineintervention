@@ -6,7 +6,7 @@ const characterSort = {
     di_dm: ["dikirito", "di5t5", "diyftx"],
     di_ls: [],
     di_qt: ["dimulikong", "dizxj"],
-    di_boss: ["dishenzhuri"],
+    di_boss: ["dishenzhuri", "difellowhuisheng"],
 };
 
 const characterSortTranslate = {

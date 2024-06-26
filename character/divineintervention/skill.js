@@ -324,8 +324,6 @@ const skills = {
                 cards.push(game.createCard("sha"));
             }
             player.gain(cards, "gain2");
-            player.removeSkill("disizhao");
-            player.addSkill("disizhao_mod");
         }
     },
     //罗刹
@@ -342,10 +340,10 @@ const skills = {
         },
         content: function () {
             "step 0"
-            var target = trigger.getParent().target;
+            var target = trigger.player;
             player.chooseToDiscard("h", 1, "弃置一张黑色手牌，使" + get.translation(target) + "的体力回复量-1。", { color: "black" });
             "step 1"
-            var target = trigger.getParent().target;
+            var target = trigger.player;
             if (result.bool) {
                 player.logSkill("diheiyuan", target);
                 player.line(target, "black");
@@ -366,10 +364,10 @@ const skills = {
         },
         content: function () {
             "step 0"
-            var target = trigger.getParent().target;
+            var target = trigger.player;
             player.chooseToDiscard("h", 1, "弃置一张红色手牌，取消对" + get.translation(target) + "的伤害并改为回复其一点体力。", { color: "red" });
             "step 1"
-            var target = trigger.getParent().target;
+            var target = trigger.player;
             if (result.bool) {
                 player.logSkill("dibaihua", target);
                 player.line(target, "red");
@@ -2918,9 +2916,9 @@ const skills = {
             player.loseToDiscardpile(player.getExpansions("didiezou"));
             var prompt2 = "";
             if (event.num == 3)
-                prompt2 = "你与其各摸三张牌";
+                prompt2 = "你与其各摸两张牌";
             else
-                prompt2 = "其从【英姿】【咆哮】【神速】【帷幕】中选择一个技能获得，然后你与其各摸三张牌";
+                prompt2 = "其从【英姿】【咆哮】【神速】【帷幕】中选择一个技能获得，然后你与其各摸两张牌";
             player.chooseTarget("选择一名角色", prompt2);
             "step 1"
             if (result.bool) {
@@ -3847,7 +3845,7 @@ const skills = {
         content: function () {
             player.changeHujia(10);
         },
-        group: ["direnxing_po"],
+        group: ["direnxing_po", "direnxing_mo"],
         subSkill: {
             po: {
                 trigger: { player: "changeHujiaAfter" },
@@ -3859,15 +3857,103 @@ const skills = {
                     player.turnOver();
                     player.discard(player.getCards("h"));
                     game.filterPlayer(function (current) {
-                        if (current != player)
+                        if (current != player && current.name != "difellowhuisheng")
                             current.changeHujia(2);
                     });
+                }
+            },
+            mo: {
+                forced: true,
+                trigger: { player: "turnOverEnd" },
+                filter: function (event, player) {
+                    return !player.isTurnedOver();
+                },
+                content: function () {
+                    player.draw(4);
                 }
             }
         }
     },
     diyuxiang: {
-        firstDo: true,
+        init: function (player) {
+            player.storage.diyuxiang = 0;
+        },
+        group: ["diyuxiang_d1j", "diyuxiang_d2j"],
+        subSkill: {
+            d1j: {
+                audio: 1,
+                forced: true,
+                trigger: { player: "dying" },
+                filter: function (event, player) {
+                    return player.storage.diyuxiang == 0;
+                },
+                content: function () {
+                    trigger.yuxiang = true;
+                    player.storage.diyuxiang++;
+                    player.gainMaxHp(5);
+                    player.recover(5 + player.maxHp - player.hp);
+                    if (player.isTurnedOver()) player.turnOver();
+                    if (player.isLinked()) player.link();
+                    player.discard(player.getCards("j"));
+                    game.filterPlayer(function (current) {
+                        if (current.name == "difellowhuisheng") {
+                            game.broadcastAll(function (t) {
+                                t.removeSkill("difellowhuishengskill");
+                                t.addSkill("difellowhuishengskill2");
+                            }, current);
+                        }
+                        game.broadcastAll(function (t) {
+                            if (t.hasSkill("diyimeng_shoushang"))
+                                t.removeSkill("diyimeng_shoushang");
+                        }, current);
+                    });
+                    game.broadcastAll(function (t) {
+                        t.removeSkill("diyimeng");
+                        t.addSkill("diyimeng2");
+                    }, player);
+                }
+            },
+            d2j: {
+                audio: 1,
+                forced: true,
+                trigger: { player: "dying" },
+                filter: function (event, player) {
+                    return player.storage.diyuxiang == 1 && !event.yuxiang;
+                },
+                content: function () {
+                    game.broadcastAll(function () {
+                        game.bgMusic.loop = true;
+                        game.bgMusic.volume = 0.3;
+                        game.bgMusic.src = "audio/music/dishenzhuri3.mp3";
+                        game.bgMusic.play();
+                    });
+                    player.storage.diyuxiang++;
+                    player.gainMaxHp(10);
+                    player.recover(10 + player.maxHp - player.hp);
+                    if (player.isTurnedOver()) player.turnOver();
+                    if (player.isLinked()) player.link();
+                    player.discard(player.getCards("j"));
+                    game.filterPlayer(function (current) {
+                        if (current.name == "difellowhuisheng")
+                            current.die();
+                        game.broadcastAll(function (t) {
+                            if (t.hasSkill("diyimeng2_shoushang"))
+                                t.removeSkill("diyimeng2_shoushang");
+                        }, current);
+                    });
+                    game.broadcastAll(function (t) {
+                        t.removeSkill("dihuisheng");
+                        t.removeSkill("diyimeng2");
+                        t.addSkill("ditaichu");
+                        t.addSkill("dizaowu");
+                    }, player);
+                }
+            }
+        }
+    },
+    dihuisheng: {
+        audio: 1,
+        lastDo: true,
         trigger: {
             global: "phaseBefore",
             player: "enterGame",
@@ -3877,12 +3963,401 @@ const skills = {
         },
         forced: true,
         content: function () {
+            game.broadcastAll(function () {
+                game.bgMusic.loop = true;
+                game.bgMusic.volume = 0.3;
+                game.bgMusic.src = "audio/music/dishenzhuri12.mp3";
+                game.bgMusic.play();
+            });
+            game.filterPlayer(function (current) {
+                if (current.name == "difellowhuisheng")
+                    current.discard(current.getCards("h"), false);
+            });
+        },
+        group: ["dihuisheng_mopai"],
+        subSkill: {
+            mopai: {
+                forced: true,
+                trigger: { player: "phaseDrawBegin2" },
+                content: function () {
+                    trigger.num += game.countPlayer(function (current) {
+                        return current.name == "difellowhuisheng" && !current.isTurnedOver();
+                    });
+                },
+            }
         }
     },
-    dihuisheng: {},
-    diyimeng: {},
-    ditaichu: {},
-    dizaowu: {},
+    diyimeng: {
+        audio: 2,
+        enable: "phaseUse",
+        usable: 1,
+        filterTarget: function (card, player, target) {
+            return target != player;
+        },
+        filterCard: true,
+        position: "h",
+        check: function (card) {
+            return 5 - get.value(card);
+        },
+        line: "thunder",
+        content: function () {
+            game.broadcastAll(function (t) {
+                t.addSkill("diyimeng_shoushang");
+            }, target);
+        },
+        ai: {
+            order: 12,
+            result: {
+                target: function (player, target) {
+                    if (
+                        get.damageEffect(target, player, target) < 0
+                        && !target.hasSkill("diyimeng_shoushang")
+                    ) {
+                        return -4;
+                    }
+                    return 0;
+                },
+            },
+        },
+        group: ["diyimeng_remove"],
+        subSkill: {
+            remove: {
+                silent: true,
+                forced: true,
+                trigger: { player: "phaseUseBegin" },
+                filter: function (event, player) {
+                    return game.countPlayer(function (current) {
+                        return current.hasSkill("diyimeng_shoushang");
+                    }) > 0;
+                },
+                content: function () {
+                    game.filterPlayer(function (current) {
+                        if (current.hasSkill("diyimeng_shoushang"))
+                            current.removeSkill("diyimeng_shoushang");
+                    });
+                }
+            },
+            shoushang: {
+                forced: true,
+                mark: true,
+                marktext: "梦",
+                intro: {
+                    name: "异梦",
+                    content: "受到的伤害+1",
+                },
+                trigger: { player: "damageBegin1" },
+                content: function () {
+                    trigger.num++;
+                }
+            }
+        }
+    },
+    diyimeng2: {
+        audio: "diyimeng",
+        enable: "phaseUse",
+        usable: 1,
+        position: "h",
+        filterTarget: function (card, player, target) {
+            return target != player;
+        },
+        complexCard: true,
+        complexSelect: true,
+        selectTarget: function () {
+            return ui.selected.cards.length;
+        },
+        filterCard: true,
+        selectCard: [1, Infinity],
+        check: function (card) {
+            var player = _status.event.player;
+            if (ui.selected.cards.length < game.countPlayer(function (current) {
+                if (player == current) return false;
+                return get.attitude(player, current) < 0;
+            }))
+                return 5 - get.value(card);
+            else
+                return 0;
+        },
+        line: "thunder",
+        content: function () {
+            game.broadcastAll(function (t) {
+                t.addSkill("diyimeng2_shoushang");
+            }, target);
+        },
+        ai: {
+            order: 12,
+            result: {
+                target: function (player, target) {
+                    if (get.attitude(player, target) < 0 && !target.hasSkill("diyimeng2_shoushang")) {
+                        return -4;
+                    }
+                    return 0;
+                },
+            },
+        },
+        group: ["diyimeng2_remove"],
+        subSkill: {
+            remove: {
+                silent: true,
+                forced: true,
+                trigger: { player: "phaseUseBegin" },
+                filter: function (event, player) {
+                    return game.countPlayer(function (current) {
+                        return current.hasSkill("diyimeng2_shoushang");
+                    }) > 0;
+                },
+                content: function () {
+                    game.filterPlayer(function (current) {
+                        if (current.hasSkill("diyimeng2_shoushang"))
+                            current.removeSkill("diyimeng2_shoushang");
+                    });
+                }
+            },
+            shoushang: {
+                forced: true,
+                mark: true,
+                marktext: "梦",
+                intro: {
+                    name: "异梦",
+                    content: "受到的伤害+1，手牌上限-1",
+                },
+                trigger: { player: "damageBegin1" },
+                content: function () {
+                    trigger.num++;
+                },
+                mod: {
+                    maxHandcardBase: function (player, num) {
+                        return num - 1;
+                    },
+                },
+            }
+        }
+    },
+    ditaichu: {
+        forced: true,
+        mark: true,
+        marktext: "日",
+        intro: {
+            name: "太初",
+            content: function (storage, player) {
+                return "第" + get.cnNumber(player.countMark("ditaichu")) + "日";
+            }
+        },
+        trigger: { player: "phaseBegin" },
+        content: function () {
+            player.skip("phaseZhunbei");
+            player.skip("phaseJudge");
+            player.skip("phaseDraw");
+            player.skip("phaseUse");
+            player.skip("phaseDiscard");
+            player.skip("phaseJieshu");
+        },
+        group: ["ditaichu_di1ri", "ditaichu_di2ri", "ditaichu_di3ri", "ditaichu_di4ri", "ditaichu_di5ri", "ditaichu_di6ri", "ditaichu_di7ri", "ditaichu_di8ri"],
+        subSkill: {
+            di1ri: {
+                audio: 1,
+                forced: true,
+                trigger: { global: "phaseEnd" },
+                filter: function (event, player) {
+                    return event.player != player && player.countMark("ditaichu") == 0 && !event.taichu;
+                },
+                content: function () {
+                    player.addMark("ditaichu", 1);
+                    trigger.taichu = true;
+                }
+            },
+            di2ri: {
+                audio: 1,
+                forced: true,
+                trigger: { global: "phaseEnd" },
+                filter: function (event, player) {
+                    return event.player != player && player.countMark("ditaichu") == 1 && !event.taichu;
+                },
+                content: function () {
+                    player.addMark("ditaichu", 1);
+                    trigger.taichu = true;
+                }
+            },
+            di3ri: {
+                audio: 1,
+                forced: true,
+                trigger: { global: "phaseEnd" },
+                filter: function (event, player) {
+                    return event.player != player && player.countMark("ditaichu") == 2 && !event.taichu;
+                },
+                content: function () {
+                    player.addMark("ditaichu", 1);
+                    trigger.taichu = true;
+                }
+            },
+            di4ri: {
+                audio: 1,
+                forced: true,
+                trigger: { global: "phaseEnd" },
+                filter: function (event, player) {
+                    return event.player != player && player.countMark("ditaichu") == 3 && !event.taichu;
+                },
+                content: function () {
+                    player.addMark("ditaichu", 1);
+                    trigger.taichu = true;
+                }
+            },
+            di5ri: {
+                audio: 1,
+                forced: true,
+                trigger: { global: "phaseEnd" },
+                filter: function (event, player) {
+                    return event.player != player && player.countMark("ditaichu") == 4 && !event.taichu;
+                },
+                content: function () {
+                    player.addMark("ditaichu", 1);
+                    trigger.taichu = true;
+                }
+            },
+            di6ri: {
+                audio: 1,
+                forced: true,
+                trigger: { global: "phaseEnd" },
+                filter: function (event, player) {
+                    return event.player != player && player.countMark("ditaichu") == 5 && !event.taichu;
+                },
+                content: function () {
+                    player.addMark("ditaichu", 1);
+                    trigger.taichu = true;
+                }
+            },
+            di7ri: {
+                audio: 1,
+                forced: true,
+                trigger: { global: "phaseEnd" },
+                filter: function (event, player) {
+                    return event.player != player && player.countMark("ditaichu") == 6 && !event.taichu;
+                },
+                content: function () {
+                    player.addMark("ditaichu", 1);
+                    trigger.taichu = true;
+                }
+            },
+            di8ri: {
+                audio: 1,
+                forced: true,
+                trigger: { global: "phaseEnd" },
+                filter: function (event, player) {
+                    return event.player != player && player.countMark("ditaichu") == 7 && !event.taichu;
+                },
+                content: function () {
+                    trigger.taichu = true;
+                    player.removeMark("ditaichu", player.countMark("ditaichu"));
+                    game.filterPlayer(function (current) {
+                        if (current != player) {
+                            player.line(current);
+                            current.damage(4);
+                        }
+                    });
+                }
+            },
+        }
+    },
+    dizaowu: {
+        audio: "difellowhuishengskill2",
+        forced: true,
+        trigger: { player: "turnOverEnd" },
+        content: function () {
+            player.removeMark("ditaichu", 3);
+        },
+        group: ["dizaowu_mopai"],
+        subSkill: {
+            mopai: {
+                audio: "difellowhuishengskill",
+                forced: true,
+                trigger: { player: "damageEnd" },
+                content: function () {
+                    trigger.source.draw();
+                }
+            }
+        }
+    },
+    //神主日召唤：旧梦的回声
+    difellowhuishengskill: {
+        audio: 4,
+        forced: true,
+        trigger: { player: ["damageBegin", "loseHpBegin"] },
+        filter: function (event, player) { return !event.huisheng; },
+        content: function () {
+            trigger.cancel();
+            trigger.huisheng = true;
+            if (trigger.name == "damage") {
+                for (var i = 0; i <= game.players.length; i++) {
+                    if (game.players[i].name == "dishenzhuri") {
+                        var nature = "";
+                        if (trigger.hasNature("fire")) nature = "fire";
+                        if (trigger.hasNature("thunder")) nature = "thunder";
+                        if (trigger.hasNature("ice")) nature = "ice";
+                        if (trigger.hasNature("kami")) nature = "kami";
+                        player.line(game.players[i], nature);
+                        game.players[i].damage(trigger.num, trigger.source, nature);
+                        player.turnOver();
+                        break;
+                    }
+                };
+            } else {
+                for (var i = 0; i <= game.players.length; i++) {
+                    if (game.players[i].name == "dishenzhuri") {
+                        player.line(game.players[i], nature);
+                        game.players[i].loseHp(trigger.num);
+                        player.turnOver();
+                    }
+                };
+            }
+        }
+    },
+    difellowhuishengskill2: {
+        audio: 7,
+        forced: true,
+        trigger: { player: ["damageBegin", "loseHpBegin"] },
+        filter: function (event, player) { return !event.huisheng; },
+        content: function () {
+            trigger.cancel();
+            trigger.huisheng = true;
+            if (trigger.name == "damage") {
+                for (var i = 0; i <= game.players.length; i++) {
+                    if (game.players[i].name == "dishenzhuri") {
+                        var nature = "";
+                        if (trigger.hasNature("fire")) nature = "fire";
+                        if (trigger.hasNature("thunder")) nature = "thunder";
+                        if (trigger.hasNature("ice")) nature = "ice";
+                        if (trigger.hasNature("kami")) nature = "kami";
+                        player.line(game.players[i], nature);
+                        game.players[i].damage(trigger.num, trigger.source, nature);
+                        player.turnOver();
+                        break;
+                    }
+                };
+            } else {
+                for (var i = 0; i <= game.players.length; i++) {
+                    if (game.players[i].name == "dishenzhuri") {
+                        player.line(game.players[i], nature);
+                        game.players[i].loseHp(trigger.num);
+                        player.turnOver();
+                    }
+                };
+            }
+        },
+        group: ["difellowhuishengskill2_sha"],
+        subSkill: {
+            sha: {
+                trigger: { player: "phaseZhunbeiBegin" },
+                direct: true,
+                content: function () {
+                    player.chooseUseTarget("视为使用一张没有距离限制的【杀】", { name: "sha" }, false, "nodistance").logSkill = "difellowhuishengskill2_sha";
+                },
+                ai: {
+                    threaten: function (player, target) {
+                        return 1.6;
+                    },
+                },
+            }
+        }
+    },
 };
 
 export default skills;

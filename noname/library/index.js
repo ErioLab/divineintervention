@@ -4862,6 +4862,7 @@ export class Library {
 					if (config.connect_identity_mode == "zhong") {
 						map.connect_player_number.hide();
 						map.connect_pve_boss.hide();
+						map.connect_ai_boss.hide();
 						map.connect_limit_zhu.hide();
 						map.connect_enhance_zhu.hide();
 						map.connect_double_nei.hide();
@@ -4874,6 +4875,7 @@ export class Library {
 						map.connect_double_character.show();
 						map.connect_player_number.show();
 						map.connect_pve_boss.hide();
+						map.connect_ai_boss.hide();
 						map.connect_limit_zhu.hide();
 						map.connect_enhance_zhu.hide();
 						map.connect_double_nei.hide();
@@ -4884,6 +4886,7 @@ export class Library {
 					} else if (config.connect_identity_mode == "purple") {
 						map.connect_player_number.hide();
 						map.connect_pve_boss.hide();
+						map.connect_ai_boss.hide();
 						map.connect_limit_zhu.hide();
 						map.connect_enhance_zhu.hide();
 						map.connect_double_nei.hide();
@@ -4894,6 +4897,7 @@ export class Library {
 						map.connect_double_character.hide();
 					} else if (config.connect_identity_mode == "pve") {
 						map.connect_player_number.show();
+						map.connect_ai_boss.show();
 						map.connect_pve_boss.show();
 						map.connect_limit_zhu.hide();
 						map.connect_enhance_zhu.hide();
@@ -4907,6 +4911,7 @@ export class Library {
 						map.connect_double_character.show();
 						map.connect_player_number.show();
 						map.connect_pve_boss.hide();
+						map.connect_ai_boss.hide();
 						map.connect_limit_zhu.show();
 						map.connect_enhance_zhu.show();
 						map.connect_double_nei[config.connect_player_number != "2" && !config.connect_enable_commoner ? "show" : "hide"]();
@@ -4944,9 +4949,19 @@ export class Library {
 					frequent: true,
 					restart: true,
 				},
-				connect_pve_boss: {
+				connect_ai_boss: {
 					name: "AI操作boss",
 					init: true,
+					frequent: true,
+					restart: true,
+				},
+				connect_pve_boss: {
+					name: "boss",
+					init: "dishenzhuri",
+					item: {
+						dishenzhuri: "『齐响诗班』神主日",
+						jie_dichongyue: "『自晦及明』界重岳",
+					},
 					frequent: true,
 					restart: true,
 				},

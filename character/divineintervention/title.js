@@ -25,6 +25,7 @@ const characterTitles = {
     dizxskd: "深悼",
     dizxj: "？？？",
     difuxuan: "穷观妙算",
-    dishenzhuri: "哲学的胎儿"
+    dishenzhuri: "齐响诗班",
+    difellowhuisheng: "齐响诗班",
 };
 export default characterTitles;

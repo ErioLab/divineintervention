@@ -162,7 +162,13 @@ const Characters = {
         sex: "male",
         group: "shen",
         hp: 15,
-        skills:["direnxing","diyuxiang","dihuisheng","diyimeng"]
+        skills: ["direnxing", "diyuxiang", "dihuisheng", "diyimeng"]
+    },
+    difellowhuisheng: {
+        sex: "none",
+        group: "shen",
+        hp: 1,
+        skills: ["difellowhuishengskill"]
     }
 };
 

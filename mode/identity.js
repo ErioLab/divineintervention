@@ -254,6 +254,10 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 				if (lib.configOL.number < 2) {
 					lib.configOL.number = 2;
 				}
+				if (lib.configOL.identity_mode == "pve")
+					lib.configOL.number += 1;
+				if (lib.configOL.identity_mode == "pve" && lib.configOL.pve_boss == "dishenzhuri")
+					lib.configOL.number += 4;
 				if (_status.mode != "purple" && lib.configOL.enable_year_limit) {
 					lib.onwash.push(yearLimitCheck);
 				}
@@ -2479,7 +2483,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 							else
 								aiNum++;
 						});
-						if (lib.configOL.pve_boss && aiNum > 0) {
+						if (lib.configOL.ai_boss && aiNum > 4) {
 							let renId = new Array(renNum).fill("fan");
 							let aiId = new Array(aiNum - 1).fill("fan");
 							aiId.push("zhu");
@@ -2512,6 +2516,32 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 								current.identityShown = true;
 							});
 						}
+						var fellows = [];
+						game.players.forEach(function (current) {
+							if (!current.isOnline() && current != game.me && game.zhu != current && fellows.length < 4) {
+								fellows.push(current);
+							}
+						});
+						game.broadcastAll(function (f, g) {
+							game.swapSeat(f, g, false, false, true);
+						}, fellows[0], game.zhu.next);
+						game.broadcastAll(function (f, g) {
+							game.swapSeat(f, g, false, false, true);
+						}, fellows[1], game.zhu.next.next);
+						game.broadcastAll(function (f, g) {
+							game.swapSeat(f, g, false, false, true);
+						}, fellows[2], game.zhu.previous);
+						game.broadcastAll(function (f, g) {
+							game.swapSeat(f, g, false, false, true);
+						}, fellows[3], game.zhu.previous.previous);
+						var setFellow = function (fellow) {
+							fellow.identity = "zhong";
+							fellow.setIdentity();
+							fellow.identityShown = true;
+						};
+						fellows.forEach(function (current) {
+							setFellow(current);
+						});
 					} else {
 						var i;
 						var identityList;
@@ -2699,7 +2729,7 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 						};
 						list = getZhuList(list2).concat(list3.randomGets(9));
 					}
-					if (_status.mode == 'pve') list = ["diganyu"];
+					if (_status.mode == 'pve') list = [lib.configOL.pve_boss];
 					var next = game.zhu.chooseButton(true);
 					next.set("selectButton", lib.configOL.double_character ? 2 : 1);
 					next.set("createDialog", ["选择角色", [list, "characterx"]]);
@@ -2805,12 +2835,28 @@ game.import("mode", function (lib, game, ui, get, ai, _status) {
 							if (game.players[i].special_identity) {
 								str += "（" + get.translation(game.players[i].special_identity) + "）";
 							}
-							list.push([
-								game.players[i],
-								[str, [event.list.randomRemove(num + num3 + 3), "characterx"]],
-								selectButton,
-								true,
-							]);
+							if (_status.mode == "pve"
+								&& lib.configOL.pve_boss == "dishenzhuri"
+								&& (game.players[i].next == game.zhu
+									|| game.players[i].next.next == game.zhu
+									|| game.players[i].previous == game.zhu
+									|| game.players[i].previous.previous == game.zhu
+								)
+							) {
+								list.push([
+									game.players[i],
+									[str, [["difellowhuisheng"], "characterx"]],
+									selectButton,
+									true,
+								]);
+							} else {
+								list.push([
+									game.players[i],
+									[str, [event.list.randomRemove(num + num3 + 3), "characterx"]],
+									selectButton,
+									true,
+								]);
+							}
 						}
 					}
 					game.me.chooseButtonOL(list, function (player, result) {
