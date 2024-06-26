@@ -2509,6 +2509,9 @@ export class Game {
 		);
 	}
 	playDaemonAnim(name) {
+		if (get.mode() == "identity" &&
+			_status.mode == "pve")
+			return;
 		const img = document.createElement('img');
 		img.src = "image/daemon/" + name + ".gif";
 		img.style.position = 'fixed';
