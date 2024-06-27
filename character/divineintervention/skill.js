@@ -3843,10 +3843,7 @@ const skills = {
             return player.hujia == 0;
         },
         content: function () {
-            var num = game.countPlayer(function (current) {
-                return current.identity == "fan";
-            });
-            player.changeHujia(5 + num);
+            player.changeHujia(7);
         },
         group: ["direnxing_po", "direnxing_mo"],
         subSkill: {
