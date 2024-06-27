@@ -168,7 +168,7 @@ const Characters = {
     difellowhuisheng: {
         sex: "none",
         group: "shen",
-        hp: 1,
+        hp: 4,
         skills: ["difellowhuishengskill"],
     },
     dichengji: {
