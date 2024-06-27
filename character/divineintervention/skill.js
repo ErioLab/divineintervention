@@ -3965,7 +3965,7 @@ const skills = {
         content: function () {
             game.broadcastAll(function () {
                 game.bgMusic.loop = true;
-                game.bgMusic.volume = 0.3;
+                game.bgMusic.volume = 0.1;
                 game.bgMusic.src = "audio/music/dishenzhuri12.mp3";
                 game.bgMusic.play();
             });
