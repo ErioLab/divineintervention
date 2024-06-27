@@ -3895,6 +3895,7 @@ const skills = {
                     if (player.isTurnedOver()) player.turnOver();
                     if (player.isLinked()) player.link();
                     player.discard(player.getCards("j"));
+                    player.changeHujia(10 - player.hujia);
                     game.filterPlayer(function (current) {
                         if (current.name == "difellowhuisheng") {
                             game.broadcastAll(function (t) {
@@ -3933,6 +3934,7 @@ const skills = {
                     if (player.isTurnedOver()) player.turnOver();
                     if (player.isLinked()) player.link();
                     player.discard(player.getCards("j"));
+                    player.changeHujia(10 - player.hujia);
                     game.filterPlayer(function (current) {
                         if (current.name == "difellowhuisheng")
                             current.die();
@@ -4151,14 +4153,14 @@ const skills = {
             player.skip("phaseDiscard");
             player.skip("phaseJieshu");
         },
-        group: ["ditaichu_di1ri", "ditaichu_di2ri", "ditaichu_di3ri", "ditaichu_di4ri", "ditaichu_di5ri", "ditaichu_di6ri", "ditaichu_di7ri", "ditaichu_di8ri"],
+        group: ["ditaichu_di1ri", "ditaichu_di2ri", "ditaichu_di3ri", "ditaichu_di4ri", "ditaichu_di5ri", "ditaichu_di6ri", "ditaichu_di7ri", "ditaichu_di8ri", "ditaichu_pan"],
         subSkill: {
             di1ri: {
                 audio: 1,
                 forced: true,
                 trigger: { global: "phaseEnd" },
                 filter: function (event, player) {
-                    return player.countMark("ditaichu") == 0 && !event.taichu;
+                    return event.player != player && player.countMark("ditaichu") == 0 && !event.taichu;
                 },
                 content: function () {
                     player.addMark("ditaichu", 1);
@@ -4170,7 +4172,7 @@ const skills = {
                 forced: true,
                 trigger: { global: "phaseEnd" },
                 filter: function (event, player) {
-                    return player.countMark("ditaichu") == 1 && !event.taichu;
+                    return event.player != player && player.countMark("ditaichu") == 1 && !event.taichu;
                 },
                 content: function () {
                     player.addMark("ditaichu", 1);
@@ -4182,7 +4184,7 @@ const skills = {
                 forced: true,
                 trigger: { global: "phaseEnd" },
                 filter: function (event, player) {
-                    return player.countMark("ditaichu") == 2 && !event.taichu;
+                    return event.player != player && player.countMark("ditaichu") == 2 && !event.taichu;
                 },
                 content: function () {
                     player.addMark("ditaichu", 1);
@@ -4194,7 +4196,7 @@ const skills = {
                 forced: true,
                 trigger: { global: "phaseEnd" },
                 filter: function (event, player) {
-                    return player.countMark("ditaichu") == 3 && !event.taichu;
+                    return event.player != player && player.countMark("ditaichu") == 3 && !event.taichu;
                 },
                 content: function () {
                     player.addMark("ditaichu", 1);
@@ -4206,7 +4208,7 @@ const skills = {
                 forced: true,
                 trigger: { global: "phaseEnd" },
                 filter: function (event, player) {
-                    return player.countMark("ditaichu") == 4 && !event.taichu;
+                    return event.player != player && player.countMark("ditaichu") == 4 && !event.taichu;
                 },
                 content: function () {
                     player.addMark("ditaichu", 1);
@@ -4218,7 +4220,7 @@ const skills = {
                 forced: true,
                 trigger: { global: "phaseEnd" },
                 filter: function (event, player) {
-                    return player.countMark("ditaichu") == 5 && !event.taichu;
+                    return event.player != player && player.countMark("ditaichu") == 5 && !event.taichu;
                 },
                 content: function () {
                     player.addMark("ditaichu", 1);
@@ -4230,7 +4232,7 @@ const skills = {
                 forced: true,
                 trigger: { global: "phaseEnd" },
                 filter: function (event, player) {
-                    return player.countMark("ditaichu") == 6 && !event.taichu;
+                    return event.player != player && player.countMark("ditaichu") == 6 && !event.taichu;
                 },
                 content: function () {
                     player.addMark("ditaichu", 1);
@@ -4242,7 +4244,7 @@ const skills = {
                 forced: true,
                 trigger: { global: "phaseEnd" },
                 filter: function (event, player) {
-                    return player.countMark("ditaichu") >= 7 && !event.taichu;
+                    return event.player != player && player.countMark("ditaichu") >= 7 && !event.taichu;
                 },
                 content: function () {
                     trigger.taichu = true;
@@ -4257,6 +4259,34 @@ const skills = {
                     });
                 }
             },
+            pan: {
+                forced: true,
+                trigger: { player: "damageEnd" },
+                content: function () {
+                    "step 0";
+                    player.judge(function (card) {
+                        return get.color(card) == "red" ? 1 : 0;
+                    });
+                    "step 1";
+                    if (true || result.bool) {
+                        player.addMark("ditaichu", 1);
+                        game.broadcastAll(function (name) {
+                            if (lib.config.background_speak) game.playAudio("skill", name);
+                        }, "ditaichu_di" + player.countMark("ditaichu") + "ri1");
+                        if (player.countMark("ditaichu") >= 8) {
+                            player.removeMark("ditaichu", player.countMark("ditaichu"));
+                            game.filterPlayer(function (current) {
+                                if (current != player) {
+                                    player.line(current);
+                                    current.discard(current.getCards("e"));
+                                    current.damage(4);
+                                    current.chooseToDiscard("h", 3, true);
+                                }
+                            });
+                        }
+                    }
+                }
+            }
         }
     },
     dizaowu: {
@@ -4276,16 +4306,7 @@ const skills = {
                 forced: true,
                 trigger: { player: "damageEnd" },
                 content: function () {
-                    "step 0";
                     trigger.source.draw();
-                    "step 1";
-                    player.judge(function (card) {
-                        return get.suit(card) == "heart" ? 1 : 0;
-                    });
-                    "step 2";
-                    if (result.bool) {
-                        player.addMark("ditaichu", 1);
-                    }
                 }
             }
         }

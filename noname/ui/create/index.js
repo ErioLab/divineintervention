@@ -2818,6 +2818,59 @@ export class Create {
 		ui.control = ui.create.div("#control", ui.arena).addTempClass("nozoom");
 		ui.cardPile = ui.create.div("#cardPile");
 		ui.discardPile = ui.create.div("#discardPile");
+		var observer = new MutationObserver(function (mutations) {
+			game.log("triggered observer");
+			if (!game.initCards) return;
+			var leftCards = game.initCards.filter(c => !ui.discardPile.contains(c));
+			var cardCount = {};
+			for (var i = 0; i < leftCards.length; i++) {
+				var name = get.translation(leftCards[i].name);
+				if (leftCards[i].nature)
+					name = get.translation(leftCards[i].nature) + name;
+				if (!cardCount[name]) {
+					cardCount[name] = {
+						count: 0,
+						num: {},
+						suit: {},
+					};
+				}
+				cardCount[name].count++;
+				var thisnum = get.number(leftCards[i]);
+				var numstr = "";
+				numstr = thisnum.toString();
+				if (thisnum == 1) numstr = "A";
+				if (thisnum == 11) numstr = "J";
+				if (thisnum == 12) numstr = "Q";
+				if (thisnum == 13) numstr = "K";
+				var thissuit = get.suit(leftCards[i]);
+				if (thissuit == "heart") thissuit = '<font color="red">♥</font>';
+				if (thissuit == "diamond") thissuit = '<font color="red">♦</font>';
+				if (thissuit == "club") thissuit = '<font color="green">♣</font>';
+				if (thissuit == "spade") thissuit = '<font color="green">♠</font>';
+				cardCount[name].num[numstr] = (cardCount[name].num[numstr] || 0) + 1;
+				cardCount[name].suit[thissuit] = (cardCount[name].suit[thissuit] || 0) + 1;
+			}
+			var str = "";
+			let sortCardCount = Object.entries(cardCount).map(([name, data]) => ({
+				name,
+				...data
+			}));
+			sortCardCount.sort((a, b) => b.count - a.count);
+			sortCardCount.forEach(card => {
+				str += "<B>" + card.name + "</B>x" + card.count + " ";
+				for (var l in card.suit)
+					str += l + "x" + card.suit[l] + " ";
+				for (var k in card.num)
+					str += k + "x" + card.num[k] + " ";
+				str += "<br>"
+			});
+			game.broadcastAll(function (text) {
+				game.cardCounterString = text;
+			}, '<div class="text left"><font size="2">' + str + '</font></div>');
+		});
+		observer.observe(ui.discardPile, { childList: true });
+		//弃牌堆监视器：更新记牌器
+
 		ui.special = ui.create.div("#special");
 		ui.ordering = ui.create.div("#ordering");
 		ui.dialogs = [];

@@ -27,6 +27,7 @@ export class Game {
 	recoverRecord = new Map();
 	killRecord = new Map();
 	initCards = [];
+	cardCounterString = "";
 	//
 	online = false;
 	onlineID = null;

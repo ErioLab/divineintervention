@@ -1094,6 +1094,8 @@ export class Get {
 					return (config.double_character ? "双将" : "") + "忠胆英杰";
 				case "stratagem":
 					return get.cnNumber(parseInt(config.number)) + "人" + (config.double_character ? "双将" : "") + "谋攻";
+				case "pve":
+					return "PVE " + get.translation(config.pve_boss);
 				default:
 					return `${get.cnNumber(parseInt(config.number))}人${config.double_nei ? "双内" : ""}${config.enable_commoner ? "带民" : ""}${config.double_character ? "双将" : ""}身份`;
 			}
