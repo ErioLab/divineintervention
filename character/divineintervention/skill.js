@@ -4255,6 +4255,7 @@ const skills = {
                         if (current != player) {
                             player.line(current);
                             current.damage(4);
+                            current.chooseToDiscard("h", 4, true);
                         }
                     });
                 }
