@@ -3843,7 +3843,7 @@ const skills = {
             return player.hujia == 0;
         },
         content: function () {
-            player.changeHujia(7);
+            player.changeHujia(10);
         },
         group: ["direnxing_po", "direnxing_mo"],
         subSkill: {
@@ -4261,8 +4261,11 @@ const skills = {
         audio: "difellowhuishengskill2",
         forced: true,
         trigger: { player: "turnOverEnd" },
+        filter: function (event, player) {
+            return player.isTurnedOver();
+        },
         content: function () {
-            player.removeMark("ditaichu", 3);
+            player.removeMark("ditaichu", 4);
         },
         group: ["dizaowu_mopai"],
         subSkill: {
