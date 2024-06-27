@@ -4288,147 +4288,148 @@ const skills = {
                     }
                 }
             }
-        },
-        //神主日召唤：旧梦的回声
-        difellowhuishengskill: {
-            audio: 4,
-            forced: true,
-            trigger: { player: ["damageBegin", "loseHpBegin"] },
-            filter: function (event, player) { return !event.huisheng; },
-            content: function () {
-                trigger.cancel();
-                trigger.huisheng = true;
-                if (trigger.name == "damage") {
-                    for (var i = 0; i <= game.players.length; i++) {
-                        if (game.players[i].name == "dishenzhuri") {
-                            var nature = "";
-                            if (trigger.hasNature("fire")) nature = "fire";
-                            if (trigger.hasNature("thunder")) nature = "thunder";
-                            if (trigger.hasNature("ice")) nature = "ice";
-                            if (trigger.hasNature("kami")) nature = "kami";
-                            player.line(game.players[i], nature);
-                            game.players[i].damage(trigger.num, trigger.source, nature);
-                            player.turnOver();
-                            break;
-                        }
-                    };
-                } else {
-                    for (var i = 0; i <= game.players.length; i++) {
-                        if (game.players[i].name == "dishenzhuri") {
-                            player.line(game.players[i], nature);
-                            game.players[i].loseHp(trigger.num);
-                            player.turnOver();
-                        }
-                    };
-                }
-            }
-        },
-        difellowhuishengskill2: {
-            audio: 7,
-            forced: true,
-            trigger: { player: ["damageBegin", "loseHpBegin"] },
-            filter: function (event, player) { return !event.huisheng; },
-            content: function () {
-                trigger.cancel();
-                trigger.huisheng = true;
-                if (trigger.name == "damage") {
-                    for (var i = 0; i <= game.players.length; i++) {
-                        if (game.players[i].name == "dishenzhuri") {
-                            var nature = "";
-                            if (trigger.hasNature("fire")) nature = "fire";
-                            if (trigger.hasNature("thunder")) nature = "thunder";
-                            if (trigger.hasNature("ice")) nature = "ice";
-                            if (trigger.hasNature("kami")) nature = "kami";
-                            player.line(game.players[i], nature);
-                            game.players[i].damage(trigger.num, trigger.source, nature);
-                            player.turnOver();
-                            break;
-                        }
-                    };
-                } else {
-                    for (var i = 0; i <= game.players.length; i++) {
-                        if (game.players[i].name == "dishenzhuri") {
-                            player.line(game.players[i], nature);
-                            game.players[i].loseHp(trigger.num);
-                            player.turnOver();
-                        }
-                    };
-                }
-            },
-            group: ["difellowhuishengskill2_sha"],
-            subSkill: {
-                sha: {
-                    trigger: { player: "phaseZhunbeiBegin" },
-                    direct: true,
-                    content: function () {
-                        player.chooseUseTarget("视为使用一张没有距离限制的【杀】", { name: "sha" }, false, "nodistance").logSkill = "difellowhuishengskill2_sha";
-                    },
-                    ai: {
-                        threaten: function (player, target) {
-                            return 1.6;
-                        },
-                    },
-                }
-            }
-        },
-        //程畿
-        dilijie: {
-            audio: 2,
-            trigger: {
-                global: "phaseBefore",
-                player: "enterGame",
-            },
-            filter: function (event, player) {
-                return event.name != "phase" || game.phaseNumber == 0;
-            },
-            frequent: true,
-            content: function () {
-                "step 0";
-                player.chooseTarget("选择一名其他角色称为【君】", lib.filter.notMe, true);
-                "step 1";
-                if (result.bool) {
-                    game.broadcastAll(function (t) {
-                        t.addSkill("dilijie_jun");
-                    }, result.targets[0]);
-                }
-            },
-            group: ["dilijie_change"],
-            subSkill: {
-                change: {
-                    audio: "dilijie",
-                    trigger: { global: "dieAfter" },
-                    filter: function (event, player) {
-                        return event.player.hasSkill("dilijie_jun");
-                    },
-                    frequent: true,
-                    content: function () {
-                        "step 0";
-                        player.chooseTarget("选择一名其他角色称为【君】", lib.filter.notMe, true);
-                        "step 1";
-                        if (result.bool) {
-                            game.broadcastAll(function (t) {
-                                t.addSkill("dilijie_jun");
-                            }, result.targets[0]);
-                        }
+        }
+    },
+    //神主日召唤：旧梦的回声
+    difellowhuishengskill: {
+        audio: 4,
+        forced: true,
+        trigger: { player: ["damageBegin", "loseHpBegin"] },
+        filter: function (event, player) { return !event.huisheng; },
+        content: function () {
+            trigger.cancel();
+            trigger.huisheng = true;
+            if (trigger.name == "damage") {
+                for (var i = 0; i <= game.players.length; i++) {
+                    if (game.players[i].name == "dishenzhuri") {
+                        var nature = "";
+                        if (trigger.hasNature("fire")) nature = "fire";
+                        if (trigger.hasNature("thunder")) nature = "thunder";
+                        if (trigger.hasNature("ice")) nature = "ice";
+                        if (trigger.hasNature("kami")) nature = "kami";
+                        player.line(game.players[i], nature);
+                        game.players[i].damage(trigger.num, trigger.source, nature);
+                        player.turnOver();
+                        break;
                     }
-                },
-                jun: {
-                    mark: true,
-                    marktext: "君",
-                    intro: {
-                        name: "立节",
-                        content: "你被程畿选为【君】",
-                    },
-                }
+                };
+            } else {
+                for (var i = 0; i <= game.players.length; i++) {
+                    if (game.players[i].name == "dishenzhuri") {
+                        player.line(game.players[i], nature);
+                        game.players[i].loseHp(trigger.num);
+                        player.turnOver();
+                    }
+                };
+            }
+        }
+    },
+    difellowhuishengskill2: {
+        audio: 7,
+        forced: true,
+        trigger: { player: ["damageBegin", "loseHpBegin"] },
+        filter: function (event, player) { return !event.huisheng; },
+        content: function () {
+            trigger.cancel();
+            trigger.huisheng = true;
+            if (trigger.name == "damage") {
+                for (var i = 0; i <= game.players.length; i++) {
+                    if (game.players[i].name == "dishenzhuri") {
+                        var nature = "";
+                        if (trigger.hasNature("fire")) nature = "fire";
+                        if (trigger.hasNature("thunder")) nature = "thunder";
+                        if (trigger.hasNature("ice")) nature = "ice";
+                        if (trigger.hasNature("kami")) nature = "kami";
+                        player.line(game.players[i], nature);
+                        game.players[i].damage(trigger.num, trigger.source, nature);
+                        player.turnOver();
+                        break;
+                    }
+                };
+            } else {
+                for (var i = 0; i <= game.players.length; i++) {
+                    if (game.players[i].name == "dishenzhuri") {
+                        player.line(game.players[i], nature);
+                        game.players[i].loseHp(trigger.num);
+                        player.turnOver();
+                    }
+                };
             }
         },
-        disuijun: {
-            audio: 2,
-
+        group: ["difellowhuishengskill2_sha"],
+        subSkill: {
+            sha: {
+                trigger: { player: "phaseZhunbeiBegin" },
+                direct: true,
+                content: function () {
+                    player.chooseUseTarget("视为使用一张没有距离限制的【杀】", { name: "sha" }, false, "nodistance").logSkill = "difellowhuishengskill2_sha";
+                },
+                ai: {
+                    threaten: function (player, target) {
+                        return 1.6;
+                    },
+                },
+            }
+        }
+    },
+    //程畿
+    dilijie: {
+        audio: 2,
+        trigger: {
+            global: "phaseBefore",
+            player: "enterGame",
         },
-        diliujian: {
-            audio: 2,
+        filter: function (event, player) {
+            return event.name != "phase" || game.phaseNumber == 0;
         },
-    };
+        frequent: true,
+        content: function () {
+            "step 0";
+            player.chooseTarget("选择一名其他角色称为【君】", lib.filter.notMe, true);
+            "step 1";
+            if (result.bool) {
+                game.broadcastAll(function (t) {
+                    t.addSkill("dilijie_jun");
+                }, result.targets[0]);
+            }
+        },
+        group: ["dilijie_change"],
+        subSkill: {
+            change: {
+                audio: "dilijie",
+                trigger: { global: "dieAfter" },
+                filter: function (event, player) {
+                    return event.player.hasSkill("dilijie_jun");
+                },
+                frequent: true,
+                content: function () {
+                    "step 0";
+                    player.chooseTarget("选择一名其他角色称为【君】", lib.filter.notMe, true);
+                    "step 1";
+                    if (result.bool) {
+                        game.broadcastAll(function (t) {
+                            t.addSkill("dilijie_jun");
+                        }, result.targets[0]);
+                    }
+                }
+            },
+            jun: {
+                mark: true,
+                marktext: "君",
+                intro: {
+                    name: "立节",
+                    content: "你被程畿选为【君】",
+                },
+            }
+        }
+    },
+    disuijun: {
+        audio: 2,
 
-    export default skills;
+    },
+    diliujian: {
+        audio: 2,
+    },
+};
+
+export default skills;
