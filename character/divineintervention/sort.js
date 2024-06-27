@@ -4,7 +4,7 @@ const characterSort = {
     di_bt: ["diren", "diluocha", "dihuangquan", "dirobin", "difuxuan"],
     di_yx: ["dijingmolieshou", "dijicanghai", "dibanzang",],
     di_dm: ["dikirito", "di5t5", "diyftx"],
-    di_ls: [],
+    di_ls: ["dichengji"],
     di_qt: ["dimulikong", "dizxj"],
     di_boss: ["dishenzhuri", "difellowhuisheng"],
 };

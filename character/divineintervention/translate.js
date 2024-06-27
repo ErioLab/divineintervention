@@ -250,6 +250,14 @@ const translates = {
     difellowhuishengskill_info: "锁定技，受到伤害或失去体力时，你翻面并改为由神主日承受。",
     difellowhuishengskill2: "回声",
     difellowhuishengskill2_info: "锁定技，受到伤害或失去体力时，你翻面并改为由神主日承受。准备阶段，你可视为使用一张无距离限制的【杀】。",
+    //程畿
+    dichengji: "程畿",
+    dilijie: "立节",
+    dilijie_info: "游戏开始时，你选择一名其他角色称为【君】。其死亡时，你可以更换【君】。",
+    disuijun: "随君",
+    disuijun_info: "你或【君】受到伤害时，你可以将一张手牌置于你的武将上称为【剑】，然后视为对伤害来源使用一张【杀】。若此杀造成伤害，你摸两张牌，并可再将一张手牌置入【剑】。",
+    diliujian: "留剑",
+    diliujian_info: "限定技，当你进入濒死状态时，你可以使用【剑】中的【杀】和伤害型锦囊牌，且无距离和次数限制。",
 };
 
 export default translates;

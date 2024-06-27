@@ -3923,7 +3923,7 @@ const skills = {
                 content: function () {
                     game.broadcastAll(function () {
                         game.bgMusic.loop = true;
-                        game.bgMusic.volume = 0.3;
+                        game.bgMusic.volume = 0.1;
                         game.bgMusic.src = "audio/music/dishenzhuri3.mp3";
                         game.bgMusic.play();
                     });
@@ -4360,6 +4360,64 @@ const skills = {
                 },
             }
         }
+    },
+    //程畿
+    dilijie: {
+        audio: 2,
+        trigger: {
+            global: "phaseBefore",
+            player: "enterGame",
+        },
+        filter: function (event, player) {
+            return event.name != "phase" || game.phaseNumber == 0;
+        },
+        frequent: true,
+        content: function () {
+            "step 0";
+            player.chooseTarget("选择一名其他角色称为【君】", lib.filter.notMe, true);
+            "step 1";
+            if (result.bool) {
+                game.broadcastAll(function (t) {
+                    t.addSkill("dilijie_jun");
+                }, result.targets[0]);
+            }
+        },
+        group: ["dilijie_change"],
+        subSkill: {
+            change: {
+                audio: "dilijie",
+                trigger: { global: "dieAfter" },
+                filter: function (event, player) {
+                    return event.player.hasSkill("dilijie_jun");
+                },
+                frequent: true,
+                content: function () {
+                    "step 0";
+                    player.chooseTarget("选择一名其他角色称为【君】", lib.filter.notMe, true);
+                    "step 1";
+                    if (result.bool) {
+                        game.broadcastAll(function (t) {
+                            t.addSkill("dilijie_jun");
+                        }, result.targets[0]);
+                    }
+                }
+            },
+            jun: {
+                mark: true,
+                marktext: "君",
+                intro: {
+                    name: "立节",
+                    content: "你被程畿选为【君】",
+                },
+            }
+        }
+    },
+    disuijun: {
+        audio: 2,
+
+    },
+    diliujian: {
+        audio: 2,
     },
 };
 

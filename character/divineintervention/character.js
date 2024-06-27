@@ -170,6 +170,12 @@ const Characters = {
         group: "shen",
         hp: 1,
         skills: ["difellowhuishengskill"],
+    },
+    dichengji: {
+        sex: "male",
+        group: "shu",
+        hp: 3,
+        skills:["dilijie","disuijun","diliujian"],
     }
 };
 

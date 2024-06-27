@@ -27,5 +27,6 @@ const characterTitles = {
     difuxuan: "穷观妙算",
     dishenzhuri: "齐响诗班",
     difellowhuisheng: "齐响诗班",
+    dichengji: "立节明君",
 };
 export default characterTitles;
