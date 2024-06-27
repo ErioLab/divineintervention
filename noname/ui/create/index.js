@@ -2819,7 +2819,6 @@ export class Create {
 		ui.cardPile = ui.create.div("#cardPile");
 		ui.discardPile = ui.create.div("#discardPile");
 		var observer = new MutationObserver(function (mutations) {
-			game.log("triggered observer");
 			if (!game.initCards) return;
 			var leftCards = game.initCards.filter(c => !ui.discardPile.contains(c));
 			var cardCount = {};
