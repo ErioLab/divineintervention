@@ -162,7 +162,7 @@ const Characters = {
         sex: "male",
         group: "shen",
         hp: 15,
-        skills: ["direnxing", "diyuxiang", "dihuisheng", "diyimeng", "diceshi", "ditaichu", "dizaowu"],
+        skills: ["direnxing", "diyuxiang", "dihuisheng", "diyimeng",],
         initFilters: ["noZhuHp"],
     },
     difellowhuisheng: {

@@ -4268,7 +4268,7 @@ const skills = {
                         return get.color(card) == "red" ? 1 : 0;
                     });
                     "step 1";
-                    if (true || result.bool) {
+                    if (result.bool) {
                         player.addMark("ditaichu", 1);
                         game.broadcastAll(function (name) {
                             if (lib.config.background_speak) game.playAudio("skill", name);
