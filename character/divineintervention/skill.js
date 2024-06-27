@@ -3838,12 +3838,15 @@ const skills = {
     //神主日
     direnxing: {
         forced: true,
-        trigger: { player: "phaseUseBegin" },
+        trigger: { player: "phaseBegin" },
         filter: function (event, player) {
             return player.hujia == 0;
         },
         content: function () {
-            player.changeHujia(10);
+            var num = game.countPlayer(function (current) {
+                return current.identity == "fan";
+            });
+            player.changeHujia(5 + num);
         },
         group: ["direnxing_po", "direnxing_mo"],
         subSkill: {
@@ -3857,7 +3860,7 @@ const skills = {
                     player.turnOver();
                     player.discard(player.getCards("h"));
                     game.filterPlayer(function (current) {
-                        if (current != player && current.name != "difellowhuisheng")
+                        if (current.identity == "fan")
                             current.changeHujia(2);
                     });
                 }
