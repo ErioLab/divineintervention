@@ -4019,7 +4019,6 @@ const skills = {
                 },
             },
         },
-        group: ["diyimeng_remove"],
         subSkill: {
             remove: {
                 silent: true,
@@ -4048,6 +4047,9 @@ const skills = {
                 trigger: { player: "damageBegin1" },
                 content: function () {
                     trigger.num++;
+                    game.broadcastAll(function (t) {
+                        t.removeSkill("diyimeng_shoushang");
+                    }, player);
                 }
             }
         }
@@ -4094,7 +4096,6 @@ const skills = {
                 },
             },
         },
-        group: ["diyimeng2_remove"],
         subSkill: {
             remove: {
                 silent: true,
@@ -4123,6 +4124,9 @@ const skills = {
                 trigger: { player: "damageBegin1" },
                 content: function () {
                     trigger.num++;
+                    game.broadcastAll(function (t) {
+                        t.removeSkill("diyimeng2_shoushang");
+                    }, player);
                 },
                 mod: {
                     maxHandcardBase: function (player, num) {
