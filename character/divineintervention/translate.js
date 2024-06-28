@@ -260,6 +260,7 @@ const translates = {
     diliujian_info: "限定技，当你进入濒死状态时，你可以使用【剑】中的【杀】和伤害型锦囊牌，且无距离和次数限制。",
     //谋徐盛
     dimou_xusheng: "谋徐盛",
+    dimou_xusheng_prefix: "谋",
     diyicheng: "疑城",
     diyicheng_info: "游戏开始时，你获得4个【城】。每回合限一次，当你成为非装备牌的唯一目标后，你可摸两张牌并弃置至多四张牌，然后获得与弃置牌数量相同的【城】。",
     dipojun: "破军",
