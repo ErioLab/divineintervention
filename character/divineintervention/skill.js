@@ -4451,6 +4451,195 @@ const skills = {
     diliujian: {
         audio: 2,
     },
+    //谋徐盛
+    diyicheng: {
+        audio: 3,
+        mark: true,
+        marktext: "城",
+        intro: {
+            name: "疑城",
+            content: function (storage, player) {
+                return "你拥有" + get.cnNumber(player.countMark("diyicheng")) + "座疑城";
+            }
+        },
+        trigger: {
+            global: "phaseBefore",
+            player: "enterGame",
+        },
+        filter: function (event, player) {
+            return event.name != "phase" || game.phaseNumber == 0;
+        },
+        forced: true,
+        content: function () {
+            player.addMark("diyicheng", 4);
+        },
+        group: ["diyicheng_target"],
+        subSkill: {
+            target: {
+                audio: "diyicheng",
+                usable: 1,
+                trigger: { target: "useCardToTargeted" },
+                filter: function (event, player) {
+                    return get.type(event.card) != "equip" && event.targets.length == 1;
+                },
+                prompt2: "每回合限一次，当你成为非装备牌的唯一目标后，你可摸两张牌并弃置至多四张牌，然后获得与弃置牌数量相同的【城】。",
+                content: function () {
+                    "step 0";
+                    player.draw(2);
+                    "step 1";
+                    player.chooseToDiscard("he", [0, 4], "弃置至多" + get.cnNumber(Math.min(4, player.countCards("he"))) + "张牌", "然后获得等量的【城】");
+                    "step 2";
+                    if (result.bool) {
+                        player.addMark("diyicheng", result.cards.length);
+                    }
+                }
+            }
+        }
+    },
+    dipojun: {
+        audio: "repojun",
+        shaRelated: true,
+        trigger: { player: "useCardToPlayered" },
+        direct: true,
+        filter: function (event, player) {
+            return event.card.name == "sha" && player.countMark("diyicheng") > 0;
+        },
+        content: function () {
+            "step 0";
+            var list = [];
+            if (trigger.target.countCards("he") > 0) {
+                list.push(
+                    "弃1城：盖其"
+                    + get.cnNumber(
+                        Math.min(
+                            trigger.target.countCards("he"),
+                            trigger.target.hp
+                        )
+                    )
+                    + "张牌"
+                );
+                if (trigger.target.hp < trigger.target.countCards("he")) {
+                    list.push(
+                        "弃2城：盖其"
+                        + get.cnNumber(
+                            trigger.target.countCards("he")
+                        )
+                        + "张牌"
+                    );
+                }
+            }
+            if (player.countCards("e") >= trigger.target.countCards("e")) {
+                list.push(
+                    "弃2城：伤害加"
+                    + (
+                        player.countCards("e") - trigger.target.countCards("e") + 1
+                    ).toString()
+                );
+            }
+            list.push("弃2城：本杀不计入次数");
+            var next = player.chooseButton(
+                ["破军：你拥有" + get.cnNumber(player.countMark("diyicheng")) + "座疑城", [list, "tdnodes"]],
+            );
+            next.set("selectButton", [1, 4]);
+            next.set("filterButton", function (button) {
+                var cheng = 0;
+                ui.selected.buttons.forEach(function (b) {
+                    if (b.link[1] == "1") cheng += 1;
+                    if (b.link[1] == "2") cheng += 2;
+                    if (b.link[1] == "3") cheng += 3;
+                });
+                var thischeng = 0;
+                if (button.link[1] == "1") thischeng += 1;
+                if (button.link[1] == "2") thischeng += 2;
+                if (button.link[1] == "3") thischeng += 3;
+                if (cheng + thischeng > _status.event.yichengnum) return false;
+                return true;
+            });
+            next.set("yichengnum", player.countMark("diyicheng"));
+            "step 1";
+            if (!result.bool) event.finish();
+            player.logSkill("dipojun", trigger.target);
+            game.log(player, "选择了", result.links);
+            var gaipainum = 0;
+            var cheng = 0;
+            for (var i = 0; i < result.links.length; i++) {
+                if (result.links[i][1] == "1") cheng += 1;
+                if (result.links[i][1] == "2") cheng += 2;
+                if (result.links[i][1] == "3") cheng += 3;
+                if (result.links[i].slice(0, 5) == "弃2城：伤")
+                    trigger.card.dipojun = true;
+                if (result.links[i].slice(0, 5) == "弃2城：本")
+                    player.getStat().card.sha--;
+                if (result.links[i].slice(0, 5) == "弃1城：盖")
+                    gaipainum = Math.min(
+                        trigger.target.countCards("he"),
+                        trigger.target.hp
+                    );
+                if (result.links[i].slice(0, 5) == "弃2城：盖")
+                    gaipainum = trigger.target.countCards("he");
+            }
+            player.removeMark("diyicheng", cheng);
+            event.gaipainum = gaipainum;
+            "step 2";
+            if (event.gaipainum > 0) {
+                var next = player.choosePlayerCard(
+                    trigger.target,
+                    "he",
+                    [1, event.gaipainum],
+                    "破军：将至多" + get.cnNumber(event.gaipainum) + "张牌置于其武将牌上"
+                );
+                next.set("forceAuto", true);
+            } else {
+                event.finish();
+            }
+            "step 3";
+            if (result.bool) {
+                var target = trigger.target;
+                player.logSkill("dipojun", target);
+                target.addSkill("dipojun2");
+                target.addToExpansion("giveAuto", result.cards, target).gaintag.add("dipojun2");
+            }
+        },
+        global: ["dipojun_shanghai"],
+        subSkill: {
+            shanghai: {
+                trigger: { source: "damageBegin1" },
+                filter: function (event, player) {
+                    var target = event.player;
+                    return event.card && event.card.name == "sha" && event.card.dipojun && player.countCards("e") >= target.countCards("e");
+                },
+                forced: true,
+                content: function () {
+                    trigger.num += player.countCards("e") - trigger.player.countCards("e") + 1;
+                },
+            }
+        }
+    },
+    dipojun2: {
+        trigger: { global: "phaseEnd" },
+        forced: true,
+        popup: false,
+        charlotte: true,
+        filter: function (event, player) {
+            return player.getExpansions("dipojun2").length > 0;
+        },
+        content: function () {
+            "step 0";
+            var cards = player.getExpansions("dipojun2");
+            player.gain(cards, "draw");
+            game.log(player, "收回了" + get.cnNumber(cards.length) + "张“破军”牌");
+            "step 1";
+            player.removeSkill("dipojun2");
+        },
+        intro: {
+            markcount: "expansion",
+            mark: function (dialog, storage, player) {
+                var cards = player.getExpansions("dipojun2");
+                if (player.isUnderControl(true)) dialog.addAuto(cards);
+                else return "共有" + get.cnNumber(cards.length) + "张牌";
+            },
+        },
+    },
 };
 
 export default skills;

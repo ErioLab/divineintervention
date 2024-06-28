@@ -6,7 +6,7 @@ const characterReplaces = {
 	xushu: ["xin_xushu", "xushu"],
 	fazheng: ["xin_fazheng", "re_fazheng", "sb_fazheng", "tw_re_fazheng", "fazheng"],
 	masu: ["xin_masu", "re_masu", "masu"],
-	xusheng: ["xusheng", "xin_xusheng", "re_xusheng", "old_xusheng"],
+	xusheng: ["xusheng", "xin_xusheng", "re_xusheng", "old_xusheng", "dimou_xusheng"],
 	wuguotai: ["wuguotai", "xin_wuguotai", "re_wuguotai"],
 	lingtong: ["lingtong", "xin_lingtong", "ol_lingtong", "re_lingtong", "old_lingtong"],
 	gaoshun: ["gaoshun", "xin_gaoshun", "ol_gaoshun", "re_gaoshun", "sb_gaoshun", "old_gaoshun"],

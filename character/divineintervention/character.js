@@ -176,6 +176,12 @@ const Characters = {
         group: "shu",
         hp: 3,
         skills: ["dilijie", "disuijun", "diliujian"],
+    },
+    dimou_xusheng: {
+        sex: "male",
+        group: "wu",
+        hp: 4,
+        skills: ["diyicheng", "dipojun"]
     }
 };
 
