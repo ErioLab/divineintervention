@@ -4557,29 +4557,33 @@ const skills = {
             });
             next.set("yichengnum", player.countMark("diyicheng"));
             "step 1";
-            if (!result.bool) event.finish();
-            player.logSkill("dipojun", trigger.target);
-            game.log(player, "选择了", result.links);
-            var gaipainum = 0;
-            var cheng = 0;
-            for (var i = 0; i < result.links.length; i++) {
-                if (result.links[i][1] == "1") cheng += 1;
-                if (result.links[i][1] == "2") cheng += 2;
-                if (result.links[i][1] == "3") cheng += 3;
-                if (result.links[i].slice(0, 5) == "弃2城：伤")
-                    trigger.card.dipojun = true;
-                if (result.links[i].slice(0, 5) == "弃2城：本")
-                    player.getStat().card.sha--;
-                if (result.links[i].slice(0, 5) == "弃1城：盖")
-                    gaipainum = Math.min(
-                        trigger.target.countCards("he"),
-                        trigger.target.hp
-                    );
-                if (result.links[i].slice(0, 5) == "弃2城：盖")
-                    gaipainum = trigger.target.countCards("he");
+            if (result.bool && result.links && result.links.length > 0) {
+                player.logSkill("dipojun", trigger.target);
+                game.log(player, "选择了", result.links);
+                var gaipainum = 0;
+                var cheng = 0;
+                for (var i = 0; i < result.links.length; i++) {
+                    if (result.links[i][1] == "1") cheng += 1;
+                    if (result.links[i][1] == "2") cheng += 2;
+                    if (result.links[i][1] == "3") cheng += 3;
+                    if (result.links[i].slice(0, 5) == "弃2城：伤")
+                        trigger.card.dipojun = true;
+                    if (result.links[i].slice(0, 5) == "弃2城：本")
+                        player.getStat().card.sha--;
+                    if (result.links[i].slice(0, 5) == "弃1城：盖")
+                        gaipainum = Math.min(
+                            trigger.target.countCards("he"),
+                            trigger.target.hp
+                        );
+                    if (result.links[i].slice(0, 5) == "弃2城：盖")
+                        gaipainum = trigger.target.countCards("he");
+                }
+                player.removeMark("diyicheng", cheng);
+                event.gaipainum = gaipainum;
             }
-            player.removeMark("diyicheng", cheng);
-            event.gaipainum = gaipainum;
+            else {
+                event.finish();
+            }
             "step 2";
             if (event.gaipainum > 0) {
                 var next = player.choosePlayerCard(
