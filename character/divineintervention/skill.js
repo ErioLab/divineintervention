@@ -4471,23 +4471,22 @@ const skills = {
         },
         forced: true,
         content: function () {
-            player.addMark("diyicheng", 4);
+            player.addMark("diyicheng", 2);
         },
         group: ["diyicheng_target"],
         subSkill: {
             target: {
                 audio: "diyicheng",
-                usable: 1,
+                frequent: true,
                 trigger: { target: "useCardToTargeted" },
                 filter: function (event, player) {
                     return get.type(event.card) != "equip" && event.targets.length == 1;
                 },
-                prompt2: "每回合限一次，当你成为非装备牌的唯一目标后，你可摸两张牌并弃置至多四张牌，然后获得与弃置牌数量相同的【城】。",
                 content: function () {
                     "step 0";
-                    player.draw(2);
+                    player.draw(1);
                     "step 1";
-                    player.chooseToDiscard("he", [0, 4], "弃置至多" + get.cnNumber(Math.min(4, player.countCards("he"))) + "张牌", "然后获得等量的【城】");
+                    player.chooseToDiscard("he", [0, 2], "弃置至多" + get.cnNumber(Math.min(2, player.countCards("he"))) + "张牌", "然后获得等量的【城】");
                     "step 2";
                     if (result.bool) {
                         player.addMark("diyicheng", result.cards.length);
@@ -4530,10 +4529,7 @@ const skills = {
             }
             if (player.countCards("e") >= trigger.target.countCards("e")) {
                 list.push(
-                    "弃2城：伤害加"
-                    + (
-                        player.countCards("e") - trigger.target.countCards("e") + 1
-                    ).toString()
+                    "弃2城：伤害加1"
                 );
             }
             list.push("弃2城：本杀不计入次数");
@@ -4610,11 +4606,11 @@ const skills = {
                 trigger: { source: "damageBegin1" },
                 filter: function (event, player) {
                     var target = event.player;
-                    return event.card && event.card.name == "sha" && event.card.dipojun && player.countCards("e") >= target.countCards("e");
+                    return event.card && event.card.name == "sha" && event.card.dipojun;
                 },
                 forced: true,
                 content: function () {
-                    trigger.num += player.countCards("e") - trigger.player.countCards("e") + 1;
+                    trigger.num++;
                 },
             }
         }
