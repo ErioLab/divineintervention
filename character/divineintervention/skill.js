@@ -3417,7 +3417,7 @@ const skills = {
     },
     //宗小静
     dimoxie: {
-        usable: 4,
+        usable: 1,
         enable: "phaseUse",
         filter: function (event, player) {
             return player.countCards("h") > 0;
@@ -3593,7 +3593,7 @@ const skills = {
                             correctPlayers.push(item[0]);
                         }
                         else if (item[1] == "random") {
-                            var dui = Math.random() < 0.7;
+                            var dui = Math.random() < 0.6;
                             if (dui) {
                                 index = 0;
                                 correctPlayers.push(item[0]);
@@ -3632,7 +3632,6 @@ const skills = {
                 event.correctPlayers[0].draw(2);
             }
             var punishPlayers = event.wrongPlayers;
-            punishPlayers.addArray(event.answerPlayers.slice(-1));
             punishPlayers.forEach(function (target) {
                 player.line(target, "fire");
                 target.addMark("dimoxie_buji", 1);
@@ -3657,16 +3656,16 @@ const skills = {
         group: ["dimoxie_fa"],
         subSkill: {
             buji: {
-                mark: true,
+                onremove: true,
                 marktext: "寄",
                 intro: {
                     name: "不及",
-                    content: "你已#次不及",
+                    content: "你已不及#次",
                 },
             },
             fa: {
-                forced: true,
                 trigger: { player: "phaseUseEnd" },
+                prompt2: "出牌阶段结束时，你可弃置所有角色的【不及】，并根据每名角色弃置的数量：1.其弃置一张牌，2.其失去一点体力，3.其翻面，4.其死亡。",
                 filter: function (event, player) {
                     return game.countPlayer(function (current) {
                         return current.countMark("dimoxie_buji") > 0;
@@ -3679,15 +3678,13 @@ const skills = {
                             var num = current.countMark("dimoxie_buji");
                             current.removeMark("dimoxie_buji", num);
                             if (num == 4) {
-                                current.turnOver();
-                                player.turnOver();
+                                current.die();
                             } else if (num == 3) {
-                                player.loseHp();
-                                current.chooseToDiscard("he", 3, true);
+                                current.turnOver();
                             } else if (num == 2) {
                                 current.loseHp();
                             } else if (num == 1) {
-                                current.chooseToDiscard("he", true);
+                                current.chooseToDiscard("he", 2, true);
                             }
                         }
                     });
