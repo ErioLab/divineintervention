@@ -4785,7 +4785,7 @@ const skills = {
             "step 0";
             player.chooseControl(["流失体力", "减少体力上限"])
                 .set("prompt", get.prompt("didieying"))
-                .set("prompt2", "出牌阶段限一次，你可以流失一点体力或减少一点体力上限，选择四项中的两项按选择顺序执行：<br>1. 视为对相邻的三名角色使用火【杀】（无距离限制）；<br>2.视为对至多X名角色使用【决斗】（X为你的体力上限）；<br>3. 失去一点体力；<br>4. 恢复一点体力。");
+                .set("prompt2", "出牌阶段限一次，你可以流失一点体力或减少一点体力上限，选择四项中的两项按选择顺序执行：<br>1. 视为对相邻的三名角色使用火【杀】（无距离限制）；<br>2.视为对至多X名角色使用【决斗】（X为你的体力值）；<br>3. 失去一点体力；<br>4. 恢复一点体力。");
             "step 1";
             if (result.control == "流失体力") {
                 player.loseHp();
@@ -4793,7 +4793,7 @@ const skills = {
                 player.loseMaxHp();
             }
             "step 2";
-            var list = ["1. 视为对相邻的三名角色使用火【杀】（无距离限制）", "2.视为对至多X名角色使用【决斗】（X为你的体力上限）", "3.失去一点体力", "4.恢复一点体力"];
+            var list = ["1. 视为对相邻的三名角色使用火【杀】（无距离限制）", "2.视为对至多X名角色使用【决斗】（X为你的体力值）", "3.失去一点体力", "4.恢复一点体力"];
             var next = player.chooseButton(
                 ["选择四项中的两项按选择顺序执行：", [list, "textbutton"]],
             );
@@ -4805,7 +4805,7 @@ const skills = {
                     if (result.links[i][0] == "1") {
                         player.chooseUseTarget({ name: "sha", nature: "fire", dieying: true }, "选择相邻三名角色的中间角色", "视为对相邻的三名角色使用火【杀】（无距离限制）", "nodistance");
                     } else if (result.links[i][0] == "2") {
-                        player.chooseUseTarget({ name: "juedou" }, [1, player.maxHp], "选择至多" + get.cnNumber(player.maxHp) + "名角色", "视为对其使用【决斗】");
+                        player.chooseUseTarget({ name: "juedou" }, [1, player.hp], "选择至多" + get.cnNumber(player.hp) + "名角色", "视为对其使用【决斗】");
                     } else if (result.links[i][0] == "3") {
                         player.loseHp();
                     } else if (result.links[i][0] == "4") {
