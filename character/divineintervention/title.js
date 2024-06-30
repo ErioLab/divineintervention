@@ -29,6 +29,7 @@ const characterTitles = {
     difellowhuisheng: "齐响诗班",
     dichengji: "立节明君",
     dimou_xusheng: "江东铁壁",
-    dihutao:"雪霁梅香",
+    dihutao: "雪霁梅香",
+    diyike: "沙海过客",
 };
 export default characterTitles;

@@ -190,6 +190,12 @@ const Characters = {
         maxHp: 6,
         skills: ["diwangsheng", "dihumo", "didieying"]
     },
+    diyike: {
+        sex: "male",
+        group: "shen",
+        hp: 3,
+        skills: ["ditianlei", "dishenqi", "dishenfa"]
+    },
 };
 
 export default Characters;

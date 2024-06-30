@@ -368,7 +368,7 @@ const skills = {
         audio: 2,
         direct: true,
         trigger: {
-            source: "damageBegin1",
+            source: "damageBegin2",
         },
         filter: function (event, player) {
             if (event.name == "damage") {
@@ -1487,7 +1487,7 @@ const skills = {
     //桃金娘
     dijunli: {
         audio: 2,
-        trigger: { player: "damageBegin" },
+        trigger: { player: "damageBegin4" },
         filter: function (event, player) {
             return !player.isTurnedOver();
         },
@@ -4642,7 +4642,7 @@ const skills = {
             if (player.countCards("e") >= trigger.target.countCards("e")) {
                 list.push(
                     "弃2城：伤害加1"
-                );
+                ); shandian
             }
             list.push("弃2城：本杀不计入次数");
             var next = player.chooseButton(
@@ -4829,6 +4829,152 @@ const skills = {
                     player.line(trigger.targets[1], "fire");
                     player.line(trigger.targets[2], "fire");
                 }
+            }
+        }
+    },
+    //异客
+    ditianlei: {
+        audio: 2,
+        group: ["ditianlei_viewas", "ditianlei_use", "ditianlei_tran"],
+        subSkill: {
+            viewas: {
+                mod: {
+                    cardname(card, player) {
+                        if (player.countCards("j") == 0 && ["trick", "delay"].includes(lib.card[card.name].type)) return "shandian";
+                    },
+                }
+            },
+            use: {
+                audio: "ditianlei",
+                trigger: { player: "useCard2" },
+                forced: true,
+                filter: function (event, player) {
+                    return event.card.name == "shandian";
+                },
+                content: function () {
+                    "step 0";
+                    player.chooseTarget(
+                        "选择一名角色对其使用【闪电】",
+                        function (card, player, target) {
+                            return lib.filter.judge(_status.event.cardx, player, target);
+                        }
+                    ).set("cardx", trigger.card);
+                    "step 1";
+                    if (result.bool) {
+                        trigger.targets = result.targets;
+                        player.line(result.targets, "thunder");
+                    }
+                }
+            },
+            tran: {
+                audio: "ditianlei",
+                direct: true,
+                trigger: { player: "damageBegin3" },
+                filter: function (event, player) {
+                    return event.nature == "thunder" && player.countCards("h") >= event.num;
+                },
+                content: function () {
+                    "step 0";
+                    player.chooseCardTarget({
+                        position: "h",
+                        selectCard: [trigger.num, trigger.num],
+                        prompt: "弃置" + get.cnNumber(trigger.num) + "张手牌转移伤害给一名其他角色",
+                        selectTarget: 1,
+                        filterTarget: lib.filter.notMe,
+                    });
+                    "step 1";
+                    if (result.bool) {
+                        player.logSkill("ditianlei_tran", result.targets);
+                        player.discard(result.cards);
+                        player.line(result.targets, "thunder");
+                        trigger.player = result.targets[0];
+                    }
+                }
+            }
+        }
+    },
+    dishenqi: {
+        audio: 2,
+        enable: "phaseUse",
+        usable: 1,
+        filter: function (event, player) {
+            return game.countPlayer(function (current) {
+                return current.countCards("j") > 0;
+            }) > 0;
+        },
+        content: function () {
+            "step 0";
+            event.cnt = 0;
+            game.filterPlayer(function (current) {
+                if (current.countCards("j") > 0) {
+                    event.cnt++;
+                    current.draw();
+                }
+            });
+            "step 1";
+            player.chooseTarget(
+                "选择" + get.cnNumber(event.cnt) + "名角色弃置其一张牌",
+                "可以弃置判定区的牌",
+                function (card, player, target) {
+                    return target.countCards("hej") > 0;
+                },
+                [1, event.cnt],
+            );
+            "step 2";
+            if (result.bool) {
+                result.targets.forEach(function (target) {
+                    player.discardPlayerCard(target, "hej", true);
+                });
+            }
+        }
+    },
+    dishenfa: {
+        audio: 2,
+        enable: "phaseUse",
+        limited: true,
+        skillAnimation: true,
+        animationColor: "thunder",
+        content: function () {
+            "step 0";
+            player.awakenSkill("dishenfa");
+            player.chooseTarget(
+                "选择一名角色",
+                "从其开始依次进行【闪电】判定直至生效",
+            );
+            "step 1";
+            if (!result.bool)
+                event.finish();
+            else {
+                event.target = result.targets[0];
+            }
+            "step 2";
+            player.line(event.target, "thunder");
+            event.target.judge(function (card) {
+                return get.suit(card) == "spade"
+                    && get.number(card) >= 2
+                    && get.number(card) <= 9;
+            });
+            "step 3";
+            if (!result.bool) {
+                event.target = event.target.next;
+                event.goto(2);
+            } else {
+                if (event.target.countCards("j") > 0) {
+                    event.target.chooseControl(["确认", "cancel2"])
+                        .set("prompt", "是否防止此伤害并使异客重置【神罚】？");
+                } else {
+                    event.target.damage("thunder", 3, "nosource");
+                    event.finish();
+                }
+            }
+            "step 4";
+            if (result.control == "cancel2") {
+                event.target.damage("thunder", 3, "nosource");
+            } else {
+                game.broadcastAll(function (p) {
+                    p.restoreSkill("dishenfa");
+                }, player);
+                event.target.line(player, "thunder");
             }
         }
     },
