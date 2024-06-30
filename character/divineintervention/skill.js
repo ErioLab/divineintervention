@@ -4498,10 +4498,70 @@ const skills = {
     },
     disuijun: {
         audio: 2,
-
+        trigger: { global: "damageEnd" },
+        direct: true,
+        lastDo: true,
+        filter: function (event, player) {
+            if (player.countCards("h") == 0) return false;
+            return event.player == player || event.player.hasSkill("dilijie_jun");
+        },
+        content: function () {
+            "step 0";
+            player.chooseCard("将一张手牌置于你的武将上称为【剑】", "h");
+            "step 1";
+            if (result.bool && result.cards && result.cards.length) {
+                player.logSkill("disuijun");
+                player.addToExpansion(result.cards, player, "give").gaintag.add("diliujian");
+            } else {
+                event.finish();
+            }
+            "step 2";
+            if (player.canUse({ name: "sha" }, trigger.source))
+                player.useCard({ name: "sha", suijun: true }, trigger.source, "disuijun");
+        },
+        group: ["disuijun_sha"],
+        subSkill: {
+            sha: {
+                frequent: true,
+                trigger: { source: "damageEnd" },
+                filter: function (event, player) {
+                    return event.card && event.card.suijun;
+                },
+                content: function () {
+                    "step 0";
+                    player.draw(2);
+                    "step 1";
+                    player.chooseCard("将一张手牌置于你的武将上称为【剑】", "h");
+                    "step 2";
+                    if (result.bool && result.cards && result.cards.length) {
+                        player.addToExpansion(result.cards, player, "give").gaintag.add("diliujian");
+                    }
+                }
+            }
+        }
     },
     diliujian: {
         audio: 2,
+        marktext: "剑",
+        intro: {
+            markcount: "expansion",
+            content: "expansion",
+        },
+        limited: true,
+        skillAnimation: "epic",
+        animationColor: "thunder",
+        trigger: { player: "dying" },
+        filter: function (event, player) {
+            return player.getExpansions("diliujian").length > 0;
+        },
+        content: function () {
+            "step 0";
+            var cards = player.getExpansions("diliujian");
+            cards.forEach(function (card) {
+                if (card.name == "sha" || (get.type(card) == "trick" && get.tag(card, "damage") > 0))
+                    player.chooseUseTarget(card, "是否使用" + get.translation(card), "你可依次使用【剑】中的【杀】和伤害性锦囊牌，且无距离和次数限制。", false, "nodistance");
+            });
+        }
     },
     //谋徐盛
     diyicheng: {
