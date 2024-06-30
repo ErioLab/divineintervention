@@ -1,4 +1,13 @@
 export default {
+    "#diganyu:die": "契约、尚未完成……",
+    "#dishuanghua1": "风雪的缩影。",
+    "#dishuanghua2": "如琉璃般飘落。",
+    "#dishuanghua3": "这项工作，该划掉了。",
+    "#dishuanghua4": "为了岩王帝君。",
+    "#dilinji1": "禁止接触。",
+    "#dilinji2": "闲人勿扰。",
+    "#dilinji3": "霜寒化生。",
+
     "#dichengji:die": "主公，快走……",
     "#dilijie1": "效力太守，未曾有丝毫叛离之心。",
     "#dilijie2": "江阳刚烈，立节明君。",

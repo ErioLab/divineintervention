@@ -30,23 +30,8 @@ const skills = {
         }
     },
     //甘雨
-    dishuanghua_bingsha: {
-        locked: true,
-        mod: {
-            cardnature: function (card, player) {
-                if (card.name == "sha" && get.color(card) == "black") return "ice";
-            },
-        }
-    },
-    dishuanghua_gongji: {
-        mod: {
-            attackFrom: function (from, to, distance) {
-                return distance - 2;
-            },
-        },
-    },
     dishuanghua: {
-        audio: 3,
+        audio: 4,
         trigger: {
             source: "damageBegin2",
         },
@@ -54,35 +39,85 @@ const skills = {
             return event.card && event.card.name == "sha" && event.card.nature == "ice" && event.player != player && event.player.isIn() && player.countCards("h");
         },
         direct: true,
-        check: function (event, player) {
-            var att1 = get.attitude(player, trigger.player.previous);
-            var att2 = get.attitude(player, trigger.player.next);
-            return (att1 * att2 < 0);
-        },
         content: function () {
             "step 0"
-            player.chooseToDiscard("h", get.prompt2("dishuanghua")).set("ai", function (card) {
-                return 7 - get.value(card);
-            }).logSkill = "shuanghua";
+            player.chooseToDiscard("h")
+                .set("prompt", get.prompt("dishuanghua"))
+                .set("prompt2", "你使用冰【杀】即将造成伤害时，可弃置一张手牌对目标上下家角色各造成一点伤害。")
+                .set("ai", function (card) {
+                    var player = _status.event.player;
+                    var ef1 = get.damageEffect(trigger.player.previous, player, player);
+                    var ef2 = get.damageEffect(trigger.player.next, player, player);
+                    if (ef1 > 0 && ef2 > 0)
+                        return 6 - get.value(card);
+                    return 0;
+                });
             "step 1"
             if (result.bool) {
-                var p = player.next;
-                while (p != player) {
-                    if (get.distance(trigger.player, p) <= 1 && trigger.player != p) {
-                        p.damage();
-                        player.line(p)
-                    }
-                    p = p.next;
-                }
+                var targets = [trigger.player.previous, trigger.player.next];
+                player.logSkill("dishuanghua", targets);
+                player.line(targets, "ice");
+                targets.forEach(function (target) {
+                    target.damage();
+                });
             }
         },
-        group: ["dishuanghua_bingsha", "dishuanghua_gongji"],
+        group: ["dishuanghua_icesha", "dishuanghua_range"],
+        subSkill: {
+            icesha: {
+                mod: {
+                    cardnature: function (card, player) {
+                        if (card.name == "sha" && get.color(card) == "black") return "ice";
+                    },
+                }
+            },
+            range: {
+                mod: {
+                    attackFrom: function (from, to, distance) {
+                        return distance - 2;
+                    },
+                },
+            }
+        }
     },
     dilinji: {
-        mod: {
-            globalTo: function (from, to, distance) {
-                if (to.countCards("h") == 0) return distance + 1;
+        audio: 3,
+        forced: true,
+        mark: true,
+        marktext: "麟",
+        init: function (player) {
+            player.storage.dilinji = 0;
+        },
+        intro: {
+            name: "麟迹",
+            content: "你至其他角色的距离+#",
+        },
+        trigger: { player: ["respond", "useCard"] },
+        filter: function (event, player) {
+            return event.card && event.card.name == "shan";
+        },
+        content: function () {
+            player.addMark("dilinji");
+            player.updateMarks();
+        },
+        group: ["dilinji_reset", "dilinji_distance"],
+        subSkill: {
+            reset: {
+                forced: true,
+                silent: true,
+                trigger: { global: "roundStart" },
+                content: function () {
+                    player.removeMark("dilinji", player.countMark("dilinji"));
+                    player.updateMarks();
+                }
             },
+            distance: {
+                mod: {
+                    globalTo: function (from, to, distance) {
+                        return distance + to.countMark("dilinji");
+                    },
+                },
+            }
         },
     },
     //重岳
@@ -1427,7 +1462,7 @@ const skills = {
     },
     //界甘雨
     dijie_shuanghua: {
-        audio: 4,
+        audio: "dishuanghua",
         marktext: "矢",
         intro: {
             name: "霜华矢",
@@ -1552,7 +1587,7 @@ const skills = {
         }
     },
     dijie_linji: {
-        audio: 3,
+        audio: "dilinji",
         trigger: { player: ["respond", "useCard"] },
         direct: true,
         filter: function (event, player) {
