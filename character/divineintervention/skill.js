@@ -3098,108 +3098,72 @@ const skills = {
     },
     //一方通行
     dishiliang: {
-        audio: 3,
-        usable: 1,
+        audio: 2,
+        frequent: true,
         trigger: { global: "useCardToTargeted" },
         filter: function (event, player) {
-            return event.player != player && !event.targets.includes(event.player) && player.maxHp > 2;
+            return event.player != player && event.targets.length == 1 && event.targets.includes(player);
         },
         content: function () {
+            var calculate = function (nums) {
+                if (nums.length === 0) return false;
+                if (nums.length === 1) return Math.abs(nums[0] - 24) < 1e-6;
+                for (let i = 0; i < nums.length; i++) {
+                    for (let j = 0; j < nums.length; j++) {
+                        if (i !== j) {
+                            let nums2 = [];
+                            for (let k = 0; k < nums.length; k++) {
+                                if (k !== i && k !== j) nums2.push(nums[k]);
+                            }
+                            for (let k = 0; k < 4; k++) {
+                                if (k < 2 && j > i) continue;
+                                if (k === 0) nums2.push(nums[i] + nums[j]);
+                                if (k === 1) nums2.push(nums[i] * nums[j]);
+                                if (k === 2) nums2.push(nums[i] - nums[j]);
+                                if (k === 3) {
+                                    if (nums[j] !== 0) {
+                                        nums2.push(nums[i] / nums[j]);
+                                    } else {
+                                        continue;
+                                    }
+                                }
+                                if (calculate(nums2)) return true;
+                                nums2.pop();
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
             "step 0";
-            player.chooseTarget(
-                "取消" + get.translation(trigger.card) + "的任意个目标",
-                [1, Math.min(trigger.targets.length, player.maxHp - 2)],
-                function (card, player, target) {
-                    return _status.event.sourcex.includes(target);
-                }
-            ).set("sourcex", trigger.targets);
+            if (player.countCards("h") < 4)
+                player.draw(4 - player.countCards("h"));
             "step 1";
-            if (result.bool) {
-                event.targets = result.targets;
-                player.loseMaxHp(result.targets.length + 1);
-                trigger.targets.removeArray(result.targets);
-                trigger.getParent().triggeredTargets2.removeArray(result.targets);
-            } else {
-                event.finish();
-            }
+            player.chooseToDiscard(
+                get.prompt2("dishiliang"),
+                "h",
+                [1, player.countCards("h")],
+            );
             "step 2";
-            event.num = event.targets.length;
-            event.correct = event.targets.length;
-            "step 3"
-            game.check();
-            game.pause();
-            fetch('./character/divineintervention/dic.json').then(function (response) {
-                return response.json();
-            }).then(function (data) {
-                event.dic = JSON.parse(JSON.stringify(data, null, 2));
-                game.resume();
-            });
-            "step 4";
-            if (event.num > 0) {
-                const choice = Math.floor(Math.random() * 2);
-                const selectedEntry = event.dic.dic[Math.floor(Math.random() * event.dic.dic.length)];
-                const selectedWord = selectedEntry.word;
-                const selectedPre = selectedEntry.pre;
-                if (choice === 1) {
-                    const randomPres = [];
-                    while (randomPres.length < 3) {
-                        const randomPre = event.dic.dic[Math.floor(Math.random() * event.dic.dic.length)].pre;
-                        if (!randomPres.includes(randomPre)) {
-                            randomPres.push(randomPre);
-                        }
-                    }
-                    const insertAt = Math.floor(Math.random() * (randomPres.length + 1));
-                    randomPres.splice(insertAt, 0, selectedPre);
-                    event.ans = insertAt;
-                    player.chooseControl(randomPres).set("prompt", selectedWord);
-                } else {
-                    const randomWords = [];
-                    while (randomWords.length < 3) {
-                        const randomWord = event.dic.dic[Math.floor(Math.random() * event.dic.dic.length)].word;
-                        if (!randomWords.includes(randomWord)) {
-                            randomWords.push(randomWord);
-                        }
-                    }
-                    const insertAt = Math.floor(Math.random() * (randomWords.length + 1));
-                    randomWords.splice(insertAt, 0, selectedWord);
-                    event.ans = insertAt;
-                    player.chooseControl(randomWords).set("prompt", selectedPre);
+            if (result.bool) {
+                var nums = [];
+                for (var i = 0; i < result.cards.length; i++) {
+                    nums.push(get.number(result.cards[i]));
+                }
+                if (calculate(nums)) {
+                    trigger.targets.remove(player);
+                    trigger.getParent().triggeredTargets2.remove(player);
+                    player.chooseControl(["确认", "cancel2"])
+                        .set("prompt", "是否失去一点体力上限并反向处理" + get.translation(trigger.player) + "的" + get.translation(trigger.card) + "？");
                 }
             } else {
-                event.goto(6);
-            }
-            "step 5";
-            event.num--;
-            if (result.index == event.ans) {
-                player.popup("请坐");
-            } else {
-                player.popup("Again?");
-                event.correct--;
-            }
-            event.goto(4);
-            "step 6";
-            event.udn1 = event.correct;
-            if (event.udn1 <= 0) event.finish();
-            "step 7";
-            player.gainMaxHp(event.udn1);
-            player.chooseTarget("从取消的目标中选择" + event.udn1 + "名角色视为反向处理对其使用的牌（无视限制且无对应实体牌）", [1, event.udn1], function (card, player, target) {
-                return _status.event.targetsx.includes(target);
-            }).set("targetsx", event.targets);
-            "step 8";
-            if (result.bool) {
-                event.udtargets = result.targets;
-            } else {
                 event.finish();
             }
-            "step 9";
-            if (event.udtargets.length) {
-                var t = event.udtargets.pop();
-                t.useCard(trigger.card, trigger.player, false);
-            } else {
-                event.finish();
+            "step 3";
+            if (result.control == "确认") {
+                player.loseMaxHp();
+                player.useCard(trigger.card, trigger.player);
             }
-            "step 10";
-            event.goto(9);
         }
     },
     //浊心斯卡蒂

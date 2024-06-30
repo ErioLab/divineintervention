@@ -135,10 +135,10 @@ const Characters = {
     },
     diyftx: {
         sex: "male",
-        group: "shen",
-        hp: 1,
+        group: "wei",
+        hp: 2,
         maxHp: 8,
-        skills: []
+        skills: ["dishiliang"]
     },
     dizxskd: {
         sex: "female",
