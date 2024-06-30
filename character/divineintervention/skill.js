@@ -737,7 +737,7 @@ const skills = {
                 result.targets[0].chooseToDiscard(result.targets[0].countMark("dijinran_chi"), "he", true);
             }
             "step 5";
-            if (player.countCards("he") >= 2) event.goto(8);
+            if (player.countCards("he") < 2) event.goto(8);
             "step 6";
             player.chooseCardTarget({
                 position: "he",
