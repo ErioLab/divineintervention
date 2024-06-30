@@ -3,7 +3,7 @@ const Characters = {
         sex: "female",
         group: "qun",
         hp: 3,
-        skills: ["dishuanghua", "dilinji", "diceshi"]
+        skills: ["dishuanghua", "dilinji"]
     },
     dichongyue: {
         sex: "male",

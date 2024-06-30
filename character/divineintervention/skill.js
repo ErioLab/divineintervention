@@ -622,11 +622,20 @@ const skills = {
         marktext: "残",
         intro: {
             name: "残梦",
-            content: "拥有#层【残梦】",
+            content: "mark",
         },
         content: function () {
             player.addMark("dijinran", 1);
         },
+        subSkill: {
+            chi: {
+                marktext: "赤",
+                intro: {
+                    name: "集真赤",
+                    content: "mark",
+                },
+            }
+        }
     },
     dihongye: {
         audio: "dijinran",
