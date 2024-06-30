@@ -182,7 +182,14 @@ const Characters = {
         group: "wu",
         hp: 4,
         skills: ["diyicheng", "dipojun"]
-    }
+    },
+    dihutao: {
+        sex: "female",
+        group: "shu",
+        hp: 4,
+        maxHp: 6,
+        skills: ["diwangsheng", "dihumo", "didieying"]
+    },
 };
 
 export default Characters;

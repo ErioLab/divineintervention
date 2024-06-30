@@ -2412,11 +2412,11 @@ const skills = {
                 var num = result.control;
                 player.removeMark("didianran", num);
                 if (num == 1) {
-                    player.chooseUseTarget({ name: "sha", nature: "fire" }, get.prompt("didianran"), "视为使用一张无距离限制的火【杀】", false, "nodistance").logSkill = "didianran";
+                    player.chooseUseTarget({ name: "sha", nature: "fire" }, get.prompt("didianran"), "视为使用一张无距离限制的火【杀】", "nodistance").logSkill = "didianran";
                 } else if (num == 2) {
-                    player.chooseUseTarget({ name: "sha", nature: "fire", "dianran2": true }, get.prompt("didianran"), "视为使用一张无距离限制、无法响应的火【杀】", false, "nodistance").logSkill = "didianran";
+                    player.chooseUseTarget({ name: "sha", nature: "fire", "dianran2": true }, get.prompt("didianran"), "视为使用一张无距离限制、无法响应的火【杀】", "nodistance").logSkill = "didianran";
                 } else if (num == 3) {
-                    player.chooseUseTarget({ name: "sha", nature: "fire", "dianran2": true, "dianran3": true }, get.prompt("didianran"), "视为使用一张无距离限制、无法响应的火【杀】，且对距离目标1以内所有其他角色各造成一点无属性伤害（包括自己）", false, "nodistance").logSkill = "didianran";
+                    player.chooseUseTarget({ name: "sha", nature: "fire", "dianran2": true, "dianran3": true }, get.prompt("didianran"), "视为使用一张无距离限制、无法响应的火【杀】，且对距离目标1以内所有其他角色各造成一点无属性伤害（包括自己）", "nodistance").logSkill = "didianran";
                 }
             }
         },
@@ -4435,7 +4435,7 @@ const skills = {
                 trigger: { player: "phaseZhunbeiBegin" },
                 direct: true,
                 content: function () {
-                    player.chooseUseTarget("视为使用一张没有距离限制的【杀】", { name: "sha" }, false, "nodistance").logSkill = "difellowhuishengskill2_sha";
+                    player.chooseUseTarget("视为使用一张没有距离限制的【杀】", { name: "sha" }, "nodistance").logSkill = "difellowhuishengskill2_sha";
                 },
                 ai: {
                     threaten: function (player, target) {
@@ -4751,6 +4751,86 @@ const skills = {
                 else return "共有" + get.cnNumber(cards.length) + "张牌";
             },
         },
+    },
+    diwangsheng: {
+        audio: 2,
+        trigger: { global: "die" },
+        filter: function (event, player) {
+            return event.source != player;
+        },
+        prompt2: function (event, player) {
+            return "减少一点体力上限，视为" + get.translation(event.player) + "的击杀者。";
+        },
+        content: function () {
+            player.loseMaxHp();
+            trigger.source = player;
+        }
+    },
+    dihumo: {
+        audio: 3,
+        forced: true,
+        filter: function (event, player) {
+            return 2 * player.hp < player.maxHp;
+        },
+        trigger: { source: "damageBegin1" },
+        content: function () {
+            trigger.num++;
+        },
+    },
+    didieying: {
+        audio: 3,
+        enable: "phaseUse",
+        usable: 1,
+        content: function () {
+            "step 0";
+            player.chooseControl(["流失体力", "减少体力上限"])
+                .set("prompt", get.prompt("didieying"))
+                .set("prompt2", "出牌阶段限一次，你可以流失一点体力或减少一点体力上限，选择四项中的两项按选择顺序执行：<br>1. 视为对相邻的三名角色使用火【杀】（无距离限制）；<br>2.视为对至多X名角色使用【决斗】（X为你的体力上限）；<br>3. 失去一点体力；<br>4. 恢复一点体力。");
+            "step 1";
+            if (result.control == "流失体力") {
+                player.loseHp();
+            } else {
+                player.loseMaxHp();
+            }
+            "step 2";
+            var list = ["1. 视为对相邻的三名角色使用火【杀】（无距离限制）", "2.视为对至多X名角色使用【决斗】（X为你的体力上限）", "3.失去一点体力", "4.恢复一点体力"];
+            var next = player.chooseButton(
+                ["选择四项中的两项按选择顺序执行：", [list, "textbutton"]],
+            );
+            next.set("selectButton", [1, 2]);
+            "step 3";
+            if (result.bool && result.links && result.links.length > 0) {
+                game.log(player, "选择了", result.links);
+                for (var i = 0; i < result.links.length; i++) {
+                    if (result.links[i][0] == "1") {
+                        player.chooseUseTarget({ name: "sha", nature: "fire", dieying: true }, "选择相邻三名角色的中间角色", "视为对相邻的三名角色使用火【杀】（无距离限制）", "nodistance");
+                    } else if (result.links[i][0] == "2") {
+                        player.chooseUseTarget({ name: "juedou" }, [1, player.maxHp], "选择至多" + get.cnNumber(player.maxHp) + "名角色", "视为对其使用【决斗】");
+                    } else if (result.links[i][0] == "3") {
+                        player.loseHp();
+                    } else if (result.links[i][0] == "4") {
+                        player.recover();
+                    }
+                }
+            }
+        },
+        group: ["didieying_sha"],
+        subSkill: {
+            sha: {
+                forced: true,
+                silent: true,
+                trigger: { player: "useCardToPlayered" },
+                filter: function (event, player) {
+                    return event.card.name == "sha" && event.card.dieying && event.targets.length == 1;
+                },
+                content: function () {
+                    trigger.targets.push(trigger.targets[0].previous);
+                    trigger.targets.push(trigger.targets[0].next);
+                    player.line(trigger.targets[1], "fire");
+                    player.line(trigger.targets[2], "fire");
+                }
+            }
+        }
     },
 };
 
