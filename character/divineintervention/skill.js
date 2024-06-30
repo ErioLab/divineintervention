@@ -1535,7 +1535,7 @@ const skills = {
                 },
                 content: function () {
                     "step 0"
-                    player.chooseCard("将一张【杀】置于武将牌上称为【矢】", "h", { name: "sha" });
+                    player.chooseCard("将任意张【杀】置于武将牌上称为【矢】", "h", { name: "sha" }, [1, player.countCards("h", { name: "sha" })]);
                     "step 1"
                     if (result.bool) {
                         if (result.cards && result.cards.length) {
@@ -1581,7 +1581,7 @@ const skills = {
                     return event.parent.skill == "dijie_shuanghua";
                 },
                 content: function () {
-                    player.draw();
+                    player.draw(trigger.num);
                 }
             },
             shoushang: {
@@ -1658,7 +1658,7 @@ const skills = {
             if (player.getExpansions("dijie_shuanghua").length > 0) {
                 player.chooseTarget("选择一名角色，视为对其及其上下家使用冰【杀】", lib.filter.notMe);
             } else {
-                player.chooseCard("将一张【杀】置于武将牌上称为【矢】", "h", { name: "sha" });
+                player.chooseCard("将任意张【杀】置于武将牌上称为【矢】", "h", { name: "sha" }, [1, player.countCards("h", { name: "sha" })]);
             }
             "step 1"
             if (player.getExpansions("dijie_shuanghua").length > 0) {
