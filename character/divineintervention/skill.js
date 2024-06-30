@@ -83,15 +83,9 @@ const skills = {
     dilinji: {
         audio: 3,
         forced: true,
-        mark: true,
+        onremove: true,
         marktext: "麟",
-        init: function (player) {
-            player.storage.dilinji = 0;
-        },
-        intro: {
-            name: "麟迹",
-            content: "你至其他角色的距离+#",
-        },
+        intro: { content: "你至其他角色的距离+#", },
         trigger: { player: ["respond", "useCard"] },
         filter: function (event, player) {
             return event.card && event.card.name == "shan";
@@ -249,11 +243,9 @@ const skills = {
         audio: 4,
         enable: "phaseUse",
         usable: 1,
+        onremove: true,
         marktext: "狱",
-        intro: {
-            name: "狱变",
-            content: "记录已损失的体力为#",
-        },
+        intro: { content: "记录已损失的体力为#", },
         content: function () {
             "step 0"
             if (player.hp != 1) {
@@ -302,23 +294,13 @@ const skills = {
         }
     },
     dizangsong: {
-        mark: true,
+        onremove: true,
         marktext: "赐",
-        intro: {
-            name: "赐",
-            content: "拥有#层【赐】"
-        },
+        intro: { content: "mark" },
         trigger: { player: ["loseHpEnd", "damageEnd"] },
         forced: true,
-        init: function (player) {
-            player.storage.dizangsong = 0;
-        },
         content: function () {
-            game.broadcastAll(function (target) {
-                target.storage.dizangsong++;
-                target.syncStorage("dizangsong");
-                target.updateMarks();
-            }, player);
+            player.addMark("dizangsong", trigger.num);
         },
         group: "dizangsong_phase",
         subSkill: {
@@ -327,16 +309,12 @@ const skills = {
                 priority: -50,
                 forced: true,
                 filter: function (event, player) {
-                    return player.storage.dizangsong >= 4;
+                    return player.countMark("dizangsong") >= 4;
                 },
                 content: function () {
+                    player.removeMark("dizangsong", player.countMark("dizangsong"));
                     player.insertPhase();
                     player.recover(1);
-                    game.broadcastAll(function (target) {
-                        target.storage.dizangsong = 0;
-                        target.syncStorage("dizangsong");
-                        target.updateMarks();
-                    }, player);
                 }
             }
         }
@@ -477,10 +455,11 @@ const skills = {
             player.addMark("dilifeng", 1);
             player.draw();
         },
+        onremove: true,
         marktext: "勋",
         intro: {
             name: "未照耀的荣光",
-            content: "拥有#个【勋】",
+            content: "mark",
         },
     },
     diyouxia: {
@@ -619,36 +598,104 @@ const skills = {
         audio: 4,
         trigger: { global: "addJudgeAfter" },
         forced: true,
+        onremove: true,
         marktext: "残",
         intro: {
             name: "残梦",
-            content: "mark",
+            content: "mark"
         },
         content: function () {
+            player.line(trigger.player, "thunder");
             player.addMark("dijinran", 1);
+            trigger.player.addMark("dijinran_chi", 1);
         },
+        group: ["dijinran_dodmg", "dijinran_getdmg"],
         subSkill: {
+            dodmg: {
+                audio: "dijinran",
+                trigger: { source: "damageEnd" },
+                forced: true,
+                content: function () {
+                    player.line(trigger.player, "thunder");
+                    player.addMark("dijinran", 1);
+                    trigger.player.addMark("dijinran_chi", 1);
+                }
+            },
+            getdmg: {
+                lastDo: true,
+                audio: "dijinran",
+                trigger: { player: "damageEnd" },
+                forced: true,
+                content: function () {
+                    player.line(trigger.source, "thunder");
+                    player.addMark("dijinran", 1);
+                    if (trigger.source)
+                        trigger.source.addMark("dijinran_chi", 1);
+                }
+            },
             chi: {
+                onremove: true,
                 marktext: "赤",
                 intro: {
-                    name: "集真赤",
-                    content: "mark",
+                    name: "集真赤", content: "mark",
                 },
             }
         }
     },
     dihongye: {
-        audio: "dijinran",
-        trigger: { source: "damageBegin4" },
+        audio: 3,
+        trigger: { player: "phaseJieshu" },
+        direct: true,
         filter: function (event, player) {
-            return event.card && event.card.name == "sha";
+            return player.countCards("h") && game.hasPlayer(target => player.canCompare(target));
         },
         content: function () {
-            trigger.cancel();
-            var t = trigger.player;
-            player.line(t, "red");
-            player.gainPlayerCard(t, "he", true);
-            player.moveCard(true);
+            "step 0";
+            player.chooseTarget(
+                "选择一名角色与其拼点",
+                "若你赢，你可移动其区域内一张牌，若你没赢，你受到该角色的一点雷属性伤害，并获得双方拼点牌。你的拼点牌点数+X（X为你拥有的【残梦】数量）。",
+                function (card, player, target) {
+                    return player.canCompare(target);
+                }
+            );
+            "step 1";
+            if (result.bool) {
+                player.logSkill("dihongye", result.targets);
+                event.target = result.targets[0];
+                player.chooseToCompare(result.targets[0]);
+            } else {
+                event.finish();
+            }
+            "step 2";
+            if (result.bool) {
+                player.moveCard(
+                    "移动" + get.translation(event.target) + "区域内一张牌",
+                    event.target,
+                    game.filterPlayer(i => i != event.target),
+                    "canReplace",
+                )
+            } else {
+                player.damage(event.target, "thunder");
+                var card1 = result.player;
+                var card2 = result.target;
+                if (get.position(card1) == "d") player.gain(card1, "gain2");
+                if (get.position(card2) == "d") player.gain(card2, "gain2");
+            }
+        },
+        group: ["dihongye_add"],
+        subSkill: {
+            add: {
+                trigger: { player: "compare" },
+                forced: true,
+                filter: function (event, player) {
+                    return event.getParent().name == "dihongye" && event.num1 < 13 && player.countMark("dijinran") > 0;
+                },
+                content: function () {
+                    var num = player.countMark("dijinran");
+                    game.log(player, "的拼点牌点数+", num);
+                    trigger.num1 = Math.min(13, trigger.num1 + num);
+                },
+            }
         }
     },
     diyuzhan: {
@@ -662,67 +709,67 @@ const skills = {
             return player.countMark("dijinran") >= 9;
         },
         content() {
-            "step 0"
+            "step 0";
             player.awakenSkill("diyuzhan");
             player.removeMark("dijinran", player.countMark("dijinran"));
-            player.storage.chosenTargets = [];
-            "step 1"
-            player.chooseTarget("对一名角色造成一点雷属性伤害", true);
-            "step 2"
+            "step 1";
+            player.chooseTarget(
+                "选择一名角色摸X张牌。",
+                "X为其拥有的【集真赤】的数量",
+                function (card, player, target) {
+                    return target.countMark("dijinran_chi") > 0;
+                }
+            );
+            "step 2";
             if (result.bool) {
-                var target = result.targets[0];
-                player.storage.chosenTargets.push(target);
-                target.damage("thunder");
+                result.targets[0].draw(result.targets[0].countMark("dijinran_chi"));
             }
-            if (player.countCards("h") < 2 || player.storage.chosenTargets.length >= game.players.length) event.goto(8);
-            "step 3"
+            "step 3";
+            player.chooseTarget(
+                "选择一名角色弃置X张牌。",
+                "X为其拥有的【集真赤】的数量",
+                function (card, player, target) {
+                    return target.countMark("dijinran_chi") > 0;
+                }
+            );
+            "step 4";
+            if (result.bool) {
+                result.targets[0].chooseToDiscard(result.targets[0].countMark("dijinran_chi"), "he", true);
+            }
+            "step 5";
+            if (player.countCards("he") >= 2) event.goto(8);
+            "step 6";
             player.chooseCardTarget({
                 position: "he",
-                filterTarget: function (card, player, target) {
-                    return !player.storage.chosenTargets.includes(target);
-                },
                 selectCard: 2,
                 selectTarget: 1,
-                prompt: "弃置两张牌，对一名角色造成一点雷属性伤害并弃置其装备区所有牌（不能为1选择的角色）",
-                forced: true,
+                prompt: "弃置两张牌，对一名角色造成两点雷属性伤害",
             });
-            "step 4"
+            "step 7";
             if (result.bool) {
-                var target = result.targets[0];
-                player.storage.chosenTargets.push(target);
-                target.damage("thunder");
                 player.discard(result.cards);
-                target.discard(target.getCards("e"));
-            } else {
-                event.finish();
+                result.targets[0].damage(2, "thunder");
             }
-            "step 5"
-            if (player.countCards("h") < 2 || player.storage.chosenTargets.length >= game.players.length) event.goto(8);
-            "step 6"
-            player.chooseCardTarget({
-                position: "he",
-                filterTarget: function (card, player, target) {
-                    return !player.storage.chosenTargets.includes(target);
-                },
-                selectCard: 2,
-                selectTarget: 1,
-                prompt: "弃置两张牌，对一名角色造成一点雷属性伤害并将其翻面（不能为1、2选择的角色）",
-                forced: true,
+            "step 8";
+            var maxMark = 0;
+            var targetsWithMaxMark = [];
+            game.filterPlayer(function (player) {
+                var markCount = player.countMark("dijinran_chi");
+                if (markCount > maxMark) {
+                    maxMark = markCount;
+                    targetsWithMaxMark = [player];
+                } else if (markCount === maxMark) {
+                    targetsWithMaxMark.push(player);
+                }
             });
-            "step 7"
-            if (result.bool) {
-                var target = result.targets[0];
-                player.storage.chosenTargets.push(target);
-                target.damage("thunder");
-                player.discard(result.cards);
-                target.turnOver();
-            } else {
-                event.finish();
-            }
-            "step 8"
-            if (player.getAllHistory("sourceDamage", evt => evt.hasNature("thunder")).reduce((num, evt) => num + evt.num, 0) > game.players.length) {
-                game.players.forEach(function (player) {
-                    player.damage("thunder");
+            event.targets = targetsWithMaxMark;
+            player.chooseControl(["确定", "cancel2"])
+                .set("prompt", "是否将拥有【集真赤】最多的角色翻面")
+                .set("prompt2", "将" + get.translation(targetsWithMaxMark) + "翻面");
+            "step 9";
+            if (result.control == "确定") {
+                event.targets.forEach(function (target) {
+                    target.turnOver();
                 });
             }
         }
