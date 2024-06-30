@@ -4801,18 +4801,25 @@ const skills = {
             "step 3";
             if (result.bool && result.links && result.links.length > 0) {
                 game.log(player, "选择了", result.links);
-                for (var i = 0; i < result.links.length; i++) {
-                    if (result.links[i][0] == "1") {
-                        player.chooseUseTarget({ name: "sha", nature: "fire", dieying: true }, "选择相邻三名角色的中间角色", "视为对相邻的三名角色使用火【杀】（无距离限制）", "nodistance");
-                    } else if (result.links[i][0] == "2") {
-                        player.chooseUseTarget({ name: "juedou" }, [1, player.hp], "选择至多" + get.cnNumber(player.hp) + "名角色", "视为对其使用【决斗】");
-                    } else if (result.links[i][0] == "3") {
-                        player.loseHp();
-                    } else if (result.links[i][0] == "4") {
-                        player.recover();
-                    }
+                event.choices = [];
+                for (var i = 0; i < result.links.length; i++)
+                    event.choices.push(result.links[i].slice(0, 1));
+            } else event.finish();
+            "step 4";
+            if (event.choices.length > 0) {
+                var choice = event.choices.shift();
+                if (choice == "1") {
+                    player.chooseUseTarget({ name: "sha", nature: "fire", dieying: true }, "选择相邻三名角色的中间角色", "视为对相邻的三名角色使用火【杀】（无距离限制）", "nodistance");
+                } else if (choice == "2") {
+                    player.chooseUseTarget({ name: "juedou" }, [1, player.hp], "选择至多" + get.cnNumber(player.hp) + "名角色", "视为对其使用【决斗】");
+                } else if (choice == "3") {
+                    player.loseHp();
+                } else if (choice == "4") {
+                    player.recover();
                 }
-            }
+            } else event.finish();
+            "step 5";
+            event.goto(4);
         },
         group: ["didieying_sha"],
         subSkill: {
