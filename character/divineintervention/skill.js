@@ -5163,7 +5163,7 @@ const skills = {
         },
         trigger: { player: "damageBegin4" },
         filter: function (event, player) {
-            return player.countMark("dishan") < 3;
+            return player.countMark("dishan") < 3 && event.source;
         },
         content: function () {
             "step 0";
@@ -5174,7 +5174,7 @@ const skills = {
                 return get.suit(card) == "club" ? 1 : 0;
             });
             "step 2";
-            if (result.bool) {
+            if (result.bool && trigger.source) {
                 var nature = "";
                 if (trigger.hasNature("fire")) nature = "fire";
                 if (trigger.hasNature("thunder")) nature = "thunder";
