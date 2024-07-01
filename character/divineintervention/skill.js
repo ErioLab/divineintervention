@@ -4985,6 +4985,102 @@ const skills = {
             }
         }
     },
+    //断罪者
+    diduanzui: {
+        audio: 4,
+        forced: true,
+        trigger: { source: "damageBegin1" },
+        filter: function (event, player) {
+            return event.card && event.card.name == "sha";
+        },
+        content: function () {
+            var num = Math.floor(Math.random() * 5) - 1;
+            game.log(get.translation(player) + "一击造成了" + num.toString() + "点伤害");
+            if (num <= 0)
+                trigger.cancel();
+            else
+                trigger.num = num;
+            if (num < 0)
+                trigger.player.recover(1, player);
+        }
+    },
+    dichuangshi: {
+        audio: 3,
+        enable: "phaseUse",
+        usable: 1,
+        content: function () {
+            "step 0";
+            player.chooseTarget(
+                "选择任意名角色",
+                "出牌阶段限一次，你可将所有角色分为两组，然后等概率随机选择一组角色全部翻面。",
+                [1, game.players.length - 1],
+            );
+            "step 1";
+            if (result.bool) {
+                var group1 = result.targets;
+                var group2 = game.players.filter(function (p) {
+                    return !group1.includes(p);
+                });
+                var group = Math.random() < 0.5 ? group1 : group2;
+                group.forEach(function (p) {
+                    p.turnOver();
+                });
+            } else {
+                event.finish();
+            }
+        }
+    },
+    //菲亚梅塔
+    dizhimian: {
+        audio: 3,
+        enable: "phaseUse",
+        filter: function (event, player) {
+            return player.hp > 3;
+        },
+        content: function () {
+            "step 0";
+            player.chooseTarget(
+                get.prompt2("dizhimian"),
+                lib.filter.notMe,
+            );
+            "step 1";
+            if (result.bool) {
+                player.loseHp();
+                result.targets[0].recover(1, player);
+            }
+        }
+    },
+    dikuihui: {
+        audio: 3,
+        forced: true,
+        trigger: { player: "phaseEnd" },
+        filter: function (event, player) {
+            return player.hp > 1;
+        },
+        content: function () {
+            player.loseHp();
+        }
+    },
+    dichanghuan: {
+        audio: 2,
+        trigger: { player: ["loseHpEnd", "loseMaxHpEnd", "gainMaxHpEnd", "damageEnd", "recoverEnd"] },
+        direct: true,
+        content: function () {
+            if (player.hp < 3 && !player.hasSkill("jsrgbahu")) {
+                player.logSkill("dichanghuan");
+                game.broadcastAll(function (p) {
+                    p.addSkill("jsrgfeiyang");
+                    p.addSkill("jsrgbahu");
+                }, player);
+            } else if (player.hp >= 3 && player.hasSkill("jsrgbahu")) {
+                player.logSkill("dichanghuan");
+                game.broadcastAll(function (p) {
+                    p.removeSkill("jsrgfeiyang");
+                    p.removeSkill("jsrgbahu");
+                }, player);
+            }
+        }
+    },
 };
 
 export default skills;

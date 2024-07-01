@@ -283,6 +283,20 @@ const translates = {
     dishenqi_info: "出牌阶段限一次，你可以使所有判定区有牌的角色摸一张牌，然后选择等量角色弃置其一张牌（可以弃置判定区的牌）。",
     dishenfa: "神罚",
     dishenfa_info: "限定技，出牌阶段，你选择一名角色，从其开始依次进行【闪电】判定直至生效。若生效角色的判定区有牌，其可防止此伤害并使你重置【神罚】。",
+    //断罪者
+    diduanzuizhe: "断罪者",
+    diduanzui: "断罪",
+    diduanzui_info: "锁定技，你的【杀】会等概率随机造成-1~3点伤害。",
+    dichuangshi: "创世",
+    dichuangshi_info: "出牌阶段限一次，你可将所有角色分为两组，然后等概率随机选择一组角色全部翻面。",
+    //菲亚梅塔
+    difeiya: "菲亚梅塔",
+    dizhimian: "直面",
+    dizhimian_info: "出牌阶段，如果你的体力大于3，你可失去一点体力并回复一名其他角色一点体力。",
+    dikuihui: "愧悔",
+    dikuihui_info: "锁定技，回合结束时，若你的体力大于一，你失去一点体力。",
+    dichanghuan: "偿还",
+    dichanghuan_info: "体力小于3时，你视为拥有【飞扬】【跋扈】。",
 };
 
 export default translates;

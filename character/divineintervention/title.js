@@ -31,5 +31,7 @@ const characterTitles = {
     dimou_xusheng: "江东铁壁",
     dihutao: "雪霁梅香",
     diyike: "沙海过客",
+    diduanzui: "断罪大师",
+    difeiya: "炽焰无霾",
 };
 export default characterTitles;
