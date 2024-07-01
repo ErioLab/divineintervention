@@ -33,5 +33,6 @@ const characterTitles = {
     diyike: "沙海过客",
     diduanzui: "断罪大师",
     difeiya: "炽焰无霾",
+    sp_digenji: "武士之魂",
 };
 export default characterTitles;

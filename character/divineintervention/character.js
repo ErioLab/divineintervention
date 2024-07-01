@@ -208,6 +208,12 @@ const Characters = {
         hp: 6,
         skills: ["dizhimian", "dikuihui", "dichanghuan"]
     },
+    sp_digenji: {
+        sex: "male",
+        group: "qun",
+        hp: 3,
+        skills: ["diling", "dibiao", "diying", "dishan", "dizhan"]
+    }
 };
 
 export default Characters;

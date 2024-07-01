@@ -5081,6 +5081,125 @@ const skills = {
             }
         }
     },
+    //源氏
+    diling: {
+        mod: {
+            globalFrom(from, to, distance) {
+                return distance - 1;
+            }
+        }
+    },
+    dibiao: {
+        audio: 7,
+        forced: true,
+        trigger: { source: "damageBegin1" },
+        filter: function (event, player) {
+            return event.card && event.card.name == "sha" && get.color(event.card) == "black" && get.distance(player, event.player) <= 1;
+        },
+        content: function () {
+            trigger.num++;
+        },
+        mod: {
+            targetInRange: function (card) {
+                if (card.name == "sha") return true;
+            },
+            selectTarget: function (card, player, range) {
+                if (card.name == "sha" && range[1] != -1 && get.color(card) == "black") {
+                    range[1]++;
+                }
+            },
+        },
+    },
+    diying: {
+        audio: 6,
+        forced: true,
+        trigger: { source: "dieAfter" },
+        content: function () {
+            var discarded = get.discarded();
+            var cards = [];
+            discarded.forEach(function (card) {
+                if (card.name == "sha")
+                    cards.push(card);
+            });
+            player.gain(cards, "gain2");
+            player.addMark("diying_sha", 1);
+        },
+        group: ["diying_sha", "diying_clear"],
+        subSkill: {
+            sha: {
+                onremove: true,
+                marktext: "影",
+                intro: {
+                    markname: "影",
+                    content: "本回合使用【杀】的次数上限+#",
+                },
+                mod: {
+                    cardUsable: function (card, player, num) {
+                        if (card.name == "sha") {
+                            return num + player.countMark("diying_sha");
+                        }
+                    }
+                }
+            },
+            clear: {
+                trigger: { global: "phaseEnd" },
+                forced: true,
+                silent: true,
+                filter: function (event, player) {
+                    return player.countMark("diying_sha") > 0;
+                },
+                content: function () {
+                    player.removeMark("diying_sha", player.countMark("diying_sha"));
+                }
+            }
+        }
+    },
+    dishan: {
+        audio: 4,
+        onremove: true,
+        marktext: "闪",
+        intro: {
+            content: "本回合已发动#次【闪】",
+        },
+        trigger: { player: "damageBegin4" },
+        filter: function (event, player) {
+            return player.countMark("dishan") < 3;
+        },
+        content: function () {
+            "step 0";
+            player.addMark("dishan", 1);
+            trigger.cancel();
+            "step 1";
+            player.judge(function (card) {
+                return get.suit(card) == "club" ? 1 : 0;
+            });
+            "step 2";
+            if (result.bool) {
+                var nature = "";
+                if (trigger.hasNature("fire")) nature = "fire";
+                if (trigger.hasNature("thunder")) nature = "thunder";
+                if (trigger.hasNature("ice")) nature = "ice";
+                if (trigger.hasNature("kami")) nature = "kami";
+                player.line(trigger.source, nature);
+                trigger.source.damage(trigger.num, player, nature);
+            }
+        },
+    },
+    dizhan: {
+        audio: 2,
+        limited: true,
+        skillAnimation: true,
+        animationColor: "thunder",
+        enable: "phaseUse",
+        filter: function (event, player) {
+            return player.getAllHistory("sourceDamage").reduce((num, evt) => num + evt.num, 0) >= 10;
+        },
+        content: function () {
+            player.awakenSkill("dizhan");
+            for (var i = 0; i < 5; i++)
+                player.chooseUseTarget({ name: "sha", baseDamage: 2 }, false, "竜刃：第" + get.cnNumber(i + 1) + "刀", "你可视为使用五张不计入次数上限的【杀】。");
+        },
+    },
 };
 
 export default skills;

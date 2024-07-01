@@ -297,6 +297,19 @@ const translates = {
     dikuihui_info: "锁定技，回合结束时，若你的体力大于2，你失去一点体力。",
     dichanghuan: "偿还",
     dichanghuan_info: "体力小于3时，你视为拥有【飞扬】【跋扈】。",
+    //SP源氏
+    sp_digenji: "SP源氏",
+    sp_digenji_prefix: "SP",
+    diling: "灵",
+    diling_info: "锁定技，你计算与其他角色的距离- 1。",
+    dibiao: "镖",
+    dibiao_info: "锁定技，你使用【杀】无距离限制。你的黑色【杀】可额外指定一个目标，且对距离小于等于一的角色造成的伤害+1。",
+    diying: "影",
+    diying_info: "击杀一名角色后，你获得本回合进入弃牌堆中的【杀】，且本回合使用【杀】的次数上限 + 1。",
+    dishan: "闪",
+    dishan_info: "每局游戏限三次，受到伤害时，你可取消此伤害并进行一次判定，如果是梅花，视为你对伤害来源造成等量同属性伤害。",
+    dizhan: "斩",
+    dizhan_info: "限定技，出牌阶段，如果你本局游戏累计造成的伤害达到10点，你可视为使用五张不计入次数上限的【杀】。",
 };
 
 export default translates;
