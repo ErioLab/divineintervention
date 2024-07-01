@@ -4099,7 +4099,7 @@ export class Get {
 		}
 	}
 	groups() {
-		return ["wei", "shu", "wu", "qun", "jin", "western", "key"];
+		return ["wei", "shu", "wu", "qun", "jin", "ming", "western", "key"];
 	}
 	types() {
 		var types = [];

@@ -314,6 +314,8 @@ const translates = {
     diqingque: "青雀",
     diqiongyu: "琼玉",
     diqiongyu_info: "出牌阶段限四次，你可将一张手牌置于牌堆顶并从牌堆底摸一张牌，然后展示牌堆顶的四张牌并按原顺序放回，若这四张牌花色均不相同，你使用的下一张基本牌基数+1且可额外指定一名目标（无任何限制）。",
+    //朱元璋
+    dizhuyuanzhang: "朱元璋",
 };
 
 export default translates;

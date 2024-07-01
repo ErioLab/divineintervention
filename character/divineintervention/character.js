@@ -220,6 +220,12 @@ const Characters = {
         hp: 3,
         skills: ["diqiongyu"]
     },
+    dizhuyuanzhang: {
+        sex: "male",
+        group: "ming",
+        hp: 4,
+        skills: []
+    },
 };
 
 export default Characters;

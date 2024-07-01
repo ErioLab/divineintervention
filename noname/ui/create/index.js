@@ -1059,6 +1059,7 @@ export class Create {
 			"wu",
 			"qun",
 			"jin",
+			"ming",
 			"western",
 			"key",
 			function (link, node) {

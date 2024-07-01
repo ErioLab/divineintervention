@@ -8668,14 +8668,16 @@ export class Library {
 					d = 0,
 					e = 0,
 					f = 0,
-					g = 0;
+					g = 0,
+					h = 0;
 				let sa = 0,
 					sb = 0,
 					sc = 0,
 					sd = 0,
 					se = 0,
 					sf = 0,
-					sg = 0;
+					sg = 0,
+					sh = 0;
 				for (let i in lib.character) {
 					switch (lib.character[i][1]) {
 						case "wei":
@@ -8706,6 +8708,11 @@ export class Library {
 							f++;
 							if (lib.config.banned.includes(i)) sf++;
 							break;
+						case "ming":
+							h++;
+							if (lib.config.banned.includes(i)) sh++;
+							break;
+
 					}
 				}
 				log("魏：" + (a - sa) + "/" + a);
@@ -8715,7 +8722,8 @@ export class Library {
 				log("晋：" + (g - sg) + "/" + g);
 				log("西：" + (e - se) + "/" + e);
 				log("键：" + (f - sf) + "/" + f);
-				log("已启用：" + (a + b + c + d + e + f - (sa + sb + sc + sd + se + sf)) + "/" + (a + b + c + d + e + f));
+				log("明：" + (h - sh) + "/" + h);
+				log("已启用：" + (a + b + c + d + e + f + h - (sa + sb + sc + sd + se + sf + sh)) + "/" + (a + b + c + d + e + f + h));
 			})();
 			(function () {
 				let a = 0,
@@ -9403,6 +9411,7 @@ export class Library {
 		wu: "吴",
 		qun: "群",
 		shen: "神",
+		ming: "明",
 		yuan: "原",
 		western: "西",
 		key: "键",
@@ -9413,6 +9422,7 @@ export class Library {
 		wu2: "吴国",
 		qun2: "群雄",
 		shen2: "神明",
+		ming2: "明朝",
 		western2: "西方",
 		key2: "KEY",
 		jin2: "晋朝",
@@ -9433,6 +9443,7 @@ export class Library {
 		wuColor: "#b2d9a9",
 		qunColor: "#f6f6f6",
 		shenColor: "#ffe14c",
+		mingColor: " #b0d0e2",
 		westernColor: "#ffe14c",
 		jinColor: "#ffe14c",
 		keyColor: "#c9b1fd",
@@ -9534,10 +9545,12 @@ export class Library {
 		group_qun: "群势力",
 		group_key: "键势力",
 		group_jin: "晋势力",
+		group_ming: "明势力",
 		group_wei_bg: "魏",
 		group_shu_bg: "蜀",
 		group_wu_bg: "吴",
 		group_qun_bg: "群",
+		group_ming_bg: "明",
 		group_key_bg: "键",
 		group_jin_bg: "晋",
 		zhengsu: "整肃",
@@ -10371,6 +10384,7 @@ export class Library {
 				if (group == "western") return base + 6;
 				if (group == "shen") return base + 7;
 				if (group == "double") return base + 7;
+				if (group == "ming") return base + 8;
 				return base + 9;
 			};
 			return groupSort(a) - groupSort(b);
@@ -10390,6 +10404,7 @@ export class Library {
 				if (group == "jin") return base + 4;
 				if (group == "key") return base + 5;
 				if (group == "western") return base + 6;
+				if (group == "ming") return base + 8;
 				return base + 7;
 			};
 			const del = groupSort(a) - groupSort(b);
@@ -13192,7 +13207,7 @@ export class Library {
 		red: ["diamond", "heart"],
 		none: ["none"],
 	};
-	group = ["wei", "shu", "wu", "qun", "jin", "shen"];
+	group = ["wei", "shu", "wu", "qun", "jin", "ming", "shen"];
 	//数值代表各元素在名称中排列的先后顺序
 	nature = new Map([
 		["fire", 20],
@@ -13705,6 +13720,7 @@ export class Library {
 		shu: "soil",
 		wu: "wood",
 		qun: "qun",
+		ming: "water",
 		western: "thunder",
 		key: "key",
 		jin: "thunder",
