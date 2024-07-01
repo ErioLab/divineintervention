@@ -5159,7 +5159,7 @@ const skills = {
         onremove: true,
         marktext: "闪",
         intro: {
-            content: "本回合已发动#次【闪】",
+            content: "本局游戏已发动#/3次【闪】",
         },
         trigger: { player: "damageBegin4" },
         filter: function (event, player) {
