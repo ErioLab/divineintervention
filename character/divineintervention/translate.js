@@ -294,7 +294,7 @@ const translates = {
     dizhimian: "直面",
     dizhimian_info: "出牌阶段，如果你的体力大于3，你可失去一点体力并回复一名其他角色一点体力。",
     dikuihui: "愧悔",
-    dikuihui_info: "锁定技，回合结束时，若你的体力大于一，你失去一点体力。",
+    dikuihui_info: "锁定技，回合结束时，若你的体力大于2，你失去一点体力。",
     dichanghuan: "偿还",
     dichanghuan_info: "体力小于3时，你视为拥有【飞扬】【跋扈】。",
 };

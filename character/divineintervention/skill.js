@@ -5055,7 +5055,7 @@ const skills = {
         forced: true,
         trigger: { player: "phaseEnd" },
         filter: function (event, player) {
-            return player.hp > 1;
+            return player.hp > 2;
         },
         content: function () {
             player.loseHp();
