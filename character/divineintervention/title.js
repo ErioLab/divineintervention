@@ -34,5 +34,6 @@ const characterTitles = {
     diduanzui: "断罪大师",
     difeiya: "炽焰无霾",
     sp_digenji: "武士之魂",
+    diqingque: "用牌玩命",
 };
 export default characterTitles;

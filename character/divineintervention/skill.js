@@ -550,6 +550,7 @@ const skills = {
                     }
                     "step 2"
                     trigger.targets.push(event.target);
+                    player.line(event.target);
                 }
             },
             response: {
@@ -2350,7 +2351,7 @@ const skills = {
                     "step 2";
                     if (event.targets) {
                         trigger.targets.addArray(event.targets);
-                        game.log(get.translation(trigger.player) + "为" + get.translation(trigger.card) + "多指点了目标" + get.translation(event.targets));
+                        game.log(get.translation(trigger.player) + "为" + get.translation(trigger.card) + "增加了目标" + get.translation(event.targets));
                     }
                 },
             },
@@ -5199,6 +5200,109 @@ const skills = {
             for (var i = 0; i < 5; i++)
                 player.chooseUseTarget({ name: "sha", baseDamage: 2 }, false, "竜刃：第" + get.cnNumber(i + 1) + "刀", "你可视为使用五张不计入次数上限的【杀】。");
         },
+    },
+    //青雀
+    diqiongyu: {
+        audio: 7,
+        usable: 4,
+        enable: "phaseUse",
+        filter: function (event, player) {
+            return player.countCards("h") > 0;
+        },
+        content: function () {
+            "step 0";
+            player.chooseCard(
+                "h",
+                "将一张手牌置于牌堆顶",
+            );
+            "step 1";
+            if (result && result.cards) {
+                event.card = result.cards[0];
+                player.lose(result.cards, ui.special);
+                var cardx = ui.create.card();
+                cardx.classList.add("infohidden");
+                cardx.classList.add("infoflip");
+                player.$throw(cardx, 1000, "nobroadcast");
+            } else {
+                event.finish();
+            }
+            "step 2";
+            event.card.fix();
+            ui.cardPile.insertBefore(event.card, ui.cardPile.firstChild);
+            "step 3";
+            player.draw(1, "bottom");
+            event.cards = game.cardsGotoOrdering(get.cards(4)).cards.slice(0);
+            player.showCards(event.cards);
+            "step 4";
+            var suits = [];
+            event.cards.forEach(function (card) {
+                if (!suits.includes(get.suit(card))) suits.push(get.suit(card));
+            });
+            if (suits.length == 4) {
+                player.popup("和牌");
+                game.broadcastAll(function (p) {
+                    if (lib.config.background_speak) game.playAudio("skill", "diqiongyu_hu");
+                    p.addSkill("diqiongyu_dmg");
+                }, player);
+            }
+            while (event.cards.length) {
+                var card = event.cards.pop();
+                ui.cardPile.insertBefore(card, ui.cardPile.firstChild);
+            }
+        },
+        subSkill: {
+            dmg: {
+                mark: true,
+                marktext: "琼",
+                intro: {
+                    content: "下一张基本牌基数+1且可额外指定一名目标（无任何限制）",
+                },
+                trigger: { player: "useCardToPlayered" },
+                filter: function (event, player) {
+                    return get.type(event.card) == "basic";
+                },
+                forced: true,
+                content: function () {
+                    trigger.getParent().baseDamage += 1;
+                    game.broadcastAll(function (p) {
+                        p.removeSkill("diqiongyu_dmg");
+                    }, player);
+                },
+                group: ["diqiongyu_target"],
+            },
+            target: {
+                trigger: { player: "useCard2" },
+                filter: function (event, player) {
+                    return get.type(event.card) == "basic";
+                },
+                direct: true,
+                content: function () {
+                    "step 0"
+                    player.chooseTarget(
+                        "为" + get.translation(trigger.card) + "增加一个目标",
+                        function (card, player, target) {
+                            return !_status.event.sourcex.includes(target);
+                        })
+                        .set("sourcex", trigger.targets)
+                        .set("ai", function (target) {
+                            var player = _status.event.player;
+                            return get.effect(target, _status.event.card, player, player);
+                        });
+                    "step 1"
+                    if (result.bool) {
+                        if (!event.isMine() && !_status.connectMode) game.delayx();
+                        event.target = result.targets[0];
+                    }
+                    else {
+                        event.finish();
+                    }
+                    "step 2"
+                    trigger.targets.push(event.target);
+                    player.line(event.target);
+                    game.log(get.translation(trigger.player) + "为" + get.translation(trigger.card) + "增加了目标" + get.translation(event.target));
+                }
+            }
+        }
     },
 };
 
